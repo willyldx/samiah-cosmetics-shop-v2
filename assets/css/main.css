@@ -1,0 +1,351 @@
+/* ==========================================
+   SAMIAH COSMETICS v2 - STYLES GLOBAUX
+   ========================================== */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+   BASE STYLES
+   ========================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-charcoal font-sans;
+  }
+
+  /* Focus visible pour accessibilité */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-gold;
+  }
+
+  /* Sélection de texte */
+  ::selection {
+    @apply bg-gold/30 text-charcoal;
+  }
+}
+
+/* ==========================================
+   COMPONENT CLASSES
+   ========================================== */
+@layer components {
+  /* Container principal */
+  .container-main {
+    @apply max-w-container mx-auto px-4 sm:px-6;
+  }
+
+  /* Boutons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           px-5 py-3 rounded-xl font-semibold
+           transition-all duration-300 ease-smooth
+           focus-visible:outline-2 focus-visible:outline-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-charcoal text-white
+           hover:bg-charcoal-800 hover:-translate-y-0.5 hover:shadow-medium
+           active:translate-y-0 focus-visible:outline-charcoal;
+  }
+
+  .btn-gold {
+    @apply btn bg-gold text-charcoal
+           hover:bg-gold-500 hover:-translate-y-0.5 hover:shadow-gold
+           active:translate-y-0 focus-visible:outline-gold;
+  }
+
+  .btn-secondary {
+    @apply btn bg-charcoal/5 text-charcoal border border-charcoal/10
+           hover:bg-charcoal/10 hover:-translate-y-0.5
+           active:translate-y-0 focus-visible:outline-charcoal;
+  }
+
+  .btn-whatsapp {
+    @apply btn bg-[#25D366] text-white
+           hover:bg-[#22c55e] hover:-translate-y-0.5 hover:shadow-whatsapp
+           active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply btn bg-transparent border-2 border-charcoal text-charcoal
+           hover:bg-charcoal hover:text-white
+           active:translate-y-0;
+  }
+
+  /* Cards */
+  .card {
+    @apply relative bg-white rounded-2xl overflow-hidden
+           shadow-soft transition-all duration-300 ease-smooth
+           hover:-translate-y-2 hover:shadow-strong;
+  }
+
+  .card-image {
+    @apply w-full h-60 object-cover
+           transition-transform duration-500 ease-smooth;
+  }
+
+  .card:hover .card-image {
+    @apply scale-110;
+  }
+
+  .card-body {
+    @apply p-4 flex flex-col gap-2;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full
+           text-xs font-semibold;
+  }
+
+  .badge-new {
+    @apply badge bg-gold text-charcoal animate-pulse-soft;
+  }
+
+  .badge-promo {
+    @apply badge bg-red-500 text-white;
+  }
+
+  .badge-stock {
+    @apply badge bg-charcoal/10 text-charcoal;
+  }
+
+  /* Input / Form */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-charcoal/10
+           bg-white text-charcoal placeholder-charcoal/40
+           transition-all duration-200
+           focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none;
+  }
+
+  .input-error {
+    @apply input border-red-500 focus:border-red-500 focus:ring-red-500/20;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-charcoal mb-1.5;
+  }
+
+  .select {
+    @apply input appearance-none cursor-pointer
+           bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%23666%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')]
+           bg-[length:1.25rem] bg-[right_0.75rem_center] bg-no-repeat pr-10;
+  }
+
+  /* Section titles */
+  .section-title {
+    @apply font-display text-2xl md:text-3xl font-bold text-charcoal;
+  }
+
+  /* Price */
+  .price {
+    @apply text-gold font-bold text-lg;
+  }
+
+  .price-old {
+    @apply text-charcoal/40 line-through text-sm;
+  }
+
+  /* Skeleton loading */
+  .skeleton {
+    @apply bg-gradient-to-r from-charcoal/5 via-charcoal/10 to-charcoal/5
+           bg-[length:468px_100%] animate-shimmer rounded-xl;
+  }
+
+  /* Toast notification */
+  .toast {
+    @apply fixed bottom-20 right-4 z-50
+           px-5 py-3 rounded-xl font-semibold
+           shadow-strong animate-slide-in-right;
+  }
+
+  .toast-success {
+    @apply toast bg-green-500 text-white;
+  }
+
+  .toast-error {
+    @apply toast bg-red-500 text-white;
+  }
+
+  .toast-info {
+    @apply toast bg-charcoal text-white;
+  }
+}
+
+/* ==========================================
+   UTILITY CLASSES
+   ========================================== */
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-gold to-gold-600 bg-clip-text text-transparent;
+  }
+
+  /* Aspect ratios */
+  .aspect-product {
+    aspect-ratio: 3 / 4;
+  }
+
+  .aspect-hero {
+    aspect-ratio: 16 / 9;
+  }
+
+  /* Scrollbar custom */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.charcoal.200') transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: theme('colors.charcoal.200');
+    border-radius: 3px;
+  }
+
+  /* Line clamp */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Safe area for mobile */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* ==========================================
+   PAGE TRANSITIONS
+   ========================================== */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Layout transitions */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+/* ==========================================
+   MODAL ANIMATIONS
+   ========================================== */
+.modal-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.modal-leave-active {
+  transition: all 0.2s ease-in;
+}
+
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-content,
+.modal-leave-to .modal-content {
+  transform: translateY(100px) scale(0.95);
+  opacity: 0;
+}
+
+.modal-enter-active .modal-content {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-leave-active .modal-content {
+  transition: all 0.2s ease-in;
+}
+
+/* ==========================================
+   CART SLIDE ANIMATION
+   ========================================== */
+.cart-slide-enter-active,
+.cart-slide-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.cart-slide-enter-from,
+.cart-slide-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* ==========================================
+   RESPONSIVE UTILITIES
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================
+   PRINT STYLES
+   ========================================== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
