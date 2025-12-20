@@ -2,7 +2,7 @@
   <section class="relative min-h-[90vh] flex items-center overflow-hidden bg-white">
     <!-- Background subtle pattern -->
     <div class="absolute inset-0">
-      <div class="absolute top-0 right-0 w-1/2 h-full bg-gray-50"></div>
+      <div class="absolute top-0 right-0 w-1/2 h-full bg-amber-50/50"></div>
       <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl animate-pulse-slow"></div>
     </div>
 
@@ -15,30 +15,31 @@
             class="inline-flex items-center gap-2 bg-charcoal text-white rounded-full px-4 py-2 animate-fade-in-down"
             style="animation-delay: 0.1s;"
           >
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
             <span class="text-sm font-medium">Consultation capillaire en ligne</span>
           </div>
 
-          <!-- Titre -->
+          <!-- Titre avec font-serif -->
           <h1 
-            class="text-4xl sm:text-5xl lg:text-6xl font-bold text-charcoal leading-tight animate-fade-in-up"
+            class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-charcoal leading-tight animate-fade-in-up"
             style="animation-delay: 0.2s;"
           >
             <span class="block">R&#233;v&#233;lez la</span>
             <span class="block mt-2">
-              <span class="text-gold relative">
-                beaut&#233;
+              <span class="relative inline-block">
+                <span class="text-gold">beaut&#233;</span>
                 <svg 
-                  class="absolute -bottom-2 left-0 w-full h-3 animate-draw-line" 
+                  class="absolute -bottom-2 left-0 w-full h-3" 
                   viewBox="0 0 200 12" 
                   fill="none" 
                   preserveAspectRatio="none"
                 >
                   <path 
                     d="M2 10C50 2 150 2 198 10" 
-                    stroke="#D4AF37" 
+                    stroke="#C6A961" 
                     stroke-width="3" 
                     stroke-linecap="round"
+                    class="animate-draw-line"
                   />
                 </svg>
               </span>
@@ -64,11 +65,11 @@
               :href="whatsappLink"
               target="_blank"
               rel="noopener"
-              class="group inline-flex items-center gap-3 bg-charcoal text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:bg-charcoal-800 active:scale-95"
+              class="group inline-flex items-center gap-3 bg-charcoal text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:bg-charcoal-800 active:scale-95"
             >
               <span>R&#233;server &#8212; 10 000 F</span>
               <svg 
-                class="w-5 h-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" 
+                class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" 
                 fill="currentColor" 
                 viewBox="0 0 24 24"
               >
@@ -78,11 +79,11 @@
             
             <NuxtLink
               to="/produits"
-              class="group inline-flex items-center gap-3 bg-transparent border-2 border-charcoal text-charcoal font-bold px-8 py-4 rounded-full transition-all duration-300 hover:bg-charcoal hover:text-white hover:-translate-y-2 hover:shadow-xl active:scale-95"
+              class="group inline-flex items-center gap-3 bg-transparent border-2 border-charcoal text-charcoal font-bold px-8 py-4 rounded-full transition-all duration-300 hover:bg-charcoal hover:text-white hover:-translate-y-2 hover:shadow-2xl active:scale-95"
             >
               <span>Voir les produits</span>
               <svg 
-                class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-2" 
+                class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -92,19 +93,19 @@
             </NuxtLink>
           </div>
 
-          <!-- Trust badges -->
+          <!-- Trust badges avec icones gold -->
           <div 
             class="flex flex-wrap items-center gap-6 pt-4 text-sm text-gray-500 animate-fade-in-up"
             style="animation-delay: 0.8s;"
           >
             <div class="flex items-center gap-2 transition-transform duration-300 hover:scale-105">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-gold" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
               <span>R&#233;ponse rapide</span>
             </div>
             <div class="flex items-center gap-2 transition-transform duration-300 hover:scale-105">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-gold" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
               </svg>
               <span>Livraison au Tchad</span>
@@ -118,31 +119,30 @@
           style="animation-delay: 0.3s;"
         >
           <div class="relative group">
-            <!-- Cadre d&#233;coratif avec animation -->
+            <!-- Cadre decoratif avec animation -->
             <div class="absolute -inset-4 border-2 border-gold/30 rounded-2xl transform rotate-3 transition-transform duration-500 group-hover:rotate-6"></div>
             <div class="absolute -inset-4 border-2 border-charcoal/10 rounded-2xl transform -rotate-2 transition-transform duration-500 group-hover:-rotate-4"></div>
             
             <!-- Image principale -->
-            <div class="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 aspect-[4/5]">
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-amber-50 aspect-[4/5]">
               <img
                 src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"
                 alt="Soins capillaires Samiah Cosmetics"
-                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="eager"
               />
               
               <!-- Overlay gradient subtil -->
-              <div class="absolute inset-0 bg-gradient-to-t from-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-charcoal/10 to-transparent"></div>
             </div>
 
             <!-- Floating card - Stats -->
             <div 
-              class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-lg p-5 border border-gray-100 animate-float transition-transform duration-300 hover:scale-105 hover:shadow-xl"
-              style="animation-delay: 1s;"
+              class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-5 border border-gray-100 animate-float transition-transform duration-300 hover:scale-105"
             >
               <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-charcoal rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-gold animate-pulse-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
                   </svg>
                 </div>
@@ -155,8 +155,7 @@
 
             <!-- Floating card - Rating -->
             <div 
-              class="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg px-4 py-3 border border-gray-100 animate-float-delayed transition-transform duration-300 hover:scale-105 hover:shadow-xl"
-              style="animation-delay: 1.2s;"
+              class="absolute -top-4 -right-4 bg-white rounded-xl shadow-2xl px-4 py-3 border border-gray-100 animate-float-delayed transition-transform duration-300 hover:scale-105"
             >
               <div class="flex items-center gap-2">
                 <span class="text-gold text-lg">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
@@ -257,7 +256,7 @@ const whatsappLink = computed(() => {
   animation-delay: 1s;
 }
 
-/* Animation Draw Line (soulignement) */
+/* Animation Draw Line (soulignement de beaute) */
 @keyframes drawLine {
   from {
     stroke-dashoffset: 200;
@@ -267,11 +266,11 @@ const whatsappLink = computed(() => {
   }
 }
 
-.animate-draw-line path {
+.animate-draw-line {
   stroke-dasharray: 200;
   stroke-dashoffset: 200;
-  animation: drawLine 1.5s ease-out forwards;
-  animation-delay: 0.8s;
+  animation: drawLine 1s ease-out forwards;
+  animation-delay: 0.5s;
 }
 
 /* Pulse Slow */
