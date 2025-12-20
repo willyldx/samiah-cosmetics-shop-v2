@@ -1,6 +1,5 @@
 <template>
   <section class="relative min-h-[90vh] flex items-center overflow-hidden bg-white">
-    <!-- Background subtle pattern -->
     <div class="absolute inset-0">
       <div class="absolute top-0 right-0 w-1/2 h-full bg-amber-50/50"></div>
       <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-gold/5 rounded-full blur-3xl animate-pulse-slow"></div>
@@ -8,18 +7,15 @@
 
     <div class="max-w-7xl mx-auto px-4 py-16 lg:py-24 relative">
       <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        <!-- Texte -->
         <div class="space-y-8">
-          <!-- Badge -->
           <div 
             class="inline-flex items-center gap-2 bg-charcoal text-white rounded-full px-4 py-2 animate-fade-in-down"
             style="animation-delay: 0.1s;"
           >
-            <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
             <span class="text-sm font-medium">Consultation capillaire en ligne</span>
           </div>
 
-          <!-- Titre avec font-serif -->
           <h1 
             class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-charcoal leading-tight animate-fade-in-up"
             style="animation-delay: 0.2s;"
@@ -47,7 +43,6 @@
             </span>
           </h1>
 
-          <!-- Description -->
           <p 
             class="text-lg text-gray-600 max-w-lg leading-relaxed animate-fade-in-up"
             style="animation-delay: 0.4s;"
@@ -56,7 +51,6 @@
             correction des habitudes et mise en place d&#39;une routine personnalis&#233;e.
           </p>
 
-          <!-- CTA Buttons -->
           <div 
             class="flex flex-wrap gap-4 animate-fade-in-up"
             style="animation-delay: 0.6s;"
@@ -93,7 +87,6 @@
             </NuxtLink>
           </div>
 
-          <!-- Trust badges avec icones gold -->
           <div 
             class="flex flex-wrap items-center gap-6 pt-4 text-sm text-gray-500 animate-fade-in-up"
             style="animation-delay: 0.8s;"
@@ -113,17 +106,14 @@
           </div>
         </div>
 
-        <!-- Image -->
         <div 
           class="relative order-first lg:order-last animate-fade-in-right"
           style="animation-delay: 0.3s;"
         >
           <div class="relative group">
-            <!-- Cadre decoratif avec animation -->
             <div class="absolute -inset-4 border-2 border-gold/30 rounded-2xl transform rotate-3 transition-transform duration-500 group-hover:rotate-6"></div>
             <div class="absolute -inset-4 border-2 border-charcoal/10 rounded-2xl transform -rotate-2 transition-transform duration-500 group-hover:-rotate-4"></div>
             
-            <!-- Image principale -->
             <div class="relative rounded-2xl overflow-hidden shadow-2xl bg-amber-50 aspect-[4/5]">
               <img
                 src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"
@@ -132,11 +122,9 @@
                 loading="eager"
               />
               
-              <!-- Overlay gradient subtil -->
               <div class="absolute inset-0 bg-gradient-to-t from-charcoal/10 to-transparent"></div>
             </div>
 
-            <!-- Floating card - Stats -->
             <div 
               class="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl p-5 border border-gray-100 animate-float transition-transform duration-300 hover:scale-105"
             >
@@ -153,7 +141,6 @@
               </div>
             </div>
 
-            <!-- Floating card - Rating -->
             <div 
               class="absolute -top-4 -right-4 bg-white rounded-xl shadow-2xl px-4 py-3 border border-gray-100 animate-float-delayed transition-transform duration-300 hover:scale-105"
             >
@@ -167,7 +154,6 @@
       </div>
     </div>
 
-    <!-- Scroll indicator -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:block animate-fade-in-up" style="animation-delay: 1.5s;">
       <div class="w-6 h-10 rounded-full border-2 border-charcoal/20 flex items-start justify-center p-2 cursor-pointer hover:border-charcoal/40 transition-colors">
         <div class="w-1 h-2 bg-charcoal/40 rounded-full animate-bounce"></div>
