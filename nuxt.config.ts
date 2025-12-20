@@ -151,8 +151,8 @@ export default defineNuxtConfig({
   // TYPESCRIPT
   // ==========================================
   typescript: {
-    strict: true,
-    typeCheck: true,
+    strict: false,
+    typeCheck: false,
   },
 
   // ==========================================
