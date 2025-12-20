@@ -13,7 +13,7 @@
           <!-- Badge -->
           <div class="inline-flex items-center gap-2 bg-charcoal text-white rounded-full px-4 py-2">
             <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-            <span class="text-sm font-medium">Consultation capillaire en ligne</span>
+            <span class="text-sm font-medium">{{ heroSettings.subtitle }}</span>
           </div>
 
           <!-- Titre -->
@@ -27,8 +27,7 @@
 
           <!-- Description -->
           <p class="text-lg text-gray-600 max-w-lg leading-relaxed">
-            Définition de votre profil capillaire, analyse des problèmes, correction des habitudes 
-            et mise en place d'une routine personnalisée.
+            {{ heroSettings.description }}
           </p>
 
           <!-- CTA Buttons -->
@@ -39,7 +38,7 @@
               rel="noopener"
               class="group inline-flex items-center gap-3 bg-charcoal hover:bg-charcoal-800 text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              <span>Réserver — 10 000 F</span>
+              <span>Réserver — {{ formatPrice(heroSettings.consultation_price) }}</span>
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
               </svg>
@@ -83,7 +82,7 @@
             <!-- Image principale -->
             <div class="relative rounded-2xl overflow-hidden shadow-lg bg-gray-100 aspect-[4/5]">
               <img
-                :src="heroImage"
+                :src="heroSettings.image"
                 alt="Soins capillaires Samiah Cosmetics"
                 class="w-full h-full object-cover"
                 loading="eager"
@@ -102,7 +101,7 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="text-2xl font-bold text-charcoal">500+</div>
+                  <div class="text-2xl font-bold text-charcoal">{{ heroSettings.stats_clients }}</div>
                   <div class="text-sm text-gray-500">Clientes satisfaites</div>
                 </div>
               </div>
@@ -112,7 +111,7 @@
             <div class="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg px-4 py-3 border border-gray-100">
               <div class="flex items-center gap-2">
                 <span class="text-gold text-lg">★★★★★</span>
-                <span class="text-sm font-bold text-charcoal">5.0</span>
+                <span class="text-sm font-bold text-charcoal">{{ heroSettings.rating }}</span>
               </div>
             </div>
           </div>
@@ -131,12 +130,17 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
+const { heroSettings, fetchHeroSettings } = useSettings()
 
-// Image Hero - tu peux changer cette URL par une image uploadée dans Supabase Storage
-const heroImage = ref('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80')
+// Charger les settings
+await fetchHeroSettings()
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('fr-FR').format(price) + ' F'
+}
 
 const whatsappLink = computed(() => {
-  const message = encodeURIComponent('Bonjour Samiah Cosmetics, je souhaite réserver une consultation capillaire (10.000F).')
+  const message = encodeURIComponent(`Bonjour Samiah Cosmetics, je souhaite réserver une consultation capillaire (${formatPrice(heroSettings.value.consultation_price)}).`)
   return `https://wa.me/${config.public.whatsappNumber}?text=${message}`
 })
 </script>
