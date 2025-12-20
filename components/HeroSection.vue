@@ -121,7 +121,6 @@
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="eager"
               />
-              
               <div class="absolute inset-0 bg-gradient-to-t from-charcoal/10 to-transparent"></div>
             </div>
 
@@ -242,22 +241,31 @@ const whatsappLink = computed(() => {
   animation-delay: 1s;
 }
 
-/* Animation Draw Line (soulignement de beaute) */
+/* --- MODIFICATION ICI : Animation en boucle pour le soulignement --- */
 @keyframes drawLine {
-  from {
+  0% {
     stroke-dashoffset: 200;
   }
-  to {
-    stroke-dashoffset: 0;
+  40% {
+    stroke-dashoffset: 0; /* Trait dessiné */
+  }
+  70% {
+    stroke-dashoffset: 0; /* Pause : reste dessiné */
+  }
+  100% {
+    stroke-dashoffset: 200; /* Le trait s'efface */
   }
 }
 
 .animate-draw-line {
   stroke-dasharray: 200;
   stroke-dashoffset: 200;
-  animation: drawLine 1s ease-out forwards;
+  /* Boucle infinie qui dure 4 secondes au total */
+  animation: drawLine 4s ease-in-out infinite;
+  /* Délai initial inchangé */
   animation-delay: 0.5s;
 }
+/* ---------------------------------------------------------------- */
 
 /* Pulse Slow */
 @keyframes pulseSlow {
