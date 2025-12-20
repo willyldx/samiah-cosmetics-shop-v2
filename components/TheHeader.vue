@@ -15,13 +15,60 @@
           class="flex items-center gap-3 group"
         >
           <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-charcoal flex items-center justify-center transition-transform group-hover:scale-105">
-            <svg 
-              viewBox="0 0 100 100" 
-              class="w-7 h-7 md:w-8 md:h-8"
-            >
-              <circle cx="50" cy="50" r="28" fill="none" stroke="#F5F2EA" stroke-width="4"></circle>
-              <circle cx="50" cy="50" r="22" fill="none" stroke="#D9B56C" stroke-width="4"></circle>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 800"
+     width="1200"
+     height="800">
+
+  <!-- Fond aquarelle stylisé -->
+  <defs>
+    <radialGradient id="wash" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#e6c9df"/>
+      <stop offset="100%" stop-color="#f3e6f0"/>
+    </radialGradient>
+  </defs>
+
+  <path
+    d="M200,150
+       C100,350 150,600 400,650
+       C700,720 1050,600 1020,350
+       C980,120 550,60 200,150 Z"
+    fill="url(#wash)"
+  />
+
+  <!-- SAMIAH -->
+  <text x="600"
+        y="360"
+        text-anchor="middle"
+        fill="#111111"
+        style="
+          font-family: 'Didot', 'Bodoni MT', 'Playfair Display', serif;
+          font-size: 220px;
+          font-weight: 500;
+          letter-spacing: 4px;
+        ">
+    SAMIAH
+  </text>
+
+  <!-- traits horizontaux -->
+  <path d="M200 430 H450" stroke="#111111" stroke-width="2"/>
+  <path d="M750 430 H1000" stroke="#111111" stroke-width="2"/>
+
+  <!-- cosmetics -->
+  <text x="600"
+        y="480"
+        text-anchor="middle"
+        fill="#111111"
+        style="
+          font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+          font-size: 42px;
+          font-weight: 300;
+          letter-spacing: 10px;
+        ">
+    cosmetics
+  </text>
+
+</svg>
           </div>
           <span class="font-bold text-charcoal tracking-wider text-sm md:text-base">
             SAMIAH COSMETICS
