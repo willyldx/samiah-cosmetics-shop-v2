@@ -18,9 +18,9 @@
 
           <!-- Titre -->
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-charcoal leading-tight">
-            <span class="block">Révélez la</span>
+            <span class="block">Revelez la</span>
             <span class="block mt-2">
-              <span class="text-gold">beauté</span>
+              <span class="text-gold">beaute</span>
               de vos cheveux
             </span>
           </h1>
@@ -38,7 +38,7 @@
               rel="noopener"
               class="group inline-flex items-center gap-3 bg-charcoal hover:bg-charcoal-800 text-white font-bold px-8 py-4 rounded-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
             >
-              <span>Réserver — {{ formatPrice(heroSettings.consultation_price) }}</span>
+              <span>Reserver - {{ formatPrice(heroSettings.consultation_price) }}</span>
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
               </svg>
@@ -61,7 +61,7 @@
               <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
-              <span>Réponse rapide</span>
+              <span>Reponse rapide</span>
             </div>
             <div class="flex items-center gap-2">
               <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -75,7 +75,7 @@
         <!-- Image -->
         <div class="relative order-first lg:order-last">
           <div class="relative">
-            <!-- Cadre décoratif -->
+            <!-- Cadre decoratif -->
             <div class="absolute -inset-4 border-2 border-gold/30 rounded-2xl transform rotate-3"></div>
             <div class="absolute -inset-4 border-2 border-charcoal/10 rounded-2xl transform -rotate-2"></div>
             
@@ -132,7 +132,6 @@
 const config = useRuntimeConfig()
 const { heroSettings, fetchHeroSettings } = useSettings()
 
-// Charger les settings
 await fetchHeroSettings()
 
 const formatPrice = (price: number) => {
@@ -140,7 +139,7 @@ const formatPrice = (price: number) => {
 }
 
 const whatsappLink = computed(() => {
-  const message = encodeURIComponent(`Bonjour Samiah Cosmetics, je souhaite réserver une consultation capillaire (${formatPrice(heroSettings.value.consultation_price)}).`)
-  return `https://wa.me/${config.public.whatsappNumber}?text=${message}`
+  const message = encodeURIComponent('Bonjour Samiah Cosmetics, je souhaite reserver une consultation capillaire (' + formatPrice(heroSettings.value.consultation_price) + ').')
+  return 'https://wa.me/' + config.public.whatsappNumber + '?text=' + message
 })
 </script>
