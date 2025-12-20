@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
@@ -27,4 +28,7 @@
     ".output",
     "dist"
   ]
+=======
+  "extends": "./.nuxt/tsconfig.json"
+>>>>>>> 230fd81 (Ajout des nouveaux composants et dossiers admin)
 }
