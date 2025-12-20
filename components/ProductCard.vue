@@ -15,7 +15,7 @@
     <div class="relative aspect-square overflow-hidden bg-gray-50">
       <!-- Image Principale -->
       <img
-        :src="optimizedImage"
+        :src="primaryImage"
         :alt="product.title"
         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         loading="lazy"
@@ -24,7 +24,7 @@
       <!-- Image Secondaire (au hover) -->
       <img
         v-if="secondaryImage"
-        :src="optimizedSecondaryImage"
+        :src="secondaryImage"
         :alt="product.title"
         class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         loading="lazy"
@@ -97,28 +97,29 @@ defineEmits<{
   'add-to-cart': [product: Product]
 }>()
 
-const { isNewProduct, getOptimizedImageUrl, buildGallery } = useProducts()
-
 // Computed
-const isNew = computed(() => isNewProduct(props.product))
+const isNew = computed(() => {
+  if (!props.product.created_at) return false
+  const created = Date.parse(props.product.created_at)
+  const twoDays = 2 * 24 * 60 * 60 * 1000
+  return (Date.now() - created) <= twoDays
+})
 
-const gallery = computed(() => buildGallery(props.product))
+const primaryImage = computed(() => {
+  return props.product.image || props.product.images?.[0] || '/images/placeholder.svg'
+})
 
-const primaryImage = computed(() => 
-  gallery.value[0] || '/images/placeholder.png'
-)
-
-const secondaryImage = computed(() => 
-  gallery.value[1] || null
-)
-
-const optimizedImage = computed(() => 
-  getOptimizedImageUrl(primaryImage.value, 400)
-)
-
-const optimizedSecondaryImage = computed(() => 
-  secondaryImage.value ? getOptimizedImageUrl(secondaryImage.value, 400) : null
-)
+const secondaryImage = computed(() => {
+  if (props.product.images && props.product.images.length > 0) {
+    // Si image principale existe, prendre la première de images[]
+    // Sinon prendre la deuxième de images[]
+    if (props.product.image) {
+      return props.product.images[0]
+    }
+    return props.product.images[1] || null
+  }
+  return null
+})
 
 const formattedPrice = computed(() => {
   return new Intl.NumberFormat('fr-FR').format(props.product.price) + ' FCFA'
