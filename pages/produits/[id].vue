@@ -60,7 +60,7 @@
               :class="currentImageIndex === index ? 'border-gold' : 'border-transparent hover:border-gray-300'"
             >
               <img
-                :src="getOptimizedImageUrl(img, 150)"
+                :src="img"
                 :alt="`${product.title} - image ${index + 1}`"
                 class="w-full h-full object-cover"
               />
@@ -72,7 +72,7 @@
         <div class="lg:py-4">
           <!-- Badge nouveau -->
           <span
-            v-if="isNewProduct(product)"
+            v-if="isNew"
             class="inline-block bg-gold text-charcoal text-xs font-bold px-3 py-1 rounded-full mb-4"
           >
             Nouveau
@@ -142,7 +142,7 @@
               Ajouter au panier — {{ formatPrice(product.price * quantity) }}
             </button>
 
-            <a
+            
               :href="whatsappLink"
               target="_blank"
               rel="noopener"
@@ -178,8 +178,8 @@
 <script setup lang="ts">
 const route = useRoute()
 const config = useRuntimeConfig()
-const { fetchProduct, fetchProductImages, buildGallery, isNewProduct, getOptimizedImageUrl } = useProducts()
-const { addItem, formatPrice } = useCart()
+const { fetchProduct } = useProducts()
+const { addItem } = useCart()
 
 const productId = route.params.id as string
 const quantity = ref(1)
@@ -187,12 +187,6 @@ const currentImageIndex = ref(0)
 
 // Fetch product
 const { data: product, pending } = await useAsyncData(`product-${productId}`, () => fetchProduct(productId))
-
-// Fetch extra images
-const extraImages = ref<string[]>([])
-if (product.value) {
-  extraImages.value = await fetchProductImages(productId)
-}
 
 // SEO
 useHead({
@@ -202,16 +196,35 @@ useHead({
   ]
 })
 
-// Gallery
+// Gallery - logique simple
 const gallery = computed(() => {
   if (!product.value) return []
-  return buildGallery(product.value, extraImages.value)
+  const images: string[] = []
+  if (product.value.image) images.push(product.value.image)
+  if (product.value.images?.length) {
+    product.value.images.forEach(img => {
+      if (!images.includes(img)) images.push(img)
+    })
+  }
+  return images.length > 0 ? images : ['/images/placeholder.svg']
 })
 
 const currentImage = computed(() => {
-  const img = gallery.value[currentImageIndex.value]
-  return img ? getOptimizedImageUrl(img, 800) : '/images/placeholder.png'
+  return gallery.value[currentImageIndex.value] || '/images/placeholder.svg'
 })
+
+// Is new product
+const isNew = computed(() => {
+  if (!product.value?.created_at) return false
+  const created = Date.parse(product.value.created_at)
+  const twoDays = 2 * 24 * 60 * 60 * 1000
+  return (Date.now() - created) <= twoDays
+})
+
+// Format price
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
+}
 
 // WhatsApp link
 const whatsappLink = computed(() => {
