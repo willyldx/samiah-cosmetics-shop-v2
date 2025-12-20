@@ -13,7 +13,7 @@
         v-if="isOpen"
         class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
         @click="closeCart"
-      />
+      ></div>
     </Transition>
 
     <!-- Drawer -->
@@ -38,11 +38,12 @@
             </span>
           </h2>
           <button
+            type="button"
             @click="closeCart"
             class="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
@@ -53,7 +54,7 @@
           <div v-if="isEmpty" class="flex flex-col items-center justify-center h-full px-6 text-center">
             <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
             </div>
             <h3 class="font-semibold text-charcoal mb-2">Votre panier est vide</h3>
@@ -75,7 +76,7 @@
               class="flex gap-3 p-3 bg-gray-50 rounded-xl"
             >
               <img
-                :src="getOptimizedUrl(item.product.image)"
+                :src="item.product.image || '/images/placeholder.svg'"
                 :alt="item.product.title"
                 class="w-16 h-16 rounded-lg object-cover bg-white"
               />
@@ -83,14 +84,30 @@
                 <h4 class="font-medium text-sm text-charcoal line-clamp-1">{{ item.product.title }}</h4>
                 <p class="text-gold font-bold text-sm">{{ formatPrice(item.product.price) }}</p>
                 <div class="flex items-center gap-2 mt-1">
-                  <button @click="updateQuantity(item.product.id, item.quantity - 1)" class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs">−</button>
+                  <button 
+                    type="button"
+                    @click="updateQuantity(item.product.id, item.quantity - 1)" 
+                    class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs hover:bg-gray-100"
+                  >
+                    -
+                  </button>
                   <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
-                  <button @click="updateQuantity(item.product.id, item.quantity + 1)" class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs">+</button>
+                  <button 
+                    type="button"
+                    @click="updateQuantity(item.product.id, item.quantity + 1)" 
+                    class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs hover:bg-gray-100"
+                  >
+                    +
+                  </button>
                 </div>
               </div>
-              <button @click="removeItem(item.product.id)" class="text-gray-400 hover:text-red-500 p-1">
+              <button 
+                type="button"
+                @click="removeItem(item.product.id)" 
+                class="text-gray-400 hover:text-red-500 p-1"
+              >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
@@ -105,7 +122,7 @@
           </div>
           <NuxtLink
             to="/commander"
-            class="w-full bg-charcoal text-white py-3 rounded-full font-bold text-center block"
+            class="w-full bg-charcoal text-white py-3 rounded-full font-bold text-center block hover:bg-charcoal-800 transition-colors"
             @click="closeCart"
           >
             Commander
@@ -118,9 +135,4 @@
 
 <script setup lang="ts">
 const { items, isOpen, itemCount, subtotal, isEmpty, updateQuantity, removeItem, closeCart, formatPrice } = useCart()
-const { getOptimizedImageUrl } = useProducts()
-
-const getOptimizedUrl = (url: string | null) => {
-  return url ? getOptimizedImageUrl(url, 200) : '/images/placeholder.png'
-}
 </script>
