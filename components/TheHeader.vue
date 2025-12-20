@@ -9,73 +9,67 @@
   >
     <div class="max-w-7xl mx-auto px-4">
       <nav class="flex items-center justify-between h-16 md:h-20">
-        <!-- Logo -->
         <NuxtLink 
           to="/" 
           class="flex items-center gap-3 group"
         >
-          <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-charcoal flex items-center justify-center transition-transform group-hover:scale-105">
+          <div class="h-14 md:h-16 w-auto flex items-center justify-center transition-transform group-hover:scale-105">
             <svg xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 1200 800"
-     width="1200"
-     height="800">
+                 viewBox="0 0 1200 800"
+                 class="h-full w-auto" 
+                 preserveAspectRatio="xMidYMid meet">
 
-  <!-- Fond aquarelle stylisé -->
-  <defs>
-    <radialGradient id="wash" cx="50%" cy="45%" r="55%">
-      <stop offset="0%" stop-color="#e6c9df"/>
-      <stop offset="100%" stop-color="#f3e6f0"/>
-    </radialGradient>
-  </defs>
+              <defs>
+                <radialGradient id="wash" cx="50%" cy="45%" r="55%">
+                  <stop offset="0%" stop-color="#e6c9df"/>
+                  <stop offset="100%" stop-color="#f3e6f0"/>
+                </radialGradient>
+              </defs>
 
-  <path
-    d="M200,150
-       C100,350 150,600 400,650
-       C700,720 1050,600 1020,350
-       C980,120 550,60 200,150 Z"
-    fill="url(#wash)"
-  />
+              <path
+                d="M200,150
+                   C100,350 150,600 400,650
+                   C700,720 1050,600 1020,350
+                   C980,120 550,60 200,150 Z"
+                fill="url(#wash)"
+              />
 
-  <!-- SAMIAH -->
-  <text x="600"
-        y="360"
-        text-anchor="middle"
-        fill="#111111"
-        style="
-          font-family: 'Didot', 'Bodoni MT', 'Playfair Display', serif;
-          font-size: 220px;
-          font-weight: 500;
-          letter-spacing: 4px;
-        ">
-    SAMIAH
-  </text>
+              <text x="600"
+                    y="360"
+                    text-anchor="middle"
+                    fill="#111111"
+                    style="
+                      font-family: 'Didot', 'Bodoni MT', 'Playfair Display', serif;
+                      font-size: 220px;
+                      font-weight: 500;
+                      letter-spacing: 4px;
+                    ">
+                SAMIAH
+              </text>
 
-  <!-- traits horizontaux -->
-  <path d="M200 430 H450" stroke="#111111" stroke-width="2"/>
-  <path d="M750 430 H1000" stroke="#111111" stroke-width="2"/>
+              <path d="M200 430 H450" stroke="#111111" stroke-width="2"/>
+              <path d="M750 430 H1000" stroke="#111111" stroke-width="2"/>
 
-  <!-- cosmetics -->
-  <text x="600"
-        y="480"
-        text-anchor="middle"
-        fill="#111111"
-        style="
-          font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-          font-size: 42px;
-          font-weight: 300;
-          letter-spacing: 10px;
-        ">
-    cosmetics
-  </text>
-
-</svg>
+              <text x="600"
+                    y="480"
+                    text-anchor="middle"
+                    fill="#111111"
+                    style="
+                      font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+                      font-size: 42px;
+                      font-weight: 300;
+                      letter-spacing: 10px;
+                    ">
+                cosmetics
+              </text>
+            </svg>
           </div>
-          <span class="font-bold text-charcoal tracking-wider text-sm md:text-base">
+          
+          <span class="sr-only font-bold text-charcoal tracking-wider text-sm md:text-base">
             SAMIAH COSMETICS
           </span>
         </NuxtLink>
 
-        <!-- Desktop Navigation -->
         <div class="hidden md:flex items-center gap-8">
           <NuxtLink 
             to="/" 
@@ -100,9 +94,7 @@
           </NuxtLink>
         </div>
 
-        <!-- Right side actions -->
         <div class="flex items-center gap-2 md:gap-4">
-          <!-- Cart button -->
           <button 
             type="button"
             class="relative p-2 rounded-lg hover:bg-charcoal/5 transition-colors"
@@ -111,7 +103,6 @@
             <svg class="w-5 h-5 md:w-6 md:h-6 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
             </svg>
-            <!-- Cart count badge -->
             <span 
               v-if="itemCount > 0"
               class="absolute -top-1 -right-1 w-5 h-5 bg-gold text-charcoal text-xs font-bold rounded-full flex items-center justify-center"
@@ -120,7 +111,6 @@
             </span>
           </button>
 
-          <!-- CTA Button (Desktop) -->
           <NuxtLink 
             to="/produits" 
             class="hidden md:inline-flex bg-gold hover:bg-gold-400 text-charcoal px-4 py-2 rounded-full font-medium text-sm transition-colors"
@@ -128,7 +118,6 @@
             Commander
           </NuxtLink>
 
-          <!-- Mobile menu button -->
           <button 
             type="button"
             class="p-2 rounded-lg hover:bg-charcoal/5 transition-colors md:hidden"
@@ -142,13 +131,11 @@
       </nav>
     </div>
 
-    <!-- Mobile Menu -->
     <MobileMenu 
       :is-open="mobileMenuOpen" 
       @close="mobileMenuOpen = false" 
     />
 
-    <!-- Cart Drawer -->
     <CartDrawer />
   </header>
 </template>
