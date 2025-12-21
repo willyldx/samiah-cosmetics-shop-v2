@@ -3,23 +3,23 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-charcoal">Commandes</h1>
-        <p class="text-gray-500">Gérez toutes les commandes</p>
+        <p class="text-gray-500">Gerez toutes les commandes</p>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-2xl shadow-soft p-4 mb-6">
+    <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
       <div class="flex flex-wrap items-center gap-4">
         <!-- Search -->
         <div class="flex-1 min-w-[200px]">
           <div class="relative">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
             <input
               v-model="search"
               type="text"
-              placeholder="Rechercher par nom, numéro..."
+              placeholder="Rechercher par nom, numero..."
               class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
             />
           </div>
@@ -32,10 +32,10 @@
         >
           <option value="">Tous les statuts</option>
           <option value="pending">En attente</option>
-          <option value="confirmed">Confirmée</option>
-          <option value="shipped">Expédiée</option>
-          <option value="delivered">Livrée</option>
-          <option value="cancelled">Annulée</option>
+          <option value="confirmed">Confirmee</option>
+          <option value="shipped">Expediee</option>
+          <option value="delivered">Livree</option>
+          <option value="cancelled">Annulee</option>
         </select>
 
         <!-- Refresh -->
@@ -44,18 +44,18 @@
           class="p-2.5 bg-gray-50 border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors"
         >
           <svg class="w-5 h-5 text-gray-600" :class="{ 'animate-spin': loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
         </button>
       </div>
     </div>
 
     <!-- Orders List -->
-    <div class="bg-white rounded-2xl shadow-soft overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
       <!-- Loading -->
       <div v-if="loading" class="p-8">
         <div class="animate-pulse space-y-4">
-          <div v-for="i in 5" :key="i" class="h-20 bg-gray-100 rounded-xl" />
+          <div v-for="i in 5" :key="i" class="h-20 bg-gray-100 rounded-xl"></div>
         </div>
       </div>
 
@@ -63,10 +63,10 @@
       <div v-else-if="filteredOrders.length === 0" class="p-12 text-center">
         <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
           </svg>
         </div>
-        <p class="text-gray-500">Aucune commande trouvée</p>
+        <p class="text-gray-500">Aucune commande trouvee</p>
       </div>
 
       <!-- Orders -->
@@ -81,7 +81,7 @@
             <div class="flex items-start gap-4 flex-1">
               <div class="w-12 h-12 bg-charcoal/10 rounded-xl flex items-center justify-center flex-shrink-0">
                 <span class="font-bold text-charcoal">
-                  {{ order.client_name.charAt(0).toUpperCase() }}
+                  {{ order.client_name ? order.client_name.charAt(0).toUpperCase() : '?' }}
                 </span>
               </div>
               <div class="flex-1 min-w-0">
@@ -94,7 +94,7 @@
                     {{ statusLabel(order.status) }}
                   </span>
                 </div>
-                <p class="text-gray-600">{{ order.client_name }} • {{ order.client_phone }}</p>
+                <p class="text-gray-600">{{ order.client_name }} - {{ order.client_phone }}</p>
                 <p class="text-sm text-gray-400">{{ order.client_address }}, {{ order.client_city }}</p>
                 <p class="text-xs text-gray-400 mt-1">{{ formatDate(order.created_at) }}</p>
               </div>
@@ -106,15 +106,15 @@
               <p class="text-sm text-gray-400">{{ order.items?.length || 0 }} article(s)</p>
               
               <div class="flex items-center gap-2 mt-2">
-                <!-- WhatsApp -->
+                <!-- WhatsApp - ENVOIE AU CLIENT -->
                 <a
-                  :href="getWhatsAppLink(order)"
+                  :href="getWhatsAppLinkToClient(order)"
                   target="_blank"
-                  class="p-2 bg-[#25D366]/10 text-[#25D366] rounded-lg hover:bg-[#25D366]/20 transition-colors"
-                  title="Contacter sur WhatsApp"
+                  class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors"
+                  title="Contacter le client sur WhatsApp"
                 >
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
                   </svg>
                 </a>
 
@@ -122,11 +122,11 @@
                 <button
                   @click="openOrderDetails(order)"
                   class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-                  title="Voir les détails"
+                  title="Voir les details"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                   </svg>
                 </button>
 
@@ -137,37 +137,11 @@
                   class="px-2 py-1 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
                 >
                   <option value="pending">En attente</option>
-                  <option value="confirmed">Confirmée</option>
-                  <option value="shipped">Expédiée</option>
-                  <option value="delivered">Livrée</option>
-                  <option value="cancelled">Annulée</option>
+                  <option value="confirmed">Confirmee</option>
+                  <option value="shipped">Expediee</option>
+                  <option value="delivered">Livree</option>
+                  <option value="cancelled">Annulee</option>
                 </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Order Items (collapsed) -->
-          <div v-if="expandedOrder === order.id" class="mt-4 pt-4 border-t border-gray-100">
-            <div class="grid sm:grid-cols-2 gap-4">
-              <div>
-                <h4 class="font-medium text-charcoal mb-2">Produits</h4>
-                <div class="space-y-2">
-                  <div
-                    v-for="(item, idx) in order.items"
-                    :key="idx"
-                    class="flex justify-between text-sm"
-                  >
-                    <span class="text-gray-600">{{ item.product_title }} × {{ item.quantity }}</span>
-                    <span class="font-medium">{{ formatPrice(item.subtotal) }}</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <h4 class="font-medium text-charcoal mb-2">Paiement</h4>
-                <p class="text-sm text-gray-600">{{ paymentLabel(order.payment_method) }}</p>
-                <p v-if="order.notes" class="text-sm text-gray-400 mt-2">
-                  <span class="font-medium">Notes:</span> {{ order.notes }}
-                </p>
               </div>
             </div>
           </div>
@@ -196,7 +170,7 @@
               <h2 class="text-lg font-bold text-charcoal">Commande {{ selectedOrder.order_number }}</h2>
               <button @click="selectedOrder = null" class="p-2 hover:bg-gray-100 rounded-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
             </div>
@@ -211,11 +185,11 @@
                   @change="updateStatus(selectedOrder.id, ($event.target as HTMLSelectElement).value); selectedOrder.status = ($event.target as HTMLSelectElement).value"
                   class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
                 >
-                  <option value="pending">🟡 En attente</option>
-                  <option value="confirmed">🔵 Confirmée</option>
-                  <option value="shipped">🟣 Expédiée</option>
-                  <option value="delivered">🟢 Livrée</option>
-                  <option value="cancelled">🔴 Annulée</option>
+                  <option value="pending">En attente</option>
+                  <option value="confirmed">Confirmee</option>
+                  <option value="shipped">Expediee</option>
+                  <option value="delivered">Livree</option>
+                  <option value="cancelled">Annulee</option>
                 </select>
               </div>
 
@@ -238,7 +212,7 @@
                   >
                     <div>
                       <p class="font-medium text-charcoal">{{ item.product_title }}</p>
-                      <p class="text-sm text-gray-500">{{ formatPrice(item.product_price) }} × {{ item.quantity }}</p>
+                      <p class="text-sm text-gray-500">{{ formatPrice(item.product_price) }} x {{ item.quantity }}</p>
                     </div>
                     <p class="font-bold text-charcoal">{{ formatPrice(item.subtotal) }}</p>
                   </div>
@@ -253,7 +227,7 @@
                 </div>
                 <div class="flex justify-between mb-2">
                   <span class="text-white/70">Livraison</span>
-                  <span>{{ selectedOrder.shipping_fee > 0 ? formatPrice(selectedOrder.shipping_fee) : 'À confirmer' }}</span>
+                  <span>{{ selectedOrder.shipping_fee > 0 ? formatPrice(selectedOrder.shipping_fee) : 'A confirmer' }}</span>
                 </div>
                 <div class="flex justify-between text-lg font-bold pt-2 border-t border-white/20">
                   <span>Total</span>
@@ -262,20 +236,34 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex gap-3">
+              <div class="space-y-3">
+                <!-- Confirmer commande -->
                 <a
-                  :href="getWhatsAppLink(selectedOrder)"
+                  :href="getConfirmationWhatsApp(selectedOrder)"
                   target="_blank"
-                  class="flex-1 bg-[#25D366] text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2"
+                  class="w-full bg-green-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-green-700 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
                   </svg>
-                  Contacter
+                  Confirmer au client via WhatsApp
                 </a>
+                
+                <!-- Expedier -->
+                <a
+                  :href="getShippingWhatsApp(selectedOrder)"
+                  target="_blank"
+                  class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
+                  </svg>
+                  Informer expedition
+                </a>
+
                 <button
                   @click="selectedOrder = null"
-                  class="flex-1 bg-gray-100 text-charcoal py-3 rounded-xl font-bold"
+                  class="w-full bg-gray-100 text-charcoal py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors"
                 >
                   Fermer
                 </button>
@@ -289,27 +277,41 @@
 </template>
 
 <script setup lang="ts">
-import { ORDER_STATUS_LABELS, PAYMENT_METHOD_LABELS } from '~/types'
-import type { Order, OrderStatus, PaymentMethod } from '~/types'
-
 definePageMeta({
   layout: 'admin',
   middleware: 'auth',
 })
 
 useHead({
-  title: 'Commandes — Admin Samiah',
+  title: 'Commandes - Admin Samiah',
 })
 
 const supabase = useSupabaseClient()
 const route = useRoute()
 
 const loading = ref(true)
-const orders = ref<Order[]>([])
+const orders = ref<any[]>([])
 const search = ref('')
 const statusFilter = ref(route.query.status as string || '')
-const expandedOrder = ref<string | null>(null)
-const selectedOrder = ref<Order | null>(null)
+const selectedOrder = ref<any | null>(null)
+
+// Status labels
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  pending: 'En attente',
+  confirmed: 'Confirmee',
+  shipped: 'Expediee',
+  delivered: 'Livree',
+  cancelled: 'Annulee',
+}
+
+const PAYMENT_LABELS: Record<string, string> = {
+  cash: 'Cash a la livraison',
+  airtel_money: 'Airtel Money',
+  moov_money: 'Moov Money',
+  western_union: 'Western Union',
+  express_union: 'Express Union',
+  moneygram: 'MoneyGram',
+}
 
 // Filtered orders
 const filteredOrders = computed(() => {
@@ -361,15 +363,15 @@ const updateStatus = async (orderId: string, newStatus: string) => {
 
     // Update local state
     const order = orders.value.find(o => o.id === orderId)
-    if (order) order.status = newStatus as OrderStatus
+    if (order) order.status = newStatus
   } catch (error) {
     console.error('Error updating status:', error)
-    alert('Erreur lors de la mise à jour du statut')
+    alert('Erreur lors de la mise a jour du statut')
   }
 }
 
 // Helpers
-const formatPrice = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' F'
+const formatPrice = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('fr-FR', {
@@ -381,7 +383,7 @@ const formatDate = (date: string) => {
   })
 }
 
-const statusLabel = (status: string) => ORDER_STATUS_LABELS[status as OrderStatus] || status
+const statusLabel = (status: string) => ORDER_STATUS_LABELS[status] || status
 
 const statusClass = (status: string) => {
   const classes: Record<string, string> = {
@@ -394,14 +396,81 @@ const statusClass = (status: string) => {
   return classes[status] || 'bg-gray-100 text-gray-800'
 }
 
-const paymentLabel = (method: string) => PAYMENT_METHOD_LABELS[method as PaymentMethod] || method
-
-const getWhatsAppLink = (order: Order) => {
-  const msg = `Bonjour ${order.client_name}, concernant votre commande #${order.order_number}...`
-  return `https://wa.me/${order.client_phone.replace(/\s/g, '')}?text=${encodeURIComponent(msg)}`
+// Formater numero tchadien pour WhatsApp
+const formatPhoneForWhatsApp = (phone: string) => {
+  // Enlever espaces et caracteres speciaux
+  let cleaned = phone.replace(/[\s\-\(\)\.]/g, '')
+  
+  // Si commence par 0, remplacer par +235
+  if (cleaned.startsWith('0')) {
+    cleaned = '235' + cleaned.substring(1)
+  }
+  
+  // Si pas de code pays, ajouter +235 (Tchad)
+  if (!cleaned.startsWith('+') && !cleaned.startsWith('235')) {
+    cleaned = '235' + cleaned
+  }
+  
+  // Enlever le + pour l'URL WhatsApp
+  return cleaned.replace('+', '')
 }
 
-const openOrderDetails = (order: Order) => {
+// WhatsApp link TO CLIENT (pas a la boutique!)
+const getWhatsAppLinkToClient = (order: any) => {
+  const phone = formatPhoneForWhatsApp(order.client_phone)
+  const msg = 'Bonjour ' + order.client_name + ', concernant votre commande ' + order.order_number + ' chez Samiah Cosmetics...'
+  return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg)
+}
+
+// Message de confirmation au client
+const getConfirmationWhatsApp = (order: any) => {
+  const phone = formatPhoneForWhatsApp(order.client_phone)
+  
+  const lines = [
+    'Bonjour ' + order.client_name + '!',
+    '',
+    'Votre commande ' + order.order_number + ' est CONFIRMEE!',
+    '',
+    '--- DETAILS ---',
+  ]
+  
+  order.items?.forEach((item: any) => {
+    lines.push('- ' + item.product_title + ' x' + item.quantity)
+  })
+  
+  lines.push('')
+  lines.push('Total: ' + formatPrice(order.total))
+  lines.push('')
+  lines.push('Nous preparons votre colis et vous informerons de l\'expedition.')
+  lines.push('')
+  lines.push('Merci pour votre confiance!')
+  lines.push('- Samiah Cosmetics')
+  
+  return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
+}
+
+// Message d'expedition au client
+const getShippingWhatsApp = (order: any) => {
+  const phone = formatPhoneForWhatsApp(order.client_phone)
+  
+  const lines = [
+    'Bonjour ' + order.client_name + '!',
+    '',
+    'Bonne nouvelle! Votre commande ' + order.order_number + ' a ete EXPEDIEE!',
+    '',
+    'Adresse de livraison:',
+    order.client_address + ', ' + order.client_city,
+    '',
+    'Vous serez contacte(e) par notre livreur tres bientot.',
+    '',
+    'Merci pour votre confiance!',
+    '- Samiah Cosmetics',
+  ]
+  
+  return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
+}
+
+const openOrderDetails = (order: any) => {
   selectedOrder.value = order
 }
 
