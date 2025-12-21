@@ -1,12 +1,9 @@
 <template>
   <div>
-    <!-- Hero Section -->
     <HeroSection />
 
-    <!-- Produits vedettes -->
     <section class="py-16 lg:py-24">
       <div class="max-w-7xl mx-auto px-4">
-        <!-- Header -->
         <div class="flex items-end justify-between mb-10">
           <div>
             <span class="text-gold font-medium text-sm uppercase tracking-wider">Catalogue</span>
@@ -25,7 +22,6 @@
           </NuxtLink>
         </div>
 
-        <!-- Loading -->
         <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
           <div v-for="i in 8" :key="i" class="animate-pulse">
             <div class="aspect-square bg-gray-200 rounded-2xl mb-4"></div>
@@ -34,7 +30,6 @@
           </div>
         </div>
 
-        <!-- Produits -->
         <div v-else-if="featuredProducts.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
           <ProductCard
             v-for="product in featuredProducts"
@@ -45,12 +40,10 @@
           />
         </div>
 
-        <!-- Aucun produit -->
         <div v-else class="text-center py-12">
           <p class="text-gray-500">Aucun produit disponible pour le moment.</p>
         </div>
 
-        <!-- CTA Mobile -->
         <div class="mt-8 text-center sm:hidden">
           <NuxtLink 
             to="/produits"
@@ -62,11 +55,9 @@
       </div>
     </section>
 
-    <!-- Section Avantages -->
     <section class="py-16 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4">
         <div class="grid md:grid-cols-3 gap-8">
-          <!-- Conseils personnalises -->
           <div class="text-center p-6">
             <div class="w-16 h-16 bg-gold/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +68,6 @@
             <p class="text-gray-600 text-sm">Une analyse complete de vos cheveux et une routine sur mesure.</p>
           </div>
 
-          <!-- Livraison -->
           <div class="text-center p-6">
             <div class="w-16 h-16 bg-gold/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +78,6 @@
             <p class="text-gray-600 text-sm">Disponible dans les grandes villes : N'Djamena, Moundou, Sarh...</p>
           </div>
 
-          <!-- Qualite -->
           <div class="text-center p-6">
             <div class="w-16 h-16 bg-gold/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +91,6 @@
       </div>
     </section>
 
-    <!-- Temoignages -->
     <section class="py-16 lg:py-24">
       <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
@@ -112,12 +100,10 @@
           </h2>
         </div>
 
-        <!-- Loading -->
         <div v-if="testimonialsLoading" class="grid md:grid-cols-3 gap-6">
           <div v-for="i in 3" :key="i" class="animate-pulse bg-gray-100 rounded-2xl h-48"></div>
         </div>
 
-        <!-- Temoignages liste -->
         <div v-else-if="testimonials.length" class="grid md:grid-cols-3 gap-6">
           <div
             v-for="testimonial in testimonials"
@@ -144,14 +130,12 @@
           </div>
         </div>
 
-        <!-- Vide -->
         <div v-else class="text-center text-gray-500 py-12">
           Les temoignages arrivent bientot...
         </div>
       </div>
     </section>
 
-    <!-- CTA Final -->
     <section class="py-16 lg:py-24 bg-charcoal text-white">
       <div class="max-w-7xl mx-auto px-4 text-center">
         <h2 class="text-3xl lg:text-4xl font-bold mb-4">
@@ -183,7 +167,6 @@
       </div>
     </section>
 
-    <!-- Bouton WhatsApp flottant -->
     <WhatsAppFloat />
   </div>
 </template>
@@ -191,12 +174,22 @@
 <script setup lang="ts">
 import type { Product } from '~/types'
 
+// --- MODIFICATION SEO ICI ---
 useHead({
-  title: 'Samiah Cosmetics - Consultation capillaire et produits au Tchad',
+  title: 'Samiah Cosmetics - Consultation Capillaire & Produits au Tchad',
   meta: [
-    { name: 'description', content: 'Consultation capillaire en ligne et produits cosmetiques au Tchad. Reservez via WhatsApp.' }
+    { 
+      name: 'description', 
+      content: 'Expertise capillaire au Tchad. Diagnostic gratuit, produits naturels et routine personnalisée pour cheveux crépus et frisés. Livraison à N\'Djamena.' 
+    },
+    // Ajout des mots-clés stratégiques pour Google
+    { 
+      name: 'keywords', 
+      content: 'cheveux tchad, produits capillaires n\'djamena, coiffeuse tchad, soins cheveux naturels, routine capillaire afro, pousse cheveux tchad' 
+    }
   ]
 })
+// ----------------------------
 
 const config = useRuntimeConfig()
 const { products, loading, fetchProducts } = useProducts()
