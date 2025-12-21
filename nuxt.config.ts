@@ -10,7 +10,15 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@nuxt/image',
     '@vueuse/nuxt',
+    '@nuxtjs/sitemap', // Module ajouté pour le référencement Google
   ],
+
+  // ==========================================
+  // SITE CONFIGURATION (SEO)
+  // ==========================================
+  site: {
+    url: 'https://www.samiahcosmetics.shop',
+  },
 
   // ==========================================
   // APP CONFIGURATION
