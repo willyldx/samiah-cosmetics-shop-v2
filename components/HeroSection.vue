@@ -17,31 +17,31 @@
           </div>
 
           <h1 
-            class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-charcoal leading-tight animate-fade-in-up"
-            style="animation-delay: 0.2s;"
-          >
-            <span class="block">R&#233;v&#233;lez la</span>
-            <span class="block mt-2">
-              <span class="relative inline-block">
-                <span class="text-gold">beaut&#233;</span>
-                <svg 
-                  class="absolute -bottom-2 left-0 w-full h-3" 
-                  viewBox="0 0 200 12" 
-                  fill="none" 
-                  preserveAspectRatio="none"
-                >
-                  <path 
-                    d="M2 10C50 2 150 2 198 10" 
-                    stroke="#C6A961" 
-                    stroke-width="3" 
-                    stroke-linecap="round"
-                    class="animate-draw-line"
-                  />
-                </svg>
-              </span>
-              de vos cheveux
-            </span>
-          </h1>
+  class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-charcoal leading-tight animate-fade-in-up"
+  style="animation-delay: 0.2s;"
+>
+  <span class="block">La nature</span>
+  <span class="block mt-2">
+    &#224; la
+    <span class="relative inline-block">
+      <span class="text-gold">rescousse</span>
+      <svg 
+        class="absolute -bottom-2 left-0 w-full h-3" 
+        viewBox="0 0 200 12" 
+        fill="none" 
+        preserveAspectRatio="none"
+      >
+        <path 
+          d="M2 10C50 2 150 2 198 10" 
+          stroke="#C6A961" 
+          stroke-width="3" 
+          stroke-linecap="round"
+          class="animate-draw-line"
+        />
+      </svg>
+    </span>
+  </span>
+</h1>
 
           <p 
             class="text-lg text-gray-600 max-w-lg leading-relaxed animate-fade-in-up"
