@@ -18,14 +18,14 @@
           <ul class="mt-4 space-y-2">
             <li><strong>Siège social :</strong> N'Djamena, Tchad</li>
             <li><strong>Téléphone :</strong> +235 62 75 21 05</li>
-            <li><strong>Directrice de la publication :</strong> [Nom de la Propriétaire]</li>
+            <li><strong>Directrice de la publication :</strong> Raissa Yousouf </li>
           </ul>
         </section>
 
         <section>
           <h2 class="text-xl font-bold text-charcoal mb-3">Hébergement</h2>
           <p>
-            Le site est hébergé par Vercel Inc.<br>
+            Le site est hébergé par SPX Inc.<br>
             <span class="text-sm text-gray-500">440 N Barranca Ave #4133, Covina, CA 91723, USA.</span>
           </p>
         </section>
