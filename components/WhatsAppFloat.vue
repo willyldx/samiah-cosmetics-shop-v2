@@ -57,18 +57,22 @@
           </div>
 
           <div v-if="showSecondMessage" class="flex flex-col items-end gap-2 mt-2 animate-fade-in-up">
+            
             <button 
-              @click="sendQuickReply('Je veux commander, j\'ai déjà choisi mes produits.')"
-              class="bg-white text-gold border border-gold hover:bg-gold hover:text-white transition-colors text-xs px-4 py-2 rounded-full shadow-sm font-medium text-left"
+              @click="handleAction('products')"
+              class="bg-white text-gold border border-gold hover:bg-gold hover:text-white transition-colors text-xs px-4 py-2 rounded-full shadow-sm font-medium text-left flex items-center gap-2"
             >
-              Oui, je veux commander 🛍️
+              <span>Oui, je veux commander</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </button>
+            
             <button 
-              @click="sendQuickReply('Je ne sais pas quoi choisir, j\'ai besoin de conseils.')"
+              @click="handleAction('advice')"
               class="bg-white text-charcoal border border-gray-200 hover:border-gold hover:text-gold transition-colors text-xs px-4 py-2 rounded-full shadow-sm font-medium text-left"
             >
               Non, j'ai besoin de conseils 💇🏽‍♀️
             </button>
+
           </div>
         </div>
 
@@ -111,6 +115,7 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
+const router = useRouter() // Permet de changer de page
 const isOpen = ref(false)
 const userMessage = ref('')
 const hasSeenChat = ref(false)
@@ -118,7 +123,6 @@ const showSecondMessage = ref(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 const messagesContainer = ref<HTMLElement | null>(null)
 
-// Gestion de l'ouverture automatique
 onMounted(() => {
   const seen = localStorage.getItem('chat_seen')
   if (seen) hasSeenChat.value = true
@@ -137,11 +141,9 @@ const toggleChat = () => {
     localStorage.setItem('chat_seen', 'true')
     setTimeout(() => inputRef.value?.focus(), 100)
     
-    // Déclencher le 2ème message après un délai pour faire "vrai"
     if (!showSecondMessage.value) {
       setTimeout(() => {
         showSecondMessage.value = true
-        // Scroll vers le bas
         setTimeout(() => {
           if (messagesContainer.value) {
             messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
@@ -152,25 +154,33 @@ const toggleChat = () => {
   }
 }
 
-// Envoyer un message écrit
 const sendMessage = () => {
   if (!userMessage.value.trim()) return
   redirectToWhatsApp(userMessage.value)
   userMessage.value = ''
 }
 
-// Envoyer une réponse rapide (clic sur bouton)
-const sendQuickReply = (text: string) => {
-  redirectToWhatsApp(text)
+// C'est ici que la magie opère
+const handleAction = (type: 'products' | 'advice') => {
+  // On ferme le chat dans tous les cas
+  isOpen.value = false
+  
+  if (type === 'products') {
+    // Si la cliente veut commander -> Direction la page produits
+    router.push('/produits')
+  } else {
+    // Si la cliente veut des conseils -> Direction WhatsApp
+    const message = "Je ne sais pas quoi choisir, j'ai besoin de conseils personnalisés. 💇🏽‍♀️"
+    redirectToWhatsApp(message)
+  }
 }
 
-// Fonction centrale de redirection
 const redirectToWhatsApp = (message: string) => {
   const phone = config.public.whatsappNumber
-  // Ajout d'un préfixe pour le contexte
   const fullMessage = `Bonjour Samiah Cosmetics ! 👋\n${message}`
   const encoded = encodeURIComponent(fullMessage)
   
+  // Si c'est un appel manuel via la fonction, on ferme aussi le chat
   isOpen.value = false
   window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank')
 }
