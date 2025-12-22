@@ -60,7 +60,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/admin/login',
       callback: '/admin',
-      exclude: ['/', '/produits', '/produits/*', '/panier', '/commander', '/a-propos', '/commande/*'],
+      exclude: ['/', '/produits', '/produits/*', '/panier', '/commander', '/a-propos', '/commande/*', '/cgv', '/mentions-legales'],
     },
   },
 
