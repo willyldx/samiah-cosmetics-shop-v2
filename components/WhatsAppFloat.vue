@@ -11,7 +11,7 @@
     >
       <div 
         v-if="isOpen"
-        class="bg-white w-[350px] max-w-[calc(100vw-3rem)] rounded-2xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col max-h-[500px]"
+        class="bg-white w-[350px] max-w-[calc(100vw-2rem)] rounded-2xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col max-h-[80vh]"
       >
         <div class="bg-charcoal p-4 flex items-center justify-between flex-shrink-0">
           <div class="flex items-center gap-3">
@@ -31,7 +31,7 @@
           </button>
         </div>
 
-        <div ref="messagesContainer" class="bg-gray-50 flex-1 p-4 overflow-y-auto flex flex-col gap-3 min-h-[250px]">
+        <div ref="messagesContainer" class="bg-gray-50 flex-1 p-4 overflow-y-auto flex flex-col gap-3 min-h-[200px]">
           <div class="text-center mb-2">
             <span class="text-[10px] font-medium text-gray-400 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded-full">Aujourd'hui</span>
           </div>
@@ -56,19 +56,19 @@
             <div class="w-2 h-2 bg-gray-300 rounded-full animation-delay-400"></div>
           </div>
 
-          <div v-if="showSecondMessage" class="flex flex-col items-end gap-2 mt-2 animate-fade-in-up">
+          <div v-if="showSecondMessage" class="flex flex-col items-end gap-2 mt-2 animate-fade-in-up pb-2">
             
             <button 
               @click="handleAction('products')"
-              class="bg-white text-gold border border-gold hover:bg-gold hover:text-white transition-colors text-xs px-4 py-2 rounded-full shadow-sm font-medium text-left flex items-center gap-2"
+              class="bg-white text-gold border border-gold hover:bg-gold hover:text-white active:bg-gold active:text-white transition-colors text-xs px-4 py-3 rounded-full shadow-sm font-medium text-left flex items-center gap-2"
             >
-              <span>Oui, je veux commander 🛍️</span>
+              <span>Oui, je veux commander</span>
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </button>
             
             <button 
               @click="handleAction('advice')"
-              class="bg-white text-charcoal border border-gray-200 hover:border-gold hover:text-gold transition-colors text-xs px-4 py-2 rounded-full shadow-sm font-medium text-left"
+              class="bg-white text-charcoal border border-gray-200 hover:border-gold hover:text-gold active:bg-gray-50 transition-colors text-xs px-4 py-3 rounded-full shadow-sm font-medium text-left"
             >
               Non, j'ai besoin de conseils 💇🏽‍♀️
             </button>
@@ -82,7 +82,7 @@
               v-model="userMessage"
               type="text" 
               placeholder="Écrivez un message..." 
-              class="flex-1 bg-gray-100 text-sm rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all text-charcoal placeholder:text-gray-400"
+              class="flex-1 bg-gray-100 text-base rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gold/50 transition-all text-charcoal placeholder:text-gray-400"
               ref="inputRef"
             >
             <button 
@@ -115,7 +115,7 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig()
-const router = useRouter() // Permet de changer de page
+const router = useRouter() 
 const isOpen = ref(false)
 const userMessage = ref('')
 const hasSeenChat = ref(false)
@@ -139,7 +139,10 @@ const toggleChat = () => {
   if (isOpen.value) {
     hasSeenChat.value = true
     localStorage.setItem('chat_seen', 'true')
-    setTimeout(() => inputRef.value?.focus(), 100)
+    
+    // MODIFICATION IMPORTANTE :
+    // On ne force plus le focus sur mobile pour éviter que le clavier ne saute
+    // On laisse l'utilisateur cliquer sur l'input s'il veut écrire.
     
     if (!showSecondMessage.value) {
       setTimeout(() => {
@@ -160,16 +163,11 @@ const sendMessage = () => {
   userMessage.value = ''
 }
 
-// C'est ici que la magie opère
 const handleAction = (type: 'products' | 'advice') => {
-  // On ferme le chat dans tous les cas
   isOpen.value = false
-  
   if (type === 'products') {
-    // Si la cliente veut commander -> Direction la page produits
     router.push('/produits')
   } else {
-    // Si la cliente veut des conseils -> Direction WhatsApp
     const message = "Je ne sais pas quoi choisir, j'ai besoin de conseils personnalisés. 💇🏽‍♀️"
     redirectToWhatsApp(message)
   }
@@ -180,7 +178,6 @@ const redirectToWhatsApp = (message: string) => {
   const fullMessage = `Bonjour Samiah Cosmetics ! 👋\n${message}`
   const encoded = encodeURIComponent(fullMessage)
   
-  // Si c'est un appel manuel via la fonction, on ferme aussi le chat
   isOpen.value = false
   window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank')
 }
