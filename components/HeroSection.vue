@@ -44,13 +44,13 @@
 </h1>
 
           <p 
-            class="text-lg text-gray-600 max-w-lg leading-relaxed animate-fade-in-up"
-            style="animation-delay: 0.4s;"
-          >
-            D&#233;finition de votre profil capillaire, analyse des probl&#232;mes, 
-            correction des habitudes et mise en place d&#39;une routine personnalis&#233;e.
-          </p>
-
+  class="text-lg text-gray-600 max-w-lg leading-relaxed animate-fade-in-up"
+  style="animation-delay: 0.4s;"
+>
+  Expertise en cosm&#233;tiques naturels pour le corps, le visage et les cheveux.
+  Nous allions soins cibl&#233;s, ingr&#233;dients naturels et accompagnement 
+  personnalis&#233; pour sublimer votre beaut&#233; au quotidien.
+</p>
           <div 
             class="flex flex-wrap gap-4 animate-fade-in-up"
             style="animation-delay: 0.6s;"
