@@ -10,12 +10,12 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@nuxt/image',
     '@vueuse/nuxt',
-    '@nuxtjs/sitemap', // Module ajouté pour le référencement Google
-    '@vite-pwa/nuxt',  // <--- AJOUTÉ : Module pour l'Application Mobile
+    '@nuxtjs/sitemap',
+    '@vite-pwa/nuxt',
   ],
 
   // ==========================================
-  // CONFIGURATION PWA (APPLICATION MOBILE)
+  // CONFIGURATION PWA
   // ==========================================
   pwa: {
     registerType: 'autoUpdate',
@@ -26,7 +26,7 @@ export default defineNuxtConfig({
       theme_color: '#0A0A0A',
       background_color: '#ffffff',
       lang: 'fr',
-      display: 'standalone', // Cache la barre d'adresse pour faire "App Native"
+      display: 'standalone',
       orientation: 'portrait',
       icons: [
         {
@@ -74,16 +74,42 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: 'Samiah Cosmetics — Consultation capillaire & produits' },
         { property: 'og:description', content: 'Réservez votre consultation capillaire et découvrez nos shampoings & soins.' },
-        { property: 'og:image', content: '/images/og-image.jpg' },
+        { property: 'og:image', content: '/icon-512.png' }, // Utilise l'icône carrée pour le partage
         { property: 'og:locale', content: 'fr_FR' },
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
       link: [
+        // C'est ces lignes que Google regarde pour l'icône
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'apple-touch-icon', href: '/icon-192.png' }, // Mis à jour pour pointer vers l'icône mobile
+        { rel: 'alternate icon', type: 'image/png', href: '/icon-192.png' }, // Fallback pour Google
+        { rel: 'apple-touch-icon', href: '/icon-192.png' },
         { rel: 'preconnect', href: 'https://dzzblqlteirtzyegplgu.supabase.co', crossorigin: '' },
       ],
+      // === NOUVEAU : DONNÉES STRUCTURÉES (JSON-LD) ===
+      // C'est ça qui dit explicitement à Google "Voici mon Logo officiel"
+      script: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Samiah Cosmetics",
+            "url": "https://www.samiahcosmetics.shop",
+            "logo": "https://www.samiahcosmetics.shop/icon-512.png",
+            "sameAs": [
+              "https://facebook.com/samiahcosmetics",
+              "https://instagram.com/samiahcosmetics"
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+235-62-75-21-05",
+              "contactType": "customer service",
+              "areaServed": "TD"
+            }
+          })
+        }
+      ]
     },
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
@@ -142,28 +168,19 @@ export default defineNuxtConfig({
   // ROUTE RULES (CACHE OPTIMIZATION)
   // ==========================================
   routeRules: {
-    // Pages publiques : ISR (cache 5 min, revalidation en arrière-plan)
     '/': { isr: 300 },
     '/produits': { isr: 300 },
     '/produits/**': { isr: 300 },
     '/a-propos': { isr: 3600 },
-    
-    // Panier et commande : pas de cache (dynamique)
     '/panier': { ssr: true },
     '/commander': { ssr: true },
     '/commande/**': { ssr: true },
-    
-    // Admin : côté client uniquement (protégé)
     '/admin': { ssr: false },
     '/admin/**': { ssr: false },
-    
-    // API : jamais de cache
     '/api/**': { 
       cors: true,
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
     },
-    
-    // Assets statiques : cache long avec hash (géré par Vite)
     '/_nuxt/**': {
       headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
     },
@@ -176,7 +193,6 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
-          // Hash unique pour chaque fichier = pas de problème de cache
           entryFileNames: '_nuxt/[name].[hash].js',
           chunkFileNames: '_nuxt/[name].[hash].js',
           assetFileNames: '_nuxt/[name].[hash].[ext]',
@@ -185,25 +201,16 @@ export default defineNuxtConfig({
     },
   },
 
-  // ==========================================
-  // NITRO (SERVER)
-  // ==========================================
   nitro: {
     preset: 'vercel',
     compressPublicAssets: true,
   },
 
-  // ==========================================
-  // TYPESCRIPT
-  // ==========================================
   typescript: {
     strict: false,
     typeCheck: false,
   },
 
-  // ==========================================
-  // EXPERIMENTAL
-  // ==========================================
   experimental: {
     payloadExtraction: true,
     typedPages: true,
