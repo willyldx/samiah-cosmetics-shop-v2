@@ -224,11 +224,8 @@
               :disabled="isSubmitting"
               class="w-full bg-charcoal text-white py-4 rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              <span v-if="isSubmitting" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              <template v-else>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                Confirmer la commande
-              </template>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Confirmer la commande
             </button>
             
             <div class="mt-4 flex justify-center gap-2 text-gray-400">
@@ -241,12 +238,41 @@
     </div>
 
     <WhatsAppFloat />
+
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div v-if="isProcessing" class="fixed inset-0 bg-charcoal/90 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+        
+        <div class="relative w-24 h-24 mb-8">
+          <div class="absolute inset-0 border-4 border-white/20 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-gold rounded-full border-t-transparent animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <h3 class="text-2xl font-bold text-white mb-2 text-center animate-pulse">
+          {{ processingStep }}
+        </h3>
+        <p class="text-white/60 text-sm text-center">Ne fermez pas cette fenêtre...</p>
+
+      </div>
+    </Transition>
+
   </div>
 </template>
 
 <script setup lang="ts">
 // IMPORTS
-const supabase = useSupabaseClient() // Pour la gestion client
+const supabase = useSupabaseClient()
 const config = useRuntimeConfig()
 const router = useRouter()
 const { items, subtotal, isEmpty, formatPrice, clearCart } = useCart()
@@ -273,7 +299,7 @@ const form = reactive({
   city: '',
   address: '',
   paymentMethod: 'cash',
-  transactionRef: '', // Nouveau champ
+  transactionRef: '', 
   notes: '',
 })
 
@@ -286,16 +312,15 @@ const errors = reactive({
   transactionRef: '',
 })
 
-// ÉTAT IDENTIFICATION
+// ÉTAT DE CHARGEMENT & OVERLAY
 const isSubmitting = ref(false)
 const isLoadingUser = ref(false)
 const userExists = ref(false)
+const isProcessing = ref(false) // Pour l'overlay
+const processingStep = ref('Connexion sécurisée...') // Pour le texte
 
-// ------------------------------------------------------------------
-// 1. FONCTION INTELLIGENTE : VÉRIFIER SI LE CLIENT EXISTE DÉJÀ
-// ------------------------------------------------------------------
+// FONCTION INTELLIGENTE : VÉRIFIER SI LE CLIENT EXISTE DÉJÀ
 const checkUser = async () => {
-  // On nettoie le numéro (enlève les espaces)
   const cleanPhone = form.phone.replace(/\s/g, '')
   if (cleanPhone.length < 8) return 
 
@@ -305,39 +330,32 @@ const checkUser = async () => {
     const { data, error } = await supabase
       .from('clients')
       .select('*')
-      .eq('phone', cleanPhone) // On cherche le numéro
+      .eq('phone', cleanPhone)
       .single()
 
     if (data) {
-      // BINGO ! On remplit le formulaire tout seul
       userExists.value = true
       form.name = data.full_name
       form.city = data.city
       form.address = data.address
-      // On garde le numéro tel quel
     } else {
       userExists.value = false
     }
   } catch (e) {
-    // Pas grave si erreur, c'est juste un bonus
     console.log('Nouveau client ou erreur lookup')
   } finally {
     isLoadingUser.value = false
   }
 }
 
-// ------------------------------------------------------------------
 // VALIDATION DU FORMULAIRE
-// ------------------------------------------------------------------
 const validate = () => {
   let isValid = true
   
-  // Reset erreurs
   Object.keys(errors).forEach(key => errors[key as keyof typeof errors] = '')
   
   if (!form.name.trim()) { errors.name = 'Le nom est requis'; isValid = false }
   
-  // Validation Tel simple
   if (!form.phone.trim()) { errors.phone = 'Le téléphone est requis'; isValid = false }
   else if (form.phone.replace(/\s/g, '').length < 8) { errors.phone = 'Numéro invalide'; isValid = false }
   
@@ -345,7 +363,6 @@ const validate = () => {
   if (!form.address.trim()) { errors.address = 'L\'adresse est requise'; isValid = false }
   if (!form.paymentMethod) { errors.paymentMethod = 'Mode de paiement requis'; isValid = false }
 
-  // Validation ID Transaction pour Mobile Money
   if (['airtel_money', 'moov_money'].includes(form.paymentMethod)) {
     if (!form.transactionRef.trim()) {
       errors.transactionRef = 'Veuillez entrer l\'ID de la transaction reçu par SMS'
@@ -356,30 +373,38 @@ const validate = () => {
   return isValid
 }
 
-// ------------------------------------------------------------------
-// 2. SOUMISSION DE LA COMMANDE
-// ------------------------------------------------------------------
+// === C'EST ICI QUE LA MAGIE OPÈRE (NOUVELLE VERSION) ===
 const submitOrder = async () => {
+  // 1. Validation de base
   if (!validate()) return
+  
+  // 2. On lance l'écran de cinéma
   isSubmitting.value = true
+  isProcessing.value = true
   
   try {
     const cleanPhone = form.phone.replace(/\s/g, '')
 
-    // ÉTAPE A : Sauvegarder/Mettre à jour le client (Construction de la base de données)
-    // On utilise "upsert" : si le tel existe on met à jour, sinon on crée
+    // Effet visuel : Connexion
+    processingStep.value = "Connexion sécurisée..."
+    await new Promise(r => setTimeout(r, 800))
+
+    // ÉTAPE A : Sauvegarder le client (En arrière-plan)
     await supabase.from('clients').upsert({
       phone: cleanPhone,
       full_name: form.name,
       city: form.city,
       address: form.address,
-      updated_at: new Date() // Si tu as ce champ, sinon enlève-le
+      updated_at: new Date()
     })
+
+    // Effet visuel : Envoi
+    processingStep.value = "Envoi de votre commande..."
 
     // ÉTAPE B : Créer la commande
     const { order, error } = await createOrder({
       client_name: form.name,
-      client_phone: form.phone, // On garde le format affiché pour la lecture
+      client_phone: form.phone,
       client_city: form.city,
       client_address: form.address,
       items: items.value.map(item => ({
@@ -387,8 +412,6 @@ const submitOrder = async () => {
         quantity: item.quantity,
       })),
       payment_method: form.paymentMethod,
-      // On passe l'ID de transaction dans les notes si la structure DB n'est pas encore à jour, 
-      // ou idéalement dans un champ 'transaction_ref' si tu l'as ajouté en SQL
       transaction_ref: form.transactionRef, 
       notes: form.notes,
       status: ['airtel_money', 'moov_money'].includes(form.paymentMethod) ? 'pending_validation' : 'pending'
@@ -396,24 +419,28 @@ const submitOrder = async () => {
     
     if (error || !order) throw new Error('Erreur création commande')
 
-    // ÉTAPE C : Succès ! On vide le panier
+    // Effet visuel : Vérification finale
+    processingStep.value = "Vérification de la transaction..."
+    await new Promise(r => setTimeout(r, 1200)) // Petite pause pour faire sérieux
+
+    // Effet visuel : Succès
+    processingStep.value = "Commande validée avec succès !"
+    await new Promise(r => setTimeout(r, 800))
+
+    // ÉTAPE C : Nettoyage et Redirection
     clearCart()
-    
-    // ÉTAPE D : Redirection vers le Ticket (Reçu) au lieu de WhatsApp
-    // C'est beaucoup plus pro. Le client pourra télécharger son reçu là-bas.
     router.push('/commande/recu?id=' + order.id)
     
   } catch (e) {
     console.error(e)
-    alert('Une erreur est survenue. Vérifiez votre connexion.')
-  } finally {
-    isSubmitting.value = false
+    isProcessing.value = false // On cache l'écran noir
+    isSubmitting.value = false // On réactive le bouton
+    alert('Une erreur est survenue lors de la commande. Veuillez vérifier votre connexion et réessayer.')
   }
 }
 </script>
 
 <style scoped>
-/* Petite animation pour l'apparition des éléments */
 .animate-fade-in-up {
   animation: fadeInUp 0.5s ease-out;
 }
