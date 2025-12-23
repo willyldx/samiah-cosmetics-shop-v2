@@ -150,7 +150,7 @@
               <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-dashed border-gray-300 mb-4">
                 <span class="text-gray-500 text-sm">Numéro {{ form.paymentMethod === 'airtel_money' ? 'Airtel' : 'Moov' }} :</span>
                 <span class="font-mono font-bold text-lg select-all">
-                  {{ form.paymentMethod === 'airtel_money' ? '66 22 33 44' : '99 88 77 66' }}
+                  {{ form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43' }}
                 </span>
               </div>
 
