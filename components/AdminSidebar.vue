@@ -3,10 +3,13 @@
     class="fixed inset-y-0 left-0 z-40 w-64 bg-charcoal transform transition-transform duration-300 lg:translate-x-0"
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
-    <!-- Logo -->
     <div class="flex items-center gap-3 h-16 px-6 border-b border-white/10">
-      <div class="w-10 h-10 bg-gold rounded-xl flex items-center justify-center">
-        <span class="text-charcoal font-bold text-lg">S</span>
+      <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center overflow-hidden">
+        <img 
+          src="/icon-192.png" 
+          alt="Admin Logo" 
+          class="w-full h-full object-cover p-1" 
+        />
       </div>
       <div>
         <h1 class="text-white font-bold">Samiah</h1>
@@ -14,7 +17,6 @@
       </div>
     </div>
 
-    <!-- Navigation -->
     <nav class="p-4 space-y-1">
       <NuxtLink
         v-for="item in menuItems"
@@ -24,7 +26,8 @@
         :class="{ 'bg-white/10 text-white': isActive(item.to) }"
         @click="$emit('close')"
       >
-        <component :is="item.icon" class="w-5 h-5" />
+        <component :is="resolveIcon(item.icon)" class="w-5 h-5" />
+        
         <span>{{ item.label }}</span>
         <span
           v-if="item.badge && item.badge > 0"
@@ -35,10 +38,8 @@
       </NuxtLink>
     </nav>
 
-    <!-- Separator -->
     <div class="mx-4 my-4 border-t border-white/10" />
 
-    <!-- Quick Actions -->
     <div class="px-4 space-y-2">
       <p class="text-white/40 text-xs uppercase tracking-wider px-4 mb-2">Actions rapides</p>
       
@@ -65,7 +66,6 @@
       </NuxtLink>
     </div>
 
-    <!-- Footer -->
     <div class="absolute bottom-0 left-0 right-0 p-4">
       <div class="bg-white/5 rounded-xl p-4">
         <p class="text-white/40 text-xs">Samiah Cosmetics</p>
@@ -76,6 +76,15 @@
 </template>
 
 <script setup lang="ts">
+// Import des icônes Heroicons pour éviter les bugs si les composants manquent
+import { 
+  HomeIcon, 
+  ShoppingBagIcon, 
+  TagIcon, 
+  ChatBubbleLeftRightIcon, 
+  Cog6ToothIcon 
+} from '@heroicons/vue/24/outline'
+
 defineProps<{
   isOpen: boolean
 }>()
@@ -86,6 +95,18 @@ defineEmits<{
 
 const route = useRoute()
 const config = useRuntimeConfig()
+
+// Mapping des icônes pour être sûr qu'elles s'affichent
+const resolveIcon = (name: string) => {
+  switch (name) {
+    case 'IconDashboard': return HomeIcon
+    case 'IconOrders': return ShoppingBagIcon
+    case 'IconProducts': return TagIcon
+    case 'IconTestimonials': return ChatBubbleLeftRightIcon
+    case 'IconSettings': return Cog6ToothIcon
+    default: return HomeIcon
+  }
+}
 
 // Menu items
 const menuItems = computed(() => [
@@ -98,7 +119,7 @@ const menuItems = computed(() => [
     to: '/admin/commandes',
     label: 'Commandes',
     icon: 'IconOrders',
-    badge: 0, // Will be updated with pending orders
+    badge: 0, 
   },
   {
     to: '/admin/produits',
