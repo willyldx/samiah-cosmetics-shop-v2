@@ -64,8 +64,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
               </svg>
             </div>
-            <h3 class="font-bold text-charcoal mb-2">Conseils personnalises</h3>
-            <p class="text-gray-600 text-sm">Une analyse complete de vos cheveux et une routine sur mesure.</p>
+            <h3 class="font-bold text-charcoal mb-2">Conseils personnalisés</h3>
+            <p class="text-gray-600 text-sm">Une analyse complète de vos cheveux et une routine sur mesure.</p>
           </div>
 
           <div class="text-center p-6">
@@ -84,17 +84,19 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
               </svg>
             </div>
-            <h3 class="font-bold text-charcoal mb-2">Produits de qualite</h3>
-            <p class="text-gray-600 text-sm">Des soins selectionnes pour les cheveux afro et crepus.</p>
+            <h3 class="font-bold text-charcoal mb-2">Produits de qualité</h3>
+            <p class="text-gray-600 text-sm">Des soins sélectionnés pour les cheveux afro et crépus.</p>
           </div>
         </div>
       </div>
     </section>
 
+    <ReviewsSection />
+
     <section class="py-16 lg:py-24">
       <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
-          <span class="text-gold font-medium text-sm uppercase tracking-wider">Temoignages</span>
+          <span class="text-gold font-medium text-sm uppercase tracking-wider">Témoignages</span>
           <h2 class="text-3xl lg:text-4xl font-bold text-charcoal mt-2">
             Ce que disent nos clientes
           </h2>
@@ -131,7 +133,7 @@
         </div>
 
         <div v-else class="text-center text-gray-500 py-12">
-          Les temoignages arrivent bientot...
+          Les témoignages arrivent bientôt...
         </div>
       </div>
     </section>
@@ -139,24 +141,24 @@
     <section class="py-16 lg:py-24 bg-charcoal text-white">
       <div class="max-w-7xl mx-auto px-4 text-center">
         <h2 class="text-3xl lg:text-4xl font-bold mb-4">
-          Prete a transformer vos cheveux ?
+          Prête à transformer vos cheveux ?
         </h2>
         <p class="text-white/70 max-w-xl mx-auto mb-8">
-          Reservez votre consultation capillaire personnalisee et decouvrez 
-          les soins adaptes a vos besoins.
+          Réservez votre consultation capillaire personnalisée et découvrez 
+          les soins adaptés à vos besoins.
         </p>
         <div class="flex flex-wrap justify-center gap-4">
-<a
-  :href="whatsappConsultationLink"
-  target="_blank"
-  rel="noopener"
-  class="inline-flex items-center gap-2 bg-gold text-charcoal px-8 py-4 rounded-full font-bold hover:bg-yellow-400 transition-colors"
->
-  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
-  </svg>
-  R&#233;server une consultation
-</a>
+          <a
+            :href="whatsappConsultationLink"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 bg-gold text-charcoal px-8 py-4 rounded-full font-bold hover:bg-yellow-400 transition-colors"
+          >
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
+            </svg>
+            Réserver une consultation
+          </a>
           <NuxtLink
             to="/produits"
             class="inline-flex items-center gap-2 bg-white/10 text-white px-8 py-4 rounded-full font-bold hover:bg-white/20 transition-colors"
@@ -174,7 +176,7 @@
 <script setup lang="ts">
 import type { Product } from '~/types'
 
-// --- MODIFICATION SEO ICI ---
+// SEO
 useHead({
   title: 'Samiah Cosmetics - Consultation Capillaire & Produits au Tchad',
   meta: [
@@ -182,14 +184,12 @@ useHead({
       name: 'description', 
       content: 'Expertise capillaire au Tchad. Diagnostic gratuit, produits naturels et routine personnalisée pour cheveux crépus et frisés. Livraison à N\'Djamena.' 
     },
-    // Ajout des mots-clés stratégiques pour Google
     { 
       name: 'keywords', 
       content: 'cheveux tchad, produits capillaires n\'djamena, coiffeuse tchad, soins cheveux naturels, routine capillaire afro, pousse cheveux tchad' 
     }
   ]
 })
-// ----------------------------
 
 const config = useRuntimeConfig()
 const { products, loading, fetchProducts } = useProducts()
@@ -198,6 +198,7 @@ const { addItem } = useCart()
 
 // Fetch data
 await fetchProducts()
+// J'ai rétabli l'appel à la base de données ici
 await fetchTestimonials(6)
 
 // Featured products (8 premiers)
