@@ -5,10 +5,8 @@
       <p class="text-gray-500">Bienvenue sur votre tableau de bord</p>
     </div>
 
-    <!-- Stats Cards -->
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <!-- Commandes du jour -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,27 +16,25 @@
           <span class="text-green-500 text-sm font-medium">Aujourd'hui</span>
         </div>
         <p class="text-3xl font-bold text-charcoal">{{ stats.ordersToday }}</p>
-        <p class="text-gray-500 text-sm">Commandes</p>
+        <p class="text-gray-500 text-sm">Commandes reçues</p>
       </div>
 
-      <!-- Commandes en attente -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
-          <span v-if="stats.pendingOrders > 0" class="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-full">
+          <span v-if="stats.pendingOrders > 0" class="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-full animate-pulse">
             Action requise
           </span>
         </div>
         <p class="text-3xl font-bold text-charcoal">{{ stats.pendingOrders }}</p>
-        <p class="text-gray-500 text-sm">En attente</p>
+        <p class="text-gray-500 text-sm">En attente de validation</p>
       </div>
 
-      <!-- Chiffre d'affaires du jour -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,8 +47,7 @@
         <p class="text-gray-500 text-sm">Chiffre d'affaires</p>
       </div>
 
-      <!-- Total produits -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <div class="flex items-center justify-between mb-4">
           <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +55,7 @@
             </svg>
           </div>
           <NuxtLink to="/admin/produits" class="text-gold text-sm font-medium hover:underline">
-            Gerer
+            Gérer
           </NuxtLink>
         </div>
         <p class="text-3xl font-bold text-charcoal">{{ stats.totalProducts }}</p>
@@ -68,12 +63,10 @@
       </div>
     </div>
 
-    <!-- Recent Orders & Quick Actions -->
     <div class="grid lg:grid-cols-3 gap-6">
-      <!-- Recent Orders (2/3) -->
-      <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm">
+      <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100">
         <div class="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 class="text-lg font-bold text-charcoal">Dernieres commandes</h2>
+          <h2 class="text-lg font-bold text-charcoal">Dernières commandes</h2>
           <NuxtLink to="/admin/commandes" class="text-gold font-medium text-sm hover:underline">
             Voir tout
           </NuxtLink>
@@ -109,7 +102,14 @@
                 </div>
                 <div>
                   <p class="font-medium text-charcoal">{{ order.client_name }}</p>
-                  <p class="text-sm text-gray-500">{{ order.order_number }} - {{ formatDate(order.created_at) }}</p>
+                  <p class="text-sm text-gray-500 flex items-center gap-2">
+                    {{ order.order_number }}
+                    <span class="text-xs text-gray-300">•</span>
+                    {{ formatDate(order.created_at) }}
+                  </p>
+                  <p v-if="order.transaction_ref" class="text-xs text-green-600 font-mono mt-0.5">
+                    ID: {{ order.transaction_ref }}
+                  </p>
                 </div>
               </div>
               <div class="text-right">
@@ -126,18 +126,36 @@
         </div>
       </div>
 
-      <!-- Quick Actions (1/3) -->
       <div class="space-y-6">
-        <!-- Actions rapides -->
-        <div class="bg-white rounded-2xl shadow-sm p-6">
-          <h2 class="text-lg font-bold text-charcoal mb-4">Actions rapides</h2>
+        <div class="bg-gradient-to-br from-charcoal to-gray-800 rounded-2xl p-6 text-white shadow-lg">
+          
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-1">
+              <h3 class="text-white/70 text-sm">Ce mois-ci</h3>
+              <span class="text-xs bg-white/10 px-2 py-0.5 rounded text-white/50">{{ currentMonthName }}</span>
+            </div>
+            <p class="text-3xl font-bold">{{ formatPrice(stats.revenueMonth) }}</p>
+            <p class="text-white/50 text-xs mt-1">{{ stats.ordersMonth }} commandes</p>
+          </div>
+
+          <div class="border-t border-white/10 my-4"></div>
+
+          <div>
+            <h3 class="text-gold text-xs font-bold uppercase tracking-wider mb-1">Total Global</h3>
+            <p class="text-xl font-bold text-white">{{ formatPrice(stats.revenueTotal) }}</p>
+          </div>
+
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+          <h2 class="text-lg font-bold text-charcoal mb-4">Raccourcis</h2>
           <div class="space-y-3">
             <NuxtLink
               to="/admin/produits/nouveau"
-              class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+              class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group"
             >
-              <div class="w-10 h-10 bg-gold/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 bg-gold/20 rounded-lg flex items-center justify-center group-hover:bg-gold group-hover:text-white transition-colors text-gold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
               </div>
@@ -153,8 +171,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
               </div>
-              <span class="font-medium text-charcoal">Commandes en attente</span>
-              <span v-if="stats.pendingOrders > 0" class="ml-auto bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-1 rounded-full">
+              <span class="font-medium text-charcoal">Valider commandes</span>
+              <span v-if="stats.pendingOrders > 0" class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-bounce">
                 {{ stats.pendingOrders }}
               </span>
             </NuxtLink>
@@ -172,13 +190,6 @@
               <span class="font-medium text-charcoal">Ouvrir WhatsApp</span>
             </a>
           </div>
-        </div>
-
-        <!-- Stats du mois -->
-        <div class="bg-gradient-to-br from-charcoal to-gray-800 rounded-2xl p-6 text-white">
-          <h3 class="text-white/70 text-sm mb-1">Ce mois</h3>
-          <p class="text-3xl font-bold mb-2">{{ formatPrice(stats.revenueMonth) }}</p>
-          <p class="text-white/70 text-sm">{{ stats.ordersMonth }} commandes</p>
         </div>
       </div>
     </div>
@@ -207,17 +218,20 @@ const stats = reactive({
   totalProducts: 0,
   ordersMonth: 0,
   revenueMonth: 0,
+  revenueTotal: 0, // AJOUT : Total global
 })
 
 const whatsappLink = computed(() => 'https://wa.me/' + config.public.whatsappNumber)
+const currentMonthName = computed(() => new Date().toLocaleString('fr-FR', { month: 'long', year: 'numeric' }))
 
 // Status labels
 const ORDER_STATUS_LABELS: Record<string, string> = {
   pending: 'En attente',
-  confirmed: 'Confirmee',
-  shipped: 'Expediee',
-  delivered: 'Livree',
-  cancelled: 'Annulee',
+  pending_validation: 'Vérif. Paiement', // Important pour le mobile money
+  confirmed: 'Confirmée',
+  shipped: 'Expédiée',
+  delivered: 'Livrée',
+  cancelled: 'Annulée',
 }
 
 // Fetch data
@@ -229,6 +243,9 @@ const fetchData = async () => {
     today.setHours(0, 0, 0, 0)
     const todayISO = today.toISOString()
 
+    // C'EST ICI LA MAGIE DU RESET MENSUEL :
+    // On demande à l'ordi : "Quel est le 1er jour de ce mois ?"
+    // Si on est le 1er Mars, ça donnera "2025-03-01". Les ventes de Février sont ignorées.
     const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
     const monthISO = monthStart.toISOString()
 
@@ -249,11 +266,11 @@ const fetchData = async () => {
 
     stats.ordersToday = ordersToday || 0
 
-    // Pending orders
+    // Pending orders (Inclut aussi pending_validation pour mobile money)
     const { count: pendingOrders } = await supabase
       .from('orders')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'pending')
+      .in('status', ['pending', 'pending_validation'])
 
     stats.pendingOrders = pendingOrders || 0
 
@@ -274,7 +291,7 @@ const fetchData = async () => {
 
     stats.totalProducts = totalProducts || 0
 
-    // Orders this month
+    // Orders this month (Le filtre monthISO assure le reset)
     const { count: ordersMonth, data: monthOrders } = await supabase
       .from('orders')
       .select('total')
@@ -283,6 +300,14 @@ const fetchData = async () => {
 
     stats.ordersMonth = ordersMonth || 0
     stats.revenueMonth = monthOrders?.reduce((sum, o) => sum + (o.total || 0), 0) || 0
+
+    // TOTAL GLOBAL (All Time)
+    const { data: allOrders } = await supabase
+      .from('orders')
+      .select('total')
+      .neq('status', 'cancelled')
+
+    stats.revenueTotal = allOrders?.reduce((sum, o) => sum + (o.total || 0), 0) || 0
 
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
@@ -312,6 +337,7 @@ const statusLabel = (status: string) => {
 const statusClass = (status: string) => {
   const classes: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-800',
+    pending_validation: 'bg-orange-100 text-orange-800',
     confirmed: 'bg-blue-100 text-blue-800',
     shipped: 'bg-purple-100 text-purple-800',
     delivered: 'bg-green-100 text-green-800',
