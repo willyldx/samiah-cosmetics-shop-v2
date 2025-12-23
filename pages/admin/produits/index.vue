@@ -16,7 +16,6 @@
       </NuxtLink>
     </div>
 
-    <!-- Filters -->
     <div class="bg-white rounded-2xl shadow-soft p-4 mb-6">
       <div class="flex flex-wrap items-center gap-4">
         <div class="flex-1 min-w-[200px]">
@@ -52,7 +51,6 @@
       </div>
     </div>
 
-    <!-- Products Grid -->
     <div v-if="loading" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <div v-for="i in 8" :key="i" class="bg-white rounded-2xl p-4 animate-pulse">
         <div class="aspect-square bg-gray-200 rounded-xl mb-4" />
@@ -79,7 +77,6 @@
         :key="product.id"
         class="bg-white rounded-2xl shadow-soft overflow-hidden group"
       >
-        <!-- Image -->
         <div class="relative aspect-square bg-gray-100">
           <img
             :src="product.image || '/images/placeholder.svg'"
@@ -87,7 +84,6 @@
             class="w-full h-full object-cover"
           />
           
-          <!-- Status badge -->
           <span
             class="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium"
             :class="product.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
@@ -95,7 +91,6 @@
             {{ product.active ? 'Actif' : 'Inactif' }}
           </span>
 
-          <!-- Actions overlay -->
           <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
             <NuxtLink
               :to="`/admin/produits/${product.id}`"
@@ -130,7 +125,6 @@
           </div>
         </div>
 
-        <!-- Info -->
         <div class="p-4">
           <p class="text-xs text-gray-400 mb-1">{{ product.category || 'Sans catégorie' }}</p>
           <h3 class="font-medium text-charcoal line-clamp-2 mb-2">{{ product.title }}</h3>
@@ -139,7 +133,6 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <Teleport to="body">
       <Transition
         enter-active-class="transition-opacity duration-200"
@@ -275,24 +268,38 @@ const toggleStatus = async (product: Product) => {
   }
 }
 
-// Delete product
+// Delete product confirmation
 const confirmDelete = (product: Product) => {
   productToDelete.value = product
 }
 
+// === C'EST ICI QUE LA MODIFICATION A ÉTÉ FAITE ===
 const deleteProduct = async () => {
-  if (!productToDelete.value) return
+  const product = productToDelete.value
+  if (!product) return
 
   try {
+    // 1. SUPPRIMER L'IMAGE DU STORAGE (si elle existe)
+    if (product.image) {
+      const imageName = product.image.split('/').pop()
+      // Note: On assume que le bucket s'appelle 'products'. Si c'est 'images', change-le ici.
+      if (imageName) {
+        await supabase.storage.from('products').remove([imageName])
+      }
+    }
+
+    // 2. SUPPRIMER LE PRODUIT DE LA BASE DE DONNÉES
     const { error } = await supabase
       .from('products')
       .delete()
-      .eq('id', productToDelete.value.id)
+      .eq('id', product.id)
 
     if (error) throw error
 
-    products.value = products.value.filter(p => p.id !== productToDelete.value!.id)
+    // Mise à jour de l'affichage
+    products.value = products.value.filter(p => p.id !== product.id)
     productToDelete.value = null
+    
   } catch (error) {
     console.error('Error deleting product:', error)
     alert('Erreur lors de la suppression')
