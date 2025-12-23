@@ -62,7 +62,7 @@
               @click="handleAction('products')"
               class="bg-white text-gold border border-gold hover:bg-gold hover:text-white active:bg-gold active:text-white transition-colors text-xs px-4 py-3 rounded-full shadow-sm font-medium text-left flex items-center gap-2"
             >
-              <span>Oui, je veux commander</span>
+              <span>Oui, je veux commander 🛍️ </span>
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
             </button>
             <button 
