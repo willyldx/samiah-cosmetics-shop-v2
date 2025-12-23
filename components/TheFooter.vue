@@ -1,29 +1,27 @@
 <template>
   <footer class="bg-charcoal text-white mt-auto">
-    <!-- Main footer -->
     <div class="container-main py-12 md:py-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-        <!-- Brand -->
         <div class="lg:col-span-1">
           <NuxtLink to="/" class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" class="w-6 h-6" aria-hidden="true">
-                <circle cx="50" cy="50" r="28" fill="none" stroke="#F5F2EA" stroke-width="4"/>
-                <circle cx="50" cy="50" r="22" fill="none" stroke="#D9B56C" stroke-width="4"/>
-                <g transform="translate(50,50)" fill="none" stroke="#F5F2EA" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M0,-9 C3,-15 12,-15 15,-9 C12,-3 3,-3 0,-9Z"/>
-                  <path d="M-4,3 C-9,2 -12,6 -9,9 C-5,11 -1,8 -4,3Z"/>
-                </g>
-              </svg>
+            
+            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+              <img 
+                src="/icon-192.png" 
+                alt="Logo Samiah" 
+                class="w-full h-full object-cover p-1" 
+              />
             </div>
+            
             <span class="font-display font-bold tracking-wider text-sm">
               SAMIAH COSMETICS
             </span>
           </NuxtLink>
+          
           <p class="text-white/60 text-sm leading-relaxed mb-4">
             Spécialiste en consultation capillaire et produits cosmétiques pour cheveux afro au Tchad.
           </p>
-          <!-- Social links -->
+          
           <div class="flex gap-3">
             <a 
               :href="`https://wa.me/${config.public.whatsappNumber}`"
@@ -61,7 +59,6 @@
           </div>
         </div>
 
-        <!-- Quick links -->
         <div>
           <h3 class="font-semibold text-white mb-4">Navigation</h3>
           <ul class="space-y-3">
@@ -93,7 +90,6 @@
           </ul>
         </div>
 
-        <!-- Services -->
         <div>
           <h3 class="font-semibold text-white mb-4">Services</h3>
           <ul class="space-y-3">
@@ -119,7 +115,6 @@
           </ul>
         </div>
 
-        <!-- Contact -->
         <div>
           <h3 class="font-semibold text-white mb-4">Contact</h3>
           <ul class="space-y-3">
@@ -149,7 +144,6 @@
             </li>
           </ul>
 
-          <!-- WhatsApp CTA -->
           <a 
             :href="`https://wa.me/${config.public.whatsappNumber}`"
             target="_blank"
@@ -165,7 +159,6 @@
       </div>
     </div>
 
-    <!-- Bottom bar -->
     <div class="border-t border-white/10">
       <div class="container-main py-6">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
