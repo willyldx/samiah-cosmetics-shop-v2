@@ -13,6 +13,7 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
     "@nuxt/image": "^1.7.0",
     "@nuxtjs/supabase": "^1.2.2",
     "@vueuse/core": "^10.9.0",
