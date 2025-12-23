@@ -9,60 +9,17 @@
   >
     <div class="max-w-7xl mx-auto px-4">
       <nav class="flex items-center justify-between h-16 md:h-20">
+        
         <NuxtLink 
           to="/" 
           class="flex items-center gap-3 group"
         >
           <div class="h-14 md:h-16 w-auto flex items-center justify-center transition-transform group-hover:scale-105">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 1200 800"
-                 class="h-full w-auto" 
-                 preserveAspectRatio="xMidYMid meet">
-
-              <defs>
-                <radialGradient id="wash" cx="50%" cy="45%" r="55%">
-                  <stop offset="0%" stop-color="#e6c9df"/>
-                  <stop offset="100%" stop-color="#f3e6f0"/>
-                </radialGradient>
-              </defs>
-
-              <path
-                d="M200,150
-                   C100,350 150,600 400,650
-                   C700,720 1050,600 1020,350
-                   C980,120 550,60 200,150 Z"
-                fill="url(#wash)"
-              />
-
-              <text x="600"
-                    y="360"
-                    text-anchor="middle"
-                    fill="#111111"
-                    style="
-                      font-family: 'Didot', 'Bodoni MT', 'Playfair Display', serif;
-                      font-size: 220px;
-                      font-weight: 500;
-                      letter-spacing: 4px;
-                    ">
-                SAMIAH
-              </text>
-
-              <path d="M200 430 H450" stroke="#111111" stroke-width="2"/>
-              <path d="M750 430 H1000" stroke="#111111" stroke-width="2"/>
-
-              <text x="600"
-                    y="480"
-                    text-anchor="middle"
-                    fill="#111111"
-                    style="
-                      font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
-                      font-size: 42px;
-                      font-weight: 300;
-                      letter-spacing: 10px;
-                    ">
-                cosmetics
-              </text>
-            </svg>
+            <img 
+              src="/favicon.svg" 
+              alt="Samiah Cosmetics" 
+              class="h-full w-auto object-contain" 
+            />
           </div>
           
           <span class="sr-only font-bold text-charcoal tracking-wider text-sm md:text-base">
