@@ -76,7 +76,7 @@
                 <input
                   v-model="form.name"
                   type="text"
-                  placeholder="Ex: Fatima Ibrahim"
+                  placeholder="John Doe"
                   class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all"
                   :class="{ 'border-red-500': errors.name }"
                 />
