@@ -9,7 +9,6 @@ import type {
   OrderStatus, 
   PaymentMethod,
   ShippingConfig,
-  DEFAULT_SHIPPING_CONFIG 
 } from '~/types'
 
 export const useOrders = () => {
@@ -27,9 +26,9 @@ export const useOrders = () => {
       "N'Djamena": 1000,
       'Moundou': 2000,
       'Sarh': 2000,
-      'Abéché': 2500,
+      'Abeche': 2500,
       'Bongor': 1500,
-      'Kélo': 2000,
+      'Kelo': 2000,
       'Pala': 2000,
       'Koumra': 2000,
       'Faya-Largeau': 3000,
@@ -46,7 +45,7 @@ export const useOrders = () => {
       return 0
     }
     
-    // Frais par ville ou défaut
+    // Frais par ville ou defaut
     return shippingConfig.fees_by_city[city] ?? shippingConfig.default_fee
   }
 
@@ -70,7 +69,7 @@ export const useOrders = () => {
 
   const createOrder = async (payload: CreateOrderPayload): Promise<{ order: Order | null; error: string | null }> => {
     try {
-      // 1. Récupérer les produits pour calculer les prix
+      // 1. Recuperer les produits pour calculer les prix
       const productIds = payload.items.map(item => item.product_id)
       
       const { data: productsData, error: productsError } = await supabase
@@ -99,8 +98,11 @@ export const useOrders = () => {
       const shippingFee = calculateShipping(payload.client_city, subtotal)
       const total = subtotal + shippingFee
 
-      // 4. Créer la commande
+      // 4. Creer la commande
       const orderNumber = generateOrderNumber()
+      
+      // Determiner le statut initial
+      const initialStatus = payload.status || 'pending'
       
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
@@ -115,7 +117,8 @@ export const useOrders = () => {
           shipping_fee: shippingFee,
           total,
           payment_method: payload.payment_method,
-          status: 'pending' as OrderStatus,
+          transaction_ref: payload.transaction_ref || null,
+          status: initialStatus as OrderStatus,
           notes: payload.notes || null,
         })
         .select()
@@ -127,7 +130,7 @@ export const useOrders = () => {
       
     } catch (e: any) {
       console.error('Erreur createOrder:', e)
-      return { order: null, error: e.message || 'Erreur lors de la création de la commande' }
+      return { order: null, error: e.message || 'Erreur lors de la creation de la commande' }
     }
   }
 
@@ -172,34 +175,62 @@ export const useOrders = () => {
   }
 
   // ==========================================
-  // WHATSAPP MESSAGE
+  // WHATSAPP MESSAGE (FORMAT PROPRE ASCII)
   // ==========================================
 
   const generateWhatsAppOrderMessage = (order: Order): string => {
-    const formatPrice = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
+    const formatPriceSimple = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
     
-    let message = `🛒 *Nouvelle commande #${order.order_number}*\n\n`
-    message += `👤 *Client:* ${order.client_name}\n`
-    message += `📱 *Tél:* ${order.client_phone}\n`
-    message += `📍 *Adresse:* ${order.client_address}, ${order.client_city}\n\n`
-    message += `📦 *Produits:*\n`
+    const paymentLabels: Record<string, string> = {
+      cash: 'Cash a la livraison',
+      airtel_money: 'Airtel Money',
+      moov_money: 'Moov Money',
+      western_union: 'Western Union',
+      express_union: 'Express Union',
+      moneygram: 'MoneyGram',
+    }
+    
+    const lines: string[] = []
+    
+    lines.push('=============================')
+    lines.push('   NOUVELLE COMMANDE')
+    lines.push('=============================')
+    lines.push('')
+    lines.push('Numero: ' + order.order_number)
+    lines.push('')
+    lines.push('--- INFORMATIONS CLIENT ---')
+    lines.push('Nom: ' + order.client_name)
+    lines.push('Tel: ' + order.client_phone)
+    lines.push('Ville: ' + order.client_city)
+    lines.push('Adresse: ' + order.client_address)
+    lines.push('')
+    lines.push('--- PRODUITS COMMANDES ---')
     
     order.items.forEach((item: any) => {
-      message += `• ${item.product_title} x${item.quantity} — ${formatPrice(item.subtotal)}\n`
+      lines.push('- ' + item.product_title + ' x' + item.quantity + ' = ' + formatPriceSimple(item.subtotal))
     })
     
-    message += `\n💰 Sous-total: ${formatPrice(order.subtotal)}\n`
-    message += `🚚 Livraison: ${order.shipping_fee === 0 ? 'GRATUITE' : formatPrice(order.shipping_fee)}\n`
-    message += `💵 *TOTAL: ${formatPrice(order.total)}*\n\n`
+    lines.push('')
+    lines.push('--- RECAPITULATIF ---')
+    lines.push('Sous-total: ' + formatPriceSimple(order.subtotal))
+    lines.push('Livraison: ' + (order.shipping_fee === 0 ? 'GRATUITE' : formatPriceSimple(order.shipping_fee)))
+    lines.push('TOTAL: ' + formatPriceSimple(order.total))
+    lines.push('')
+    lines.push('Mode de paiement: ' + (paymentLabels[order.payment_method] || order.payment_method))
     
-    const paymentLabels: Record<PaymentMethod, string> = {
-      cash: '💵 Cash à la livraison',
-      airtel_money: '📱 Airtel Money',
-      moov_money: '📱 Moov Money',
+    if (order.transaction_ref) {
+      lines.push('Ref. Transaction: ' + order.transaction_ref)
     }
-    message += `💳 *Paiement:* ${paymentLabels[order.payment_method]}`
     
-    return encodeURIComponent(message)
+    if (order.notes) {
+      lines.push('')
+      lines.push('Notes: ' + order.notes)
+    }
+    
+    lines.push('')
+    lines.push('=============================')
+
+    return encodeURIComponent(lines.join('\n'))
   }
 
   // ==========================================
