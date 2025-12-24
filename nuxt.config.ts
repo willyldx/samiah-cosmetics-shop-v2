@@ -64,50 +64,63 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
-      title: 'Samiah Cosmetics — Consultation capillaire & produits',
+      // Tarte : J'ai mis un titre plus court et percutant pour qu'il ne soit pas coupé sur mobile
+      title: 'Samiah Cosmetics : Soins Capillaires au Tchad',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Consultation capillaire en ligne et produits cosmétiques au Tchad. Réservez via WhatsApp.' },
         { name: 'theme-color', content: '#0A0A0A' },
+        
         // Open Graph
+        { property: 'og:site_name', content: 'Samiah Cosmetics' }, // <-- IMPORTANT : Nom du site pour Facebook/WhatsApp
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: 'Samiah Cosmetics — Consultation capillaire & produits' },
+        { property: 'og:title', content: 'Samiah Cosmetics — Soins Capillaires' },
         { property: 'og:description', content: 'Réservez votre consultation capillaire et découvrez nos shampoings & soins.' },
-        { property: 'og:image', content: '/icon-512.png' }, // Utilise l'icône carrée pour le partage
+        { property: 'og:image', content: '/icon-512.png' },
         { property: 'og:locale', content: 'fr_FR' },
+        
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
       ],
       link: [
-        // C'est ces lignes que Google regarde pour l'icône
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'alternate icon', type: 'image/png', href: '/icon-192.png' }, // Fallback pour Google
+        { rel: 'alternate icon', type: 'image/png', href: '/icon-192.png' },
         { rel: 'apple-touch-icon', href: '/icon-192.png' },
         { rel: 'preconnect', href: 'https://dzzblqlteirtzyegplgu.supabase.co', crossorigin: '' },
       ],
-      // === NOUVEAU : DONNÉES STRUCTURÉES (JSON-LD) ===
-      // C'est ça qui dit explicitement à Google "Voici mon Logo officiel"
+      // === DONNÉES STRUCTURÉES (JSON-LD) ===
       script: [
         {
           type: 'application/ld+json',
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Samiah Cosmetics",
-            "url": "https://www.samiahcosmetics.shop",
-            "logo": "https://www.samiahcosmetics.shop/icon-512.png",
-            "sameAs": [
-              "https://facebook.com/samiahcosmetics",
-              "https://instagram.com/samiahcosmetics"
-            ],
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+235-62-75-21-05",
-              "contactType": "customer service",
-              "areaServed": "TD"
+          children: JSON.stringify([
+            // 1. L'ORGANISATION (Pour le Logo et les infos de contact)
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "Samiah Cosmetics",
+              "url": "https://www.samiahcosmetics.shop",
+              "logo": "https://www.samiahcosmetics.shop/icon-512.png",
+              "sameAs": [
+                "https://facebook.com/samiahcosmetics",
+                "https://instagram.com/samiahcosmetics"
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": "+235-62-75-21-05",
+                "contactType": "customer service",
+                "areaServed": "TD"
+              }
+            },
+            // 2. LE SITE WEB (C'est ICI qu'on force le nom "Samiah Cosmetics" sur Google)
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Samiah Cosmetics",
+              "alternateName": ["Samiah Cosmétique", "Samiah Tchad"], // Google comprendra aussi ces recherches
+              "url": "https://www.samiahcosmetics.shop"
             }
-          })
+          ])
         }
       ]
     },
