@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-white">
-    <!-- Loading -->
     <div v-if="pending" class="max-w-container mx-auto px-4 py-12">
       <div class="grid lg:grid-cols-2 gap-12">
         <div class="aspect-square bg-gray-200 rounded-2xl animate-pulse"></div>
@@ -12,7 +11,6 @@
       </div>
     </div>
 
-    <!-- Product Not Found -->
     <div v-else-if="!product" class="max-w-container mx-auto px-4 py-24 text-center">
       <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,9 +24,7 @@
       </NuxtLink>
     </div>
 
-    <!-- Product Detail -->
     <div v-else class="max-w-container mx-auto px-4 py-8 lg:py-12">
-      <!-- Breadcrumb -->
       <nav class="flex items-center gap-2 text-sm text-gray-500 mb-8">
         <NuxtLink to="/" class="hover:text-charcoal">Accueil</NuxtLink>
         <span>/</span>
@@ -38,9 +34,7 @@
       </nav>
 
       <div class="grid lg:grid-cols-2 gap-8 lg:gap-16">
-        <!-- Galerie -->
         <div class="space-y-4">
-          <!-- Image principale -->
           <div class="aspect-square bg-gray-50 rounded-2xl overflow-hidden">
             <img
               :src="currentImage"
@@ -49,7 +43,6 @@
             />
           </div>
 
-          <!-- Thumbnails -->
           <div v-if="gallery.length > 1" class="flex gap-3 overflow-x-auto pb-2">
             <button
               v-for="(img, index) in gallery"
@@ -68,9 +61,7 @@
           </div>
         </div>
 
-        <!-- Infos -->
         <div class="lg:py-4">
-          <!-- Badge nouveau -->
           <span
             v-if="isNew"
             class="inline-block bg-gold text-charcoal text-xs font-bold px-3 py-1 rounded-full mb-4"
@@ -78,25 +69,20 @@
             Nouveau
           </span>
 
-          <!-- Catégorie -->
           <p class="text-gray-500 text-sm mb-2">{{ product.category }}</p>
 
-          <!-- Titre -->
           <h1 class="text-3xl lg:text-4xl font-bold text-charcoal mb-4">
             {{ product.title }}
           </h1>
 
-          <!-- Prix -->
           <div class="text-3xl font-bold text-gold mb-6">
             {{ formatPrice(product.price) }}
           </div>
 
-          <!-- Description -->
           <p v-if="product.short_description" class="text-gray-600 leading-relaxed mb-6">
             {{ product.short_description }}
           </p>
 
-          <!-- Villes -->
           <div v-if="product.cities && product.cities.length" class="mb-6">
             <h3 class="text-sm font-medium text-charcoal mb-2">Disponible à :</h3>
             <div class="flex flex-wrap gap-2">
@@ -110,7 +96,6 @@
             </div>
           </div>
 
-          <!-- Quantité -->
           <div class="mb-6">
             <h3 class="text-sm font-medium text-charcoal mb-2">Quantité :</h3>
             <div class="flex items-center gap-4">
@@ -132,7 +117,6 @@
             </div>
           </div>
 
-          <!-- Actions -->
           <div class="space-y-3">
             <button
               type="button"
@@ -144,21 +128,8 @@
               </svg>
               Ajouter au panier
             </button>
-
-            <a
-              :href="whatsappLink"
-              target="_blank"
-              rel="noopener"
-              class="w-full bg-green-500 text-white py-4 rounded-full font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-            >
-              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
-              </svg>
-              Commander via WhatsApp
-            </a>
           </div>
 
-          <!-- Partager -->
           <div class="mt-8 pt-6 border-t border-gray-100">
             <button
               type="button"
@@ -228,11 +199,7 @@ const formatPrice = (price: number) => {
   return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
 }
 
-const whatsappLink = computed(() => {
-  if (!product.value) return '#'
-  const msg = encodeURIComponent(`Bonjour Samiah Cosmetics, je suis interesse par ${product.value.title} (${formatPrice(product.value.price)}).`)
-  return `https://wa.me/${config.public.whatsappNumber}?text=${msg}`
-})
+// NOTE: J'ai retiré le bloc "whatsappLink" qui n'est plus utilisé
 
 const decreaseQuantity = () => {
   if (quantity.value > 1) quantity.value--
