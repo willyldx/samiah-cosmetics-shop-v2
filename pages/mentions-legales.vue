@@ -18,7 +18,7 @@
           <ul class="mt-4 space-y-2">
             <li><strong>Siège social :</strong> N'Djamena, Tchad</li>
             <li><strong>Téléphone :</strong> +235 62 75 21 05</li>
-            <li><strong>Directrice de la publication :</strong> Raissa Yousouf </li>
+            <li><strong>Directrice de la publication :</strong> Raissa Yann Samiah </li>
           </ul>
         </section>
 
