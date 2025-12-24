@@ -16,6 +16,7 @@ export interface Product {
   images: string[]
   cities: string[]
   active: boolean
+  featured?: boolean
   expires_after_days: number | null
   published_at: string | null
   created_at: string
@@ -42,7 +43,7 @@ export interface Cart {
 // ==========================================
 // COMMANDES
 // ==========================================
-export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+export type OrderStatus = 'pending' | 'pending_validation' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
 export type PaymentMethod = 'cash' | 'airtel_money' | 'moov_money' | 'western_union' | 'express_union' | 'moneygram'
 
 export interface OrderItem {
@@ -65,6 +66,7 @@ export interface Order {
   shipping_fee: number
   total: number
   payment_method: PaymentMethod
+  transaction_ref?: string | null
   status: OrderStatus
   notes: string | null
   created_at: string
@@ -80,8 +82,23 @@ export interface CreateOrderPayload {
     product_id: string
     quantity: number
   }[]
-  payment_method: PaymentMethod
+  payment_method: PaymentMethod | string
+  transaction_ref?: string
+  status?: OrderStatus | string
   notes?: string
+}
+
+// ==========================================
+// CLIENTS
+// ==========================================
+export interface Client {
+  id?: string
+  phone: string
+  full_name: string
+  city: string
+  address: string
+  created_at?: string
+  updated_at?: string
 }
 
 // ==========================================
@@ -145,12 +162,24 @@ export const CHAD_CITIES = [
   "N'Djamena",
   'Moundou',
   'Sarh',
-  'Abéché',
+  'Abeche',
   'Bongor',
-  'Kélo',
+  'Kelo',
   'Pala',
   'Koumra',
   'Faya-Largeau',
+  'Am Timan',
+  'Mongo',
+  'Doba',
+  'Ati',
+  'Lai',
+  'Oum Hadjer',
+  'Bitkine',
+  'Massaguet',
+  'Dourbali',
+  'Massakory',
+  'Ngama',
+  'Bokoro',
 ] as const
 
 export type ChadCity = typeof CHAD_CITIES[number]
@@ -171,9 +200,9 @@ export const DEFAULT_SHIPPING_CONFIG: ShippingConfig = {
     "N'Djamena": 1000,
     'Moundou': 2000,
     'Sarh': 2000,
-    'Abéché': 2500,
+    'Abeche': 2500,
     'Bongor': 1500,
-    'Kélo': 2000,
+    'Kelo': 2000,
     'Pala': 2000,
     'Koumra': 2000,
     'Faya-Largeau': 3000,
@@ -185,14 +214,16 @@ export const DEFAULT_SHIPPING_CONFIG: ShippingConfig = {
 // ==========================================
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
   pending: 'En attente',
-  confirmed: 'Confirmée',
-  shipped: 'Expédiée',
-  delivered: 'Livrée',
-  cancelled: 'Annulée',
+  pending_validation: 'Verif. Paiement',
+  confirmed: 'Confirmee',
+  shipped: 'Expediee',
+  delivered: 'Livree',
+  cancelled: 'Annulee',
 }
 
 export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
   pending: 'yellow',
+  pending_validation: 'orange',
   confirmed: 'blue',
   shipped: 'purple',
   delivered: 'green',
@@ -200,10 +231,23 @@ export const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
 }
 
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  cash: 'Cash à la livraison',
+  cash: 'Cash a la livraison',
   airtel_money: 'Airtel Money',
   moov_money: 'Moov Money',
   western_union: 'Western Union',
   express_union: 'Express Union',
   moneygram: 'MoneyGram',
+}
+
+// ==========================================
+// SETTINGS
+// ==========================================
+export interface HeroSettings {
+  title?: string
+  subtitle?: string
+  description?: string
+  image?: string
+  consultation_price?: number
+  stats_clients?: string
+  rating?: number
 }
