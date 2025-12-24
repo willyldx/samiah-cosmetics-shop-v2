@@ -37,7 +37,7 @@
             
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                Numéro de Téléphone (WhatsApp) <span class="text-red-500">*</span>
+                Numero de Telephone (WhatsApp) <span class="text-red-500">*</span>
               </label>
               <div class="flex gap-2">
                 <span class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-500 font-bold flex items-center">+235</span>
@@ -67,7 +67,7 @@
           <div class="bg-white rounded-2xl p-6 shadow-sm transition-all duration-500" :class="{ 'opacity-50 pointer-events-none': isLoadingUser }">
             <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
               <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">2</span>
-              Vos coordonnées
+              Vos coordonnees
             </h2>
             
             <div class="space-y-4">
@@ -91,7 +91,7 @@
                     class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all bg-white"
                     :class="{ 'border-red-500': errors.city }"
                   >
-                    <option value="">Sélectionnez une ville</option>
+                    <option value="">Selectionnez une ville</option>
                     <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
                   </select>
                   <p v-if="errors.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
@@ -102,7 +102,7 @@
                   <input
                     v-model="form.address"
                     type="text"
-                    placeholder="Ex: Moursal, près de..."
+                    placeholder="Ex: Moursal, pres de..."
                     class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all"
                     :class="{ 'border-red-500': errors.address }"
                   />
@@ -115,7 +115,7 @@
           <div class="bg-white rounded-2xl p-6 shadow-sm">
             <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
               <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">3</span>
-              Paiement Sécurisé
+              Paiement Securise
             </h2>
             
             <div class="grid sm:grid-cols-2 gap-3 mb-6">
@@ -138,24 +138,24 @@
 
             <div v-if="['airtel_money', 'moov_money'].includes(form.paymentMethod)" class="bg-gray-50 border border-gray-200 rounded-xl p-5 animate-fade-in-up">
               <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                📲 Comment payer par {{ form.paymentMethod === 'airtel_money' ? 'Airtel Money' : 'Moov Money' }} ?
+                Comment payer par {{ form.paymentMethod === 'airtel_money' ? 'Airtel Money' : 'Moov Money' }} ?
               </h3>
               <ol class="list-decimal list-inside text-sm text-gray-600 space-y-2 mb-4">
-                <li>Ouvrez votre application téléphone.</li>
-                <li>Envoyez le montant de <strong class="text-charcoal">{{ formatPrice(subtotal) }}</strong> au numéro ci-dessous.</li>
-                <li>Une fois envoyé, vous recevrez un SMS avec un <strong>ID de transaction</strong>.</li>
+                <li>Ouvrez votre application telephone.</li>
+                <li>Envoyez le montant de <strong class="text-charcoal">{{ formatPrice(subtotal) }}</strong> au numero ci-dessous.</li>
+                <li>Une fois envoye, vous recevrez un SMS avec un <strong>ID de transaction</strong>.</li>
                 <li>Entrez cet ID dans la case ci-dessous pour valider.</li>
               </ol>
               
               <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-dashed border-gray-300 mb-4">
-                <span class="text-gray-500 text-sm">Numéro {{ form.paymentMethod === 'airtel_money' ? 'Airtel' : 'Moov' }} :</span>
+                <span class="text-gray-500 text-sm">Numero {{ form.paymentMethod === 'airtel_money' ? 'Airtel' : 'Moov' }} :</span>
                 <span class="font-mono font-bold text-lg select-all">
                   {{ form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43' }}
                 </span>
               </div>
 
               <div>
-                <label class="block text-sm font-bold text-charcoal mb-1.5">ID DE TRANSACTION (Reçu par SMS)</label>
+                <label class="block text-sm font-bold text-charcoal mb-1.5">ID DE TRANSACTION (Recu par SMS)</label>
                 <input 
                   v-model="form.transactionRef" 
                   type="text" 
@@ -178,7 +178,7 @@
             <textarea
               v-model="form.notes"
               rows="3"
-              placeholder="Instructions spéciales pour la livraison..."
+              placeholder="Instructions speciales pour la livraison..."
               class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all resize-none"
             ></textarea>
           </div>
@@ -186,14 +186,14 @@
 
         <div class="lg:col-span-1">
           <div class="bg-white rounded-2xl p-6 shadow-sm sticky top-24">
-            <h2 class="text-lg font-bold text-charcoal mb-4">Récapitulatif</h2>
+            <h2 class="text-lg font-bold text-charcoal mb-4">Recapitulatif</h2>
             
             <div class="space-y-3 mb-4">
               <div v-for="item in items" :key="item.product.id" class="flex gap-3">
                 <img :src="item.product.image || 'https://via.placeholder.com/100'" :alt="item.product.title" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
                 <div class="flex-1 min-w-0">
                   <h4 class="font-medium text-sm text-charcoal line-clamp-1">{{ item.product.title }}</h4>
-                  <p class="text-gray-500 text-sm">Qté: {{ item.quantity }}</p>
+                  <p class="text-gray-500 text-sm">Qte: {{ item.quantity }}</p>
                   <p class="text-gold font-semibold text-sm">{{ formatPrice(item.product.price * item.quantity) }}</p>
                 </div>
               </div>
@@ -208,7 +208,7 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Livraison</span>
-                <span class="text-gold font-medium">À confirmer</span>
+                <span class="text-gold font-medium">A confirmer</span>
               </div>
             </div>
 
@@ -230,7 +230,7 @@
             
             <div class="mt-4 flex justify-center gap-2 text-gray-400">
                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-               <span class="text-xs">Paiement sécurisé et données cryptées</span>
+               <span class="text-xs">Paiement securise et donnees cryptees</span>
             </div>
           </div>
         </div>
@@ -239,6 +239,7 @@
 
     <WhatsAppFloat />
 
+    <!-- Overlay de traitement -->
     <Transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0"
@@ -262,7 +263,7 @@
         <h3 class="text-2xl font-bold text-white mb-2 text-center animate-pulse">
           {{ processingStep }}
         </h3>
-        <p class="text-white/60 text-sm text-center">Ne fermez pas cette fenêtre...</p>
+        <p class="text-white/60 text-sm text-center">Ne fermez pas cette fenetre...</p>
 
       </div>
     </Transition>
@@ -284,13 +285,23 @@ useHead({ title: 'Commander - Samiah Cosmetics' })
 const cities = ["N'Djamena", 'Moundou', 'Sarh', 'Abeche', 'Kelo', 'Koumra', 'Pala', 'Am Timan', 'Bongor', 'Mongo', 'Doba', 'Ati', 'Lai', 'Oum Hadjer', 'Bitkine', 'Massaguet', 'Dourbali', 'Massakory', 'Ngama', 'Bokoro']
 
 const paymentMethods = [
-  { value: 'cash', label: 'Cash à la livraison', icon: '💵' },
+  { value: 'cash', label: 'Cash a la livraison', icon: '💵' },
   { value: 'airtel_money', label: 'Airtel Money', icon: '📱' },
   { value: 'moov_money', label: 'Moov Money', icon: '📱' },
   { value: 'western_union', label: 'Western Union', icon: '🏦' },
   { value: 'express_union', label: 'Express Union', icon: '🏦' },
   { value: 'moneygram', label: 'MoneyGram', icon: '🏦' },
 ]
+
+// Labels pour le message WhatsApp (sans accents)
+const paymentLabelsWhatsApp: Record<string, string> = {
+  cash: 'Cash a la livraison',
+  airtel_money: 'Airtel Money',
+  moov_money: 'Moov Money',
+  western_union: 'Western Union',
+  express_union: 'Express Union',
+  moneygram: 'MoneyGram',
+}
 
 // ÉTAT DU FORMULAIRE
 const form = reactive({
@@ -316,8 +327,8 @@ const errors = reactive({
 const isSubmitting = ref(false)
 const isLoadingUser = ref(false)
 const userExists = ref(false)
-const isProcessing = ref(false) // Pour l'overlay
-const processingStep = ref('Connexion sécurisée...') // Pour le texte
+const isProcessing = ref(false)
+const processingStep = ref('Connexion securisee...')
 
 // FONCTION INTELLIGENTE : VÉRIFIER SI LE CLIENT EXISTE DÉJÀ
 const checkUser = async () => {
@@ -356,8 +367,8 @@ const validate = () => {
   
   if (!form.name.trim()) { errors.name = 'Le nom est requis'; isValid = false }
   
-  if (!form.phone.trim()) { errors.phone = 'Le téléphone est requis'; isValid = false }
-  else if (form.phone.replace(/\s/g, '').length < 8) { errors.phone = 'Numéro invalide'; isValid = false }
+  if (!form.phone.trim()) { errors.phone = 'Le telephone est requis'; isValid = false }
+  else if (form.phone.replace(/\s/g, '').length < 8) { errors.phone = 'Numero invalide'; isValid = false }
   
   if (!form.city) { errors.city = 'La ville est requise'; isValid = false }
   if (!form.address.trim()) { errors.address = 'L\'adresse est requise'; isValid = false }
@@ -365,7 +376,7 @@ const validate = () => {
 
   if (['airtel_money', 'moov_money'].includes(form.paymentMethod)) {
     if (!form.transactionRef.trim()) {
-      errors.transactionRef = 'Veuillez entrer l\'ID de la transaction reçu par SMS'
+      errors.transactionRef = 'Veuillez entrer l\'ID de la transaction recu par SMS'
       isValid = false
     }
   }
@@ -373,12 +384,63 @@ const validate = () => {
   return isValid
 }
 
-// === C'EST ICI QUE LA MAGIE OPÈRE (NOUVELLE VERSION) ===
+// Generer le message WhatsApp PROPRE (sans emojis Unicode)
+const generateWhatsAppMessage = (orderNumber: string) => {
+  const formatPriceSimple = (price: number) => {
+    return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
+  }
+
+  // Construction du message ligne par ligne (ASCII only)
+  const lines: string[] = []
+  
+  lines.push('=============================')
+  lines.push('   NOUVELLE COMMANDE')
+  lines.push('=============================')
+  lines.push('')
+  lines.push('Numero: ' + orderNumber)
+  lines.push('')
+  lines.push('--- INFORMATIONS CLIENT ---')
+  lines.push('Nom: ' + form.name)
+  lines.push('Tel: ' + form.phone)
+  lines.push('Ville: ' + form.city)
+  lines.push('Adresse: ' + form.address)
+  lines.push('')
+  lines.push('--- PRODUITS COMMANDES ---')
+  
+  items.value.forEach(item => {
+    const itemTotal = item.product.price * item.quantity
+    lines.push('- ' + item.product.title + ' x' + item.quantity + ' = ' + formatPriceSimple(itemTotal))
+  })
+  
+  lines.push('')
+  lines.push('--- RECAPITULATIF ---')
+  lines.push('Sous-total: ' + formatPriceSimple(subtotal.value))
+  lines.push('Livraison: A confirmer')
+  lines.push('Mode de paiement: ' + paymentLabelsWhatsApp[form.paymentMethod])
+  
+  if (form.transactionRef) {
+    lines.push('Ref. Transaction: ' + form.transactionRef)
+  }
+  
+  if (form.notes) {
+    lines.push('')
+    lines.push('Notes: ' + form.notes)
+  }
+  
+  lines.push('')
+  lines.push('=============================')
+  lines.push('Merci de confirmer ma commande!')
+  lines.push('=============================')
+
+  return lines.join('\n')
+}
+
+// SOUMISSION DE LA COMMANDE
 const submitOrder = async () => {
   // 1. Validation de base
   if (!validate()) return
   
-  // 2. On lance l'écran de cinéma
+  // 2. On lance l'ecran de cinema
   isSubmitting.value = true
   isProcessing.value = true
   
@@ -386,10 +448,10 @@ const submitOrder = async () => {
     const cleanPhone = form.phone.replace(/\s/g, '')
 
     // Effet visuel : Connexion
-    processingStep.value = "Connexion sécurisée..."
+    processingStep.value = "Connexion securisee..."
     await new Promise(r => setTimeout(r, 800))
 
-    // ÉTAPE A : Sauvegarder le client (En arrière-plan)
+    // ÉTAPE A : Sauvegarder le client (En arriere-plan)
     await supabase.from('clients').upsert({
       phone: cleanPhone,
       full_name: form.name,
@@ -401,7 +463,7 @@ const submitOrder = async () => {
     // Effet visuel : Envoi
     processingStep.value = "Envoi de votre commande..."
 
-    // ÉTAPE B : Créer la commande
+    // ÉTAPE B : Creer la commande
     const { order, error } = await createOrder({
       client_name: form.name,
       client_phone: form.phone,
@@ -417,25 +479,34 @@ const submitOrder = async () => {
       status: ['airtel_money', 'moov_money'].includes(form.paymentMethod) ? 'pending_validation' : 'pending'
     })
     
-    if (error || !order) throw new Error('Erreur création commande')
+    if (error || !order) throw new Error('Erreur creation commande')
 
-    // Effet visuel : Vérification finale
-    processingStep.value = "Vérification de la transaction..."
-    await new Promise(r => setTimeout(r, 1200)) // Petite pause pour faire sérieux
+    // Effet visuel : Verification finale
+    processingStep.value = "Verification de la transaction..."
+    await new Promise(r => setTimeout(r, 1200))
 
-    // Effet visuel : Succès
-    processingStep.value = "Commande validée avec succès !"
+    // Effet visuel : Succes
+    processingStep.value = "Commande validee avec succes!"
     await new Promise(r => setTimeout(r, 800))
 
-    // ÉTAPE C : Nettoyage et Redirection
+    // ÉTAPE C : Generer le message WhatsApp propre
+    const whatsappMessage = generateWhatsAppMessage(order.order_number)
+    const whatsappUrl = 'https://wa.me/' + config.public.whatsappNumber + '?text=' + encodeURIComponent(whatsappMessage)
+
+    // ÉTAPE D : Nettoyage et Redirection
     clearCart()
+    
+    // Ouvrir WhatsApp dans un nouvel onglet
+    window.open(whatsappUrl, '_blank')
+    
+    // Rediriger vers la page de recu
     router.push('/commande/recu?id=' + order.id)
     
   } catch (e) {
     console.error(e)
-    isProcessing.value = false // On cache l'écran noir
-    isSubmitting.value = false // On réactive le bouton
-    alert('Une erreur est survenue lors de la commande. Veuillez vérifier votre connexion et réessayer.')
+    isProcessing.value = false
+    isSubmitting.value = false
+    alert('Une erreur est survenue lors de la commande. Veuillez verifier votre connexion et reessayer.')
   }
 }
 </script>
