@@ -149,9 +149,25 @@
               
               <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-dashed border-gray-300 mb-4">
                 <span class="text-gray-500 text-sm">Numero {{ form.paymentMethod === 'airtel_money' ? 'Airtel' : 'Moov' }} :</span>
-                <span class="font-mono font-bold text-lg select-all">
-                  {{ form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43' }}
-                </span>
+                
+                <div class="flex items-center gap-3">
+                  <span class="font-mono font-bold text-lg text-charcoal select-all">
+                    {{ form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43' }}
+                  </span>
+                  
+                  <button 
+                    type="button"
+                    @click="copyToClipboard(form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43')"
+                    class="px-3 py-1.5 rounded-md text-xs font-bold transition-all border flex items-center gap-1.5"
+                    :class="copied ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'"
+                  >
+                    <span v-if="copied">✓ Copié</span>
+                    <span v-else>
+                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                       Copier
+                    </span>
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -239,7 +255,6 @@
 
     <WhatsAppFloat />
 
-    <!-- Overlay de traitement -->
     <Transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0"
@@ -329,6 +344,23 @@ const isLoadingUser = ref(false)
 const userExists = ref(false)
 const isProcessing = ref(false)
 const processingStep = ref('Connexion securisee...')
+
+// === FONCTIONNALITÉ COPIE RAPIDE ===
+const copied = ref(false)
+
+const copyToClipboard = (text: string) => {
+  const cleanText = text.replace(/\s/g, '') // Enlève les espaces
+  navigator.clipboard.writeText(cleanText)
+  copied.value = true
+  
+  // Vibration pour feedback tactile (si supporté par le téléphone)
+  if (typeof navigator.vibrate === 'function') {
+      navigator.vibrate(50)
+  }
+  
+  setTimeout(() => copied.value = false, 2000)
+}
+// ===================================
 
 // FONCTION INTELLIGENTE : VÉRIFIER SI LE CLIENT EXISTE DÉJÀ
 const checkUser = async () => {
