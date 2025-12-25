@@ -528,8 +528,8 @@ const submitOrder = async () => {
     // ÉTAPE D : Nettoyage et Redirection
     clearCart()
     
-    // Ouvrir WhatsApp dans un nouvel onglet
-    window.open(whatsappUrl, '_blank')
+    // Modification : On n'ouvre PLUS WhatsApp automatiquement
+    // window.open(whatsappUrl, '_blank')
     
     // Rediriger vers la page de recu
     router.push('/commande/recu?id=' + order.id)
