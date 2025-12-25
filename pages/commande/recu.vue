@@ -69,14 +69,24 @@
       </div>
 
       <div class="space-y-3">
+        
+        <a 
+          :href="whatsappLink"
+          target="_blank"
+          class="w-full bg-green-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-green-200 flex items-center justify-center gap-2 hover:bg-green-600 transition-colors"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path></svg>
+          Envoyer la preuve sur WhatsApp
+        </a>
+
         <button 
           @click="downloadReceipt" 
           :disabled="isGenerating"
-          class="w-full bg-charcoal text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          class="w-full bg-white border-2 border-charcoal text-charcoal py-4 rounded-xl font-bold hover:bg-gray-50 flex items-center justify-center gap-2 active:scale-95 transition-transform"
         >
-          <span v-if="isGenerating" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span v-if="isGenerating" class="w-5 h-5 border-2 border-charcoal border-t-transparent rounded-full animate-spin"></span>
           <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          {{ isGenerating ? 'Génération de l\'image...' : 'Télécharger le Reçu (Image)' }}
+          {{ isGenerating ? 'Génération...' : 'Télécharger le Reçu (Image)' }}
         </button>
 
         <NuxtLink to="/" class="block w-full text-center py-3 text-gray-500 font-medium hover:text-charcoal transition-colors">
@@ -92,9 +102,13 @@
 import html2canvas from 'html2canvas'
 
 const route = useRoute()
+const config = useRuntimeConfig()
 const supabase = useSupabaseClient()
+// On utilise le composable useOrders pour récupérer la fonction de génération de message
+const { generateWhatsAppOrderMessage } = useOrders()
+
 const order = ref(null)
-const receiptRef = ref(null) // Lien vers l'élément HTML
+const receiptRef = ref(null)
 const isGenerating = ref(false)
 
 // 1. Récupérer la commande
@@ -116,7 +130,15 @@ onMounted(async () => {
   order.value = data
 })
 
-// 2. Formatage des données
+// 2. Calcul du lien WhatsApp
+const whatsappLink = computed(() => {
+  if (!order.value) return '#'
+  // Génère le message complet avec les détails
+  const message = generateWhatsAppOrderMessage(order.value)
+  return `https://wa.me/${config.public.whatsappNumber}?text=${message}`
+})
+
+// 3. Formatage
 const formatPrice = (price) => {
   return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
 }
@@ -134,28 +156,26 @@ const formatPaymentMethod = (method) => {
     airtel_money: 'Airtel Money',
     moov_money: 'Moov Money',
     western_union: 'Western Union',
+    express_union: 'Express Union',
     moneygram: 'MoneyGram'
   }
   return labels[method] || method
 }
 
-// 3. LA MAGIE : Télécharger l'image
+// 4. Télécharger l'image
 const downloadReceipt = async () => {
   if (!receiptRef.value) return
   isGenerating.value = true
 
   try {
-    // On attend un tout petit peu que les polices soient chargées
     await new Promise(resolve => setTimeout(resolve, 100))
 
-    // Capture de l'élément HTML
     const canvas = await html2canvas(receiptRef.value, {
-      scale: 2, // Meilleure qualité (HD)
-      backgroundColor: '#ffffff', // Force le fond blanc
-      useCORS: true // Important si tu as des images externes (logos)
+      scale: 2, 
+      backgroundColor: '#ffffff', 
+      useCORS: true 
     })
 
-    // Conversion en lien de téléchargement
     const image = canvas.toDataURL("image/png")
     const link = document.createElement('a')
     link.href = image
@@ -164,7 +184,7 @@ const downloadReceipt = async () => {
 
   } catch (err) {
     console.error('Erreur génération image:', err)
-    alert('Impossible de générer l\'image. Essayez de faire une capture d\'écran manuelle.')
+    alert('Impossible de générer l\'image.')
   } finally {
     isGenerating.value = false
   }
