@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-charcoal">Témoignages</h1>
-        <p class="text-gray-500">Gérez les avis de vos clientes</p>
+        <h1 class="text-2xl font-bold text-charcoal">Temoignages</h1>
+        <p class="text-gray-500">Gerez les avis de vos clientes</p>
       </div>
       <button
         @click="openModal()"
@@ -13,7 +13,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Ajouter un témoignage
+        Ajouter un temoignage
       </button>
     </div>
 
@@ -30,12 +30,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
       </div>
-      <p class="text-gray-500 mb-4">Aucun témoignage pour le moment</p>
+      <p class="text-gray-500 mb-4">Aucun temoignage pour le moment</p>
       <button
         @click="openModal()"
         class="inline-flex items-center gap-2 bg-gold text-charcoal px-4 py-2 rounded-xl font-medium"
       >
-        Ajouter le premier témoignage
+        Ajouter le premier temoignage
       </button>
     </div>
 
@@ -47,11 +47,19 @@
       >
         <div class="flex items-start justify-between gap-4">
           <div class="flex items-start gap-4 flex-1">
-            <!-- Avatar -->
-            <div class="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <span class="text-gold font-bold text-lg">
-                {{ testimonial.client_name.charAt(0).toUpperCase() }}
-              </span>
+            <!-- Avatar ou Photo -->
+            <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gold/20">
+              <img 
+                v-if="getPhotoUrl(testimonial)"
+                :src="getPhotoUrl(testimonial)"
+                :alt="testimonial.client_name"
+                class="w-full h-full object-cover"
+              />
+              <div v-else class="w-full h-full flex items-center justify-center">
+                <span class="text-gold font-bold text-xl">
+                  {{ testimonial.client_name.charAt(0).toUpperCase() }}
+                </span>
+              </div>
             </div>
             
             <!-- Content -->
@@ -63,7 +71,7 @@
                   class="px-2 py-0.5 rounded-full text-xs font-medium"
                   :class="testimonial.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
                 >
-                  {{ testimonial.active ? 'Visible' : 'Masqué' }}
+                  {{ testimonial.active ? 'Visible' : 'Masque' }}
                 </span>
               </div>
               
@@ -74,8 +82,17 @@
               
               <p class="text-gray-600">{{ testimonial.message }}</p>
               
+              <!-- Photo preview -->
+              <div v-if="getPhotoUrl(testimonial)" class="mt-3">
+                <img 
+                  :src="getPhotoUrl(testimonial)" 
+                  :alt="'Photo de ' + testimonial.client_name"
+                  class="h-20 w-auto rounded-lg object-cover border border-gray-200"
+                />
+              </div>
+              
               <p class="text-xs text-gray-400 mt-2">
-                Ajouté le {{ formatDate(testimonial.created_at) }}
+                Ajoute le {{ formatDate(testimonial.created_at) }}
               </p>
             </div>
           </div>
@@ -133,9 +150,9 @@
           class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
           @click.self="closeModal"
         >
-          <div class="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div class="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-charcoal mb-4">
-              {{ editingTestimonial ? 'Modifier le témoignage' : 'Nouveau témoignage' }}
+              {{ editingTestimonial ? 'Modifier le temoignage' : 'Nouveau temoignage' }}
             </h3>
 
             <form @submit.prevent="saveTestimonial" class="space-y-4">
@@ -177,7 +194,7 @@
                     :key="star"
                     type="button"
                     @click="form.rating = star"
-                    class="text-2xl transition-colors"
+                    class="text-3xl transition-colors hover:scale-110 transform"
                     :class="star <= (form.rating || 0) ? 'text-gold' : 'text-gray-300 hover:text-gold/50'"
                   >
                     ★
@@ -196,15 +213,88 @@
               <!-- Message -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                  Témoignage <span class="text-red-500">*</span>
+                  Temoignage <span class="text-red-500">*</span>
                 </label>
                 <textarea
                   v-model="form.message"
                   rows="4"
-                  placeholder="Le témoignage de la cliente..."
+                  placeholder="Le temoignage de la cliente..."
                   class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none resize-none"
                   required
                 />
+              </div>
+
+              <!-- Photo Upload - DRAG & DROP -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                  Photo (optionnel)
+                </label>
+                
+                <!-- Preview si image existe -->
+                <div v-if="form.photo_url" class="mb-3 relative inline-block">
+                  <img 
+                    :src="form.photo_url" 
+                    alt="Preview" 
+                    class="h-32 w-auto rounded-xl object-cover border border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    @click="removePhoto"
+                    class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Drop zone -->
+                <div
+                  v-else
+                  @dragover.prevent="isDragging = true"
+                  @dragleave.prevent="isDragging = false"
+                  @drop.prevent="handleDrop"
+                  @click="triggerFileInput"
+                  class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all"
+                  :class="isDragging ? 'border-gold bg-gold/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'"
+                >
+                  <input
+                    ref="fileInput"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    @change="handleFileSelect"
+                  />
+                  
+                  <div v-if="isUploading" class="flex flex-col items-center">
+                    <div class="w-10 h-10 border-4 border-gold/30 border-t-gold rounded-full animate-spin mb-3"></div>
+                    <p class="text-gray-600 text-sm">Telechargement...</p>
+                  </div>
+                  
+                  <div v-else class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-1">
+                      <span class="text-gold font-medium">Cliquez</span> ou glissez une image
+                    </p>
+                    <p class="text-xs text-gray-400">PNG, JPG jusqu'a 5MB</p>
+                  </div>
+                </div>
+
+                <!-- URL manuelle -->
+                <div class="mt-3">
+                  <p class="text-xs text-gray-400 mb-1">Ou collez une URL :</p>
+                  <input
+                    v-model="manualPhotoUrl"
+                    type="url"
+                    placeholder="https://exemple.com/photo.jpg"
+                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+                    @blur="applyManualUrl"
+                  />
+                </div>
               </div>
 
               <!-- Active -->
@@ -229,8 +319,9 @@
                 <button
                   type="submit"
                   :disabled="saving"
-                  class="flex-1 px-4 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-800 transition-colors disabled:opacity-50"
+                  class="flex-1 px-4 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
+                  <span v-if="saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
                 </button>
               </div>
@@ -262,9 +353,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold text-charcoal mb-2">Supprimer ce témoignage ?</h3>
+              <h3 class="text-lg font-bold text-charcoal mb-2">Supprimer ce temoignage ?</h3>
               <p class="text-gray-500 text-sm mb-6">
-                Le témoignage de "{{ testimonialToDelete.client_name }}" sera supprimé.
+                Le temoignage de "{{ testimonialToDelete.client_name }}" sera supprime.
               </p>
               <div class="flex gap-3">
                 <button
@@ -298,7 +389,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Témoignages — Admin Samiah',
+  title: 'Temoignages — Admin Samiah',
 })
 
 const supabase = useSupabaseClient()
@@ -306,16 +397,21 @@ const supabase = useSupabaseClient()
 const loading = ref(true)
 const saving = ref(false)
 const deleting = ref(false)
+const isUploading = ref(false)
+const isDragging = ref(false)
 const testimonials = ref<Testimonial[]>([])
 const showModal = ref(false)
 const editingTestimonial = ref<Testimonial | null>(null)
 const testimonialToDelete = ref<Testimonial | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+const manualPhotoUrl = ref('')
 
 const form = reactive({
   client_name: '',
   city: '',
   rating: null as number | null,
   message: '',
+  photo_url: '',
   active: true,
 })
 
@@ -337,6 +433,13 @@ const fetchTestimonials = async () => {
   }
 }
 
+// Get photo URL helper
+const getPhotoUrl = (testimonial: Testimonial): string | null => {
+  if (testimonial.photo_url) return testimonial.photo_url
+  if (testimonial.photos && testimonial.photos.length > 0) return testimonial.photos[0]
+  return null
+}
+
 // Open modal
 const openModal = (testimonial?: Testimonial) => {
   if (testimonial) {
@@ -345,6 +448,7 @@ const openModal = (testimonial?: Testimonial) => {
     form.city = testimonial.city || ''
     form.rating = testimonial.rating
     form.message = testimonial.message
+    form.photo_url = getPhotoUrl(testimonial) || ''
     form.active = testimonial.active
   } else {
     editingTestimonial.value = null
@@ -352,8 +456,10 @@ const openModal = (testimonial?: Testimonial) => {
     form.city = ''
     form.rating = null
     form.message = ''
+    form.photo_url = ''
     form.active = true
   }
+  manualPhotoUrl.value = ''
   showModal.value = true
 }
 
@@ -361,6 +467,82 @@ const openModal = (testimonial?: Testimonial) => {
 const closeModal = () => {
   showModal.value = false
   editingTestimonial.value = null
+}
+
+// File input trigger
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+// Handle file select
+const handleFileSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (target.files && target.files[0]) {
+    uploadPhoto(target.files[0])
+  }
+}
+
+// Handle drag & drop
+const handleDrop = (event: DragEvent) => {
+  isDragging.value = false
+  if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
+    uploadPhoto(event.dataTransfer.files[0])
+  }
+}
+
+// Upload photo to Supabase Storage
+const uploadPhoto = async (file: File) => {
+  // Validation
+  if (!file.type.startsWith('image/')) {
+    alert('Veuillez selectionner une image')
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert('L\'image ne doit pas depasser 5MB')
+    return
+  }
+
+  isUploading.value = true
+  
+  try {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `testimonial-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('images')
+      .upload(`testimonials/${fileName}`, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (uploadError) throw uploadError
+
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('images')
+      .getPublicUrl(`testimonials/${fileName}`)
+
+    form.photo_url = urlData.publicUrl
+  } catch (error: any) {
+    console.error('Upload error:', error)
+    alert('Erreur lors du telechargement: ' + error.message)
+  } finally {
+    isUploading.value = false
+    if (fileInput.value) fileInput.value.value = ''
+  }
+}
+
+// Remove photo
+const removePhoto = () => {
+  form.photo_url = ''
+}
+
+// Apply manual URL
+const applyManualUrl = () => {
+  if (manualPhotoUrl.value && !form.photo_url) {
+    form.photo_url = manualPhotoUrl.value
+    manualPhotoUrl.value = ''
+  }
 }
 
 // Save testimonial
@@ -372,6 +554,7 @@ const saveTestimonial = async () => {
       city: form.city.trim() || null,
       rating: form.rating,
       message: form.message.trim(),
+      photo_url: form.photo_url || null,
       active: form.active,
     }
 
