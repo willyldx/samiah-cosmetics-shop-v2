@@ -26,7 +26,7 @@
     </div>
 
     <div v-else class="max-w-7xl mx-auto px-4 py-8">
-      <div class="grid lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-6">
           
           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
