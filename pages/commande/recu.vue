@@ -3,7 +3,7 @@
     
     <div v-if="loading" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
       <div class="w-12 h-12 border-4 border-charcoal border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="text-gray-500 font-medium">Génération de votre reçu...</p>
+      <p class="text-gray-500 font-medium">Chargement de votre recu...</p>
     </div>
 
     <div v-else-if="!order" class="max-w-md mx-auto text-center py-12">
@@ -11,17 +11,17 @@
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </div>
       <h2 class="text-xl font-bold text-gray-800">Commande introuvable</h2>
-      <p class="text-gray-500 mb-6">Nous ne parvenons pas à récupérer les détails.</p>
-      <NuxtLink to="/" class="text-charcoal underline font-bold">Retour à l'accueil</NuxtLink>
+      <p class="text-gray-500 mb-6">Nous ne parvenons pas a recuperer les details.</p>
+      <NuxtLink to="/" class="text-charcoal underline font-bold">Retour a l'accueil</NuxtLink>
     </div>
 
     <div v-else class="max-w-md mx-auto animate-fade-in">
       
       <div class="text-center mb-6">
         <h1 class="text-xl font-bold text-charcoal">
-          Merci {{ (order.client_name || 'Client').split(' ')[0] }} !
+          Merci {{ clientFirstName }} !
         </h1>
-        <p class="text-gray-500 text-sm">Voici votre récapitulatif.</p>
+        <p class="text-gray-500 text-sm">Voici votre recapitulatif.</p>
       </div>
 
       <div ref="receiptRef" class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 relative mb-6">
@@ -34,9 +34,9 @@
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
 
-            <h2 class="text-lg font-bold mb-2">Commande reçue avec succès ! ✅</h2>
+            <h2 class="text-lg font-bold mb-2">Commande recue avec succes !</h2>
             <p class="text-white/90 text-xs leading-relaxed px-2 mb-4">
-              Merci pour votre commande. Nous allons traiter votre demande et vous contacterons très bientôt pour la validation et la livraison.
+              Merci pour votre commande. Nous allons traiter votre demande et vous contacterons tres bientot pour la validation et la livraison.
             </p>
 
             <div class="border-t border-white/10 pt-3 mt-2">
@@ -58,7 +58,7 @@
             <div v-for="(item, index) in order.items" :key="index" class="flex justify-between items-start text-sm">
               <div class="flex-1">
                 <span class="font-medium text-gray-800">{{ item.product_title }}</span>
-                <div class="text-xs text-gray-400">Qté: {{ item.quantity }}</div>
+                <div class="text-xs text-gray-400">Qte: {{ item.quantity }}</div>
               </div>
               <span class="font-medium text-charcoal">{{ formatPrice(item.subtotal) }}</span>
             </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-gray-500">Livraison</span>
-              <span class="text-gold font-medium">À confirmer</span>
+              <span class="text-gold font-medium">{{ order.shipping_fee > 0 ? formatPrice(order.shipping_fee) : 'A confirmer' }}</span>
             </div>
             <div class="border-t border-gray-200 pt-2 mt-2 flex justify-between items-center">
               <span class="font-bold text-charcoal">TOTAL</span>
@@ -102,11 +102,23 @@
         >
           <span v-if="isGenerating" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
           <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          {{ isGenerating ? 'Génération...' : 'Télécharger le Reçu' }}
+          {{ isGenerating ? 'Generation...' : 'Telecharger le Recu' }}
         </button>
 
+        <!-- Bouton WhatsApp pour confirmer -->
+        <a
+          :href="whatsappLink"
+          target="_blank"
+          class="w-full bg-[#25D366] text-white py-4 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-[#22c55e] transition-all active:scale-95"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          </svg>
+          Confirmer sur WhatsApp
+        </a>
+
         <NuxtLink to="/" class="block w-full text-center py-3 text-gray-500 font-medium hover:text-charcoal transition-colors">
-          Retour à l'accueil
+          Retour a l'accueil
         </NuxtLink>
       </div>
 
@@ -119,7 +131,7 @@ import html2canvas from 'html2canvas'
 
 const route = useRoute()
 const supabase = useSupabaseClient()
-const router = useRouter()
+const config = useRuntimeConfig()
 
 const order = ref<any>(null)
 const receiptRef = ref(null)
@@ -131,6 +143,11 @@ const formatPrice = (price: number) => {
   return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
 }
 
+const clientFirstName = computed(() => {
+  if (!order.value?.client_name) return 'Client'
+  return order.value.client_name.split(' ')[0]
+})
+
 const orderDate = computed(() => {
   if (!order.value?.created_at) return ''
   return new Date(order.value.created_at).toLocaleDateString('fr-FR', {
@@ -140,7 +157,7 @@ const orderDate = computed(() => {
 
 const formatPaymentMethod = (method: string) => {
   const labels: Record<string, string> = {
-    cash: 'Paiement à la livraison',
+    cash: 'Paiement a la livraison',
     airtel_money: 'Airtel Money',
     moov_money: 'Moov Money',
     western_union: 'Western Union',
@@ -150,68 +167,74 @@ const formatPaymentMethod = (method: string) => {
   return labels[method] || method
 }
 
-// --- CHARGEMENT DES DONNÉES ---
+// --- LIEN WHATSAPP ---
+const whatsappLink = computed(() => {
+  if (!order.value) return '#'
+  
+  const lines: string[] = []
+  lines.push('=============================')
+  lines.push('   CONFIRMATION COMMANDE')
+  lines.push('=============================')
+  lines.push('')
+  lines.push('Numero: ' + order.value.order_number)
+  lines.push('Client: ' + order.value.client_name)
+  lines.push('Tel: ' + order.value.client_phone)
+  lines.push('')
+  lines.push('Total: ' + formatPrice(order.value.total))
+  lines.push('')
+  lines.push('Merci de confirmer ma commande!')
+  
+  return 'https://wa.me/' + config.public.whatsappNumber + '?text=' + encodeURIComponent(lines.join('\n'))
+})
+
+// --- CHARGEMENT DES DONNEES ---
 onMounted(async () => {
-  const orderId = route.query.id
+  const orderId = route.query.id as string
   
   if (!orderId) {
+    console.error('Pas d\'ID de commande dans l\'URL')
     loading.value = false
     return
   }
 
   try {
-    // On récupère la commande ET les articles liés
-    // ATTENTION : vérifie que ta table de jointure s'appelle bien 'order_items'
-    // et qu'elle a une relation vers 'products'
+    // Requete simple - les items sont deja dans la colonne JSONB 'items'
     const { data, error } = await supabase
       .from('orders')
-      .select(`
-        *,
-        order_items (
-          quantity,
-          unit_price,
-          products (
-            title
-          )
-        )
-      `)
+      .select('*')
       .eq('id', orderId)
       .single()
 
-    if (error) throw error
-    if (!data) throw new Error('Commande introuvable')
-
-    // Préparation des données pour l'affichage
-    const formattedItems = (data.order_items || []).map((item: any) => ({
-      product_title: item.products?.title || 'Produit',
-      quantity: item.quantity,
-      subtotal: item.quantity * item.unit_price
-    }))
-
-    // On stocke tout dans la variable order
-    order.value = {
-      ...data,
-      items: formattedItems,
-      // Si le total n'est pas dans la table orders, on le recalcule
-      subtotal: data.total_amount || formattedItems.reduce((acc: number, i: any) => acc + i.subtotal, 0),
-      total: data.total_amount || formattedItems.reduce((acc: number, i: any) => acc + i.subtotal, 0)
+    if (error) {
+      console.error('Erreur Supabase:', error)
+      throw error
+    }
+    
+    if (!data) {
+      console.error('Aucune donnee retournee')
+      throw new Error('Commande introuvable')
     }
 
+    // Les items sont deja dans data.items (JSONB)
+    order.value = data
+    
+    console.log('Commande chargee:', order.value)
+
   } catch (e) {
-    console.error('Erreur:', e)
+    console.error('Erreur chargement commande:', e)
+    order.value = null
   } finally {
-    // IMPORTANT : On enlève l'état de chargement à la fin
     loading.value = false
   }
 })
 
-// --- TÉLÉCHARGEMENT ---
+// --- TELECHARGEMENT ---
 const downloadReceipt = async () => {
   if (!receiptRef.value) return
   isGenerating.value = true
 
   try {
-    await new Promise(r => setTimeout(r, 200)) // Petite pause pour la stabilité
+    await new Promise(r => setTimeout(r, 200))
 
     const canvas = await html2canvas(receiptRef.value, {
       scale: 2,
@@ -228,7 +251,8 @@ const downloadReceipt = async () => {
     document.body.removeChild(link)
 
   } catch (error) {
-    alert("Erreur lors du téléchargement. Essayez une capture d'écran.")
+    console.error('Erreur telechargement:', error)
+    alert("Erreur lors du telechargement. Essayez une capture d'ecran.")
   } finally {
     isGenerating.value = false
   }
