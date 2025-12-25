@@ -91,52 +91,8 @@
       </div>
     </section>
 
-    <ReviewsSection />
-
-    <section class="py-16 lg:py-24">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="text-center mb-12">
-          <span class="text-gold font-medium text-sm uppercase tracking-wider">Témoignages</span>
-          <h2 class="text-3xl lg:text-4xl font-bold text-charcoal mt-2">
-            Ce que disent nos clientes
-          </h2>
-        </div>
-
-        <div v-if="testimonialsLoading" class="grid md:grid-cols-3 gap-6">
-          <div v-for="i in 3" :key="i" class="animate-pulse bg-gray-100 rounded-2xl h-48"></div>
-        </div>
-
-        <div v-else-if="testimonials.length" class="grid md:grid-cols-3 gap-6">
-          <div
-            v-for="testimonial in testimonials"
-            :key="testimonial.id"
-            class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100"
-          >
-            <div class="flex items-center gap-4 mb-4">
-              <div class="w-12 h-12 bg-gold/20 rounded-full flex items-center justify-center">
-                <span class="text-gold font-bold">
-                  {{ testimonial.client_name ? testimonial.client_name.charAt(0) : '?' }}
-                </span>
-              </div>
-              <div>
-                <h4 class="font-semibold text-charcoal">{{ testimonial.client_name }}</h4>
-                <p class="text-sm text-gray-500">{{ testimonial.city || 'Tchad' }}</p>
-              </div>
-            </div>
-            <div v-if="testimonial.rating" class="text-gold mb-2">
-              <span v-for="n in 5" :key="n">{{ n <= testimonial.rating ? '★' : '☆' }}</span>
-            </div>
-            <p class="text-gray-600 text-sm line-clamp-3">
-              "{{ testimonial.message }}"
-            </p>
-          </div>
-        </div>
-
-        <div v-else class="text-center text-gray-500 py-12">
-          Les témoignages arrivent bientôt...
-        </div>
-      </div>
-    </section>
+    <!-- Section témoignages WhatsApp dynamique -->
+    <WhatsAppReviews />
 
     <section class="py-16 lg:py-24 bg-charcoal text-white">
       <div class="max-w-7xl mx-auto px-4 text-center">
@@ -193,13 +149,10 @@ useHead({
 
 const config = useRuntimeConfig()
 const { products, loading, fetchProducts } = useProducts()
-const { testimonials, loading: testimonialsLoading, fetchTestimonials } = useTestimonials()
 const { addItem } = useCart()
 
 // Fetch data
 await fetchProducts()
-// J'ai rétabli l'appel à la base de données ici
-await fetchTestimonials(6)
 
 // Featured products (8 premiers)
 const featuredProducts = computed(() => products.value.slice(0, 8))
