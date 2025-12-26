@@ -48,6 +48,49 @@
           </button>
         </div>
 
+        <!-- Notification produits retirés -->
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <div 
+            v-if="removedItems.length > 0"
+            class="mx-4 mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl"
+          >
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-amber-800">
+                  {{ removedItems.length === 1 ? 'Un produit a été retiré' : 'Certains produits ont été retirés' }}
+                </p>
+                <p class="text-xs text-amber-600 mt-1">
+                  <span v-for="(item, index) in removedItems" :key="index">
+                    "{{ item }}"{{ index < removedItems.length - 1 ? ', ' : '' }}
+                  </span>
+                  {{ removedItems.length === 1 ? " n'est plus disponible." : " ne sont plus disponibles." }}
+                </p>
+              </div>
+              <button 
+                type="button"
+                @click="clearRemovedItems"
+                class="flex-shrink-0 text-amber-400 hover:text-amber-600 transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </Transition>
+
         <!-- Contenu -->
         <div class="flex-1 overflow-y-auto">
           <!-- Panier vide -->
@@ -70,47 +113,56 @@
 
           <!-- Items -->
           <div v-else class="px-4 py-4 space-y-3">
-            <div
-              v-for="item in items"
-              :key="item.product.id"
-              class="flex gap-3 p-3 bg-gray-50 rounded-xl"
+            <TransitionGroup
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
             >
-              <img
-                :src="item.product.image || '/images/placeholder.svg'"
-                :alt="item.product.title"
-                class="w-16 h-16 rounded-lg object-cover bg-white"
-              />
-              <div class="flex-1 min-w-0">
-                <h4 class="font-medium text-sm text-charcoal line-clamp-1">{{ item.product.title }}</h4>
-                <p class="text-gold font-bold text-sm">{{ formatPrice(item.product.price) }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <button 
-                    type="button"
-                    @click="updateQuantity(item.product.id, item.quantity - 1)" 
-                    class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs hover:bg-gray-100"
-                  >
-                    -
-                  </button>
-                  <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
-                  <button 
-                    type="button"
-                    @click="updateQuantity(item.product.id, item.quantity + 1)" 
-                    class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs hover:bg-gray-100"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <button 
-                type="button"
-                @click="removeItem(item.product.id)" 
-                class="text-gray-400 hover:text-red-500 p-1"
+              <div
+                v-for="item in items"
+                :key="item.product.id"
+                class="flex gap-3 p-3 bg-gray-50 rounded-xl"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
+                <img
+                  :src="item.product.image || '/images/placeholder.svg'"
+                  :alt="item.product.title"
+                  class="w-16 h-16 rounded-lg object-cover bg-white"
+                />
+                <div class="flex-1 min-w-0">
+                  <h4 class="font-medium text-sm text-charcoal line-clamp-1">{{ item.product.title }}</h4>
+                  <p class="text-gold font-bold text-sm">{{ formatPrice(item.product.price) }}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <button 
+                      type="button"
+                      @click="updateQuantity(item.product.id, item.quantity - 1)" 
+                      class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs hover:bg-gray-100 transition-colors"
+                    >
+                      -
+                    </button>
+                    <span class="text-sm font-medium w-6 text-center">{{ item.quantity }}</span>
+                    <button 
+                      type="button"
+                      @click="updateQuantity(item.product.id, item.quantity + 1)" 
+                      class="w-6 h-6 rounded-full bg-white border flex items-center justify-center text-xs hover:bg-gray-100 transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  @click="removeItem(item.product.id)" 
+                  class="text-gray-400 hover:text-red-500 p-1 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </TransitionGroup>
           </div>
         </div>
 
@@ -134,5 +186,17 @@
 </template>
 
 <script setup lang="ts">
-const { items, isOpen, itemCount, subtotal, isEmpty, updateQuantity, removeItem, closeCart, formatPrice } = useCart()
+const { 
+  items, 
+  isOpen, 
+  itemCount, 
+  subtotal, 
+  isEmpty, 
+  removedItems,
+  updateQuantity, 
+  removeItem, 
+  closeCart, 
+  formatPrice,
+  clearRemovedItems 
+} = useCart()
 </script>
