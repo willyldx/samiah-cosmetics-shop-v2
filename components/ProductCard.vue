@@ -3,12 +3,23 @@
     class="group relative bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-strong transition-all duration-500 cursor-pointer transform hover:-translate-y-2"
     @click="$emit('click', product)"
   >
-    <!-- Badge Nouveau -->
+    <!-- Badge Nouveau (priorité 1) -->
     <div
       v-if="isNew"
       class="absolute top-3 left-3 z-10 bg-gold text-charcoal text-xs font-bold px-3 py-1 rounded-full shadow-md animate-pulse-soft"
     >
       Nouveau
+    </div>
+
+    <!-- Badge En vedette (priorité 2 - affiché si pas nouveau) -->
+    <div
+      v-else-if="product.featured"
+      class="absolute top-3 left-3 z-10 bg-charcoal text-white text-xs font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1"
+    >
+      <svg class="w-3 h-3 text-gold" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+      </svg>
+      En vedette
     </div>
 
     <!-- Image Container -->
@@ -101,8 +112,8 @@ defineEmits<{
 const isNew = computed(() => {
   if (!props.product.created_at) return false
   const created = Date.parse(props.product.created_at)
-  const twoDays = 2 * 24 * 60 * 60 * 1000
-  return (Date.now() - created) <= twoDays
+  const fortyEightHours = 48 * 60 * 60 * 1000 // 48 heures
+  return (Date.now() - created) <= fortyEightHours
 })
 
 const primaryImage = computed(() => {
@@ -111,8 +122,6 @@ const primaryImage = computed(() => {
 
 const secondaryImage = computed(() => {
   if (props.product.images && props.product.images.length > 0) {
-    // Si image principale existe, prendre la première de images[]
-    // Sinon prendre la deuxième de images[]
     if (props.product.image) {
       return props.product.images[0]
     }
