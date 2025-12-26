@@ -1,16 +1,19 @@
 // ==========================================
 // COMPOSABLE: useCart
-// Gestion du panier d'achat
+// Gestion du panier d'achat avec validation
 // ==========================================
 
-import type { Product, CartItem, Cart } from '~/types'
+import type { Product, CartItem } from '~/types'
 
 const CART_STORAGE_KEY = 'samiah_cart'
 
 export const useCart = () => {
+  const supabase = useSupabaseClient()
+  
   // État réactif du panier
   const items = useState<CartItem[]>('cart-items', () => [])
   const isOpen = useState<boolean>('cart-open', () => false)
+  const removedItems = useState<string[]>('cart-removed', () => []) // Produits supprimés lors de la validation
 
   // ==========================================
   // COMPUTED
@@ -27,6 +30,85 @@ export const useCart = () => {
   const isEmpty = computed(() => items.value.length === 0)
 
   // ==========================================
+  // VALIDATION DU PANIER
+  // ==========================================
+
+  /**
+   * Valide le panier en vérifiant que tous les produits existent et sont actifs
+   * Supprime automatiquement les produits invalides
+   */
+  const validateCart = async (): Promise<{ valid: boolean; removed: string[] }> => {
+    if (items.value.length === 0) {
+      return { valid: true, removed: [] }
+    }
+
+    const productIds = items.value.map(item => item.product.id)
+    const removedProducts: string[] = []
+
+    try {
+      // Récupérer les produits actifs depuis Supabase
+      const { data: activeProducts, error } = await supabase
+        .from('products')
+        .select('id, title, price, image, active')
+        .in('id', productIds)
+        .eq('active', true)
+
+      if (error) {
+        console.warn('Erreur validation panier:', error)
+        return { valid: true, removed: [] } // En cas d'erreur, on garde le panier tel quel
+      }
+
+      const activeProductIds = new Set(activeProducts?.map(p => p.id) || [])
+
+      // Filtrer les items invalides et mettre à jour les prix si nécessaire
+      const validItems: CartItem[] = []
+
+      for (const item of items.value) {
+        const activeProduct = activeProducts?.find(p => p.id === item.product.id)
+        
+        if (activeProduct) {
+          // Produit valide - mettre à jour les infos (prix, image, etc.)
+          validItems.push({
+            ...item,
+            product: {
+              ...item.product,
+              price: activeProduct.price,
+              image: activeProduct.image,
+              title: activeProduct.title,
+            }
+          })
+        } else {
+          // Produit supprimé ou désactivé
+          removedProducts.push(item.product.title)
+        }
+      }
+
+      // Mettre à jour le panier si des produits ont été retirés
+      if (removedProducts.length > 0) {
+        items.value = validItems
+        removedItems.value = removedProducts
+        saveToStorage()
+      }
+
+      return { 
+        valid: removedProducts.length === 0, 
+        removed: removedProducts 
+      }
+
+    } catch (e) {
+      console.warn('Erreur validation panier:', e)
+      return { valid: true, removed: [] }
+    }
+  }
+
+  /**
+   * Efface la liste des produits supprimés (après affichage de la notification)
+   */
+  const clearRemovedItems = () => {
+    removedItems.value = []
+  }
+
+  // ==========================================
   // ACTIONS
   // ==========================================
 
@@ -34,6 +116,12 @@ export const useCart = () => {
    * Ajouter un produit au panier
    */
   const addItem = (product: Product, quantity: number = 1) => {
+    // Vérifier que le produit est actif
+    if (product.active === false) {
+      console.warn('Tentative d\'ajout d\'un produit inactif:', product.title)
+      return
+    }
+
     const existingIndex = items.value.findIndex(item => item.product.id === product.id)
     
     if (existingIndex >= 0) {
@@ -120,7 +208,7 @@ export const useCart = () => {
     }
   }
 
-  const loadFromStorage = () => {
+  const loadFromStorage = async () => {
     if (import.meta.client) {
       try {
         const saved = localStorage.getItem(CART_STORAGE_KEY)
@@ -128,6 +216,8 @@ export const useCart = () => {
           const parsed = JSON.parse(saved)
           if (Array.isArray(parsed)) {
             items.value = parsed
+            // Valider le panier après chargement
+            await validateCart()
           }
         }
       } catch (e) {
@@ -188,6 +278,7 @@ export const useCart = () => {
     // État
     items: readonly(items),
     isOpen,
+    removedItems: readonly(removedItems),
     
     // Computed
     itemCount,
@@ -202,6 +293,10 @@ export const useCart = () => {
     toggleCart,
     openCart,
     closeCart,
+    
+    // Validation
+    validateCart,
+    clearRemovedItems,
     
     // Helpers
     isInCart,
