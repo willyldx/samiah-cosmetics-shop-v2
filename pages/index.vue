@@ -132,18 +132,39 @@
 <script setup lang="ts">
 import type { Product } from '~/types'
 
-// SEO
+// ==========================================
+// SEO OPTIMISÉ POUR GOOGLE
+// ==========================================
+useSeoMeta({
+  // Titre principal (ce qui apparaît sur Google)
+  title: 'Samiah Cosmetics Tchad — Soins Capillaires & Consultation',
+  
+  // Description (le texte sous le titre sur Google)
+  description: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés. Livraison à N\'Djamena, Moundou, Sarh.',
+  
+  // Mots-clés
+  keywords: 'samiah cosmetics, soins capillaires tchad, cheveux crépus n\'djamena, produits cheveux afro, coiffeuse tchad, routine capillaire',
+  
+  // Open Graph (Facebook, WhatsApp, LinkedIn)
+  ogType: 'website',
+  ogSiteName: 'Samiah Cosmetics Tchad',
+  ogTitle: 'Samiah Cosmetics Tchad — Soins Capillaires & Consultation',
+  ogDescription: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés.',
+  ogImage: 'https://www.samiahcosmetics.shop/og-image.jpg',
+  ogUrl: 'https://www.samiahcosmetics.shop',
+  ogLocale: 'fr_TD',
+  
+  // Twitter
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Samiah Cosmetics Tchad — Soins Capillaires',
+  twitterDescription: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus.',
+  twitterImage: 'https://www.samiahcosmetics.shop/og-image.jpg',
+})
+
+// URL canonique (dit à Google quelle est l'URL officielle)
 useHead({
-  title: 'Samiah Cosmetics - Consultation Capillaire & Produits au Tchad',
-  meta: [
-    { 
-      name: 'description', 
-      content: 'Expertise capillaire au Tchad. Diagnostic gratuit, produits naturels et routine personnalisée pour cheveux crépus et frisés. Livraison à N\'Djamena.' 
-    },
-    { 
-      name: 'keywords', 
-      content: 'cheveux tchad, produits capillaires n\'djamena, coiffeuse tchad, soins cheveux naturels, routine capillaire afro, pousse cheveux tchad' 
-    }
+  link: [
+    { rel: 'canonical', href: 'https://www.samiahcosmetics.shop' }
   ]
 })
 
@@ -159,7 +180,7 @@ const featuredProducts = computed(() => products.value.slice(0, 8))
 
 // WhatsApp link
 const whatsappConsultationLink = computed(() => {
-  const msg = encodeURIComponent('Bonjour Samiah Cosmetics, je souhaite reserver une consultation capillaire (10.000F).')
+  const msg = encodeURIComponent('Bonjour Samiah Cosmetics, je souhaite réserver une consultation capillaire (10.000F).')
   return `https://wa.me/${config.public.whatsappNumber}?text=${msg}`
 })
 
