@@ -150,21 +150,21 @@ useSeoMeta({
   ogSiteName: 'Samiah Cosmetics Tchad',
   ogTitle: 'Samiah Cosmetics Tchad — Soins Capillaires & Consultation',
   ogDescription: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés.',
-  ogImage: 'https://www.samiahcosmetics.shop/og-image.jpg',
-  ogUrl: 'https://www.samiahcosmetics.shop',
+  ogImage: 'https://samiahcosmetics.shop/icon-512.png',
+  ogUrl: 'https://samiahcosmetics.shop',
   ogLocale: 'fr_TD',
   
   // Twitter
   twitterCard: 'summary_large_image',
   twitterTitle: 'Samiah Cosmetics Tchad — Soins Capillaires',
   twitterDescription: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus.',
-  twitterImage: 'https://www.samiahcosmetics.shop/og-image.jpg',
+  twitterImage: 'https://samiahcosmetics.shop/icon-512.png',
 })
 
 // URL canonique (dit à Google quelle est l'URL officielle)
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://www.samiahcosmetics.shop' }
+    { rel: 'canonical', href: 'https://samiahcosmetics.shop' }
   ]
 })
 
