@@ -10,6 +10,7 @@
     <div class="max-w-7xl mx-auto px-4">
       <nav class="flex items-center justify-between h-16 md:h-20">
         
+        <!-- Logo -->
         <NuxtLink 
           to="/" 
           class="flex items-center gap-3 group"
@@ -27,6 +28,7 @@
           </span>
         </NuxtLink>
 
+        <!-- Navigation desktop -->
         <div class="hidden md:flex items-center gap-8">
           <NuxtLink 
             to="/" 
@@ -43,6 +45,16 @@
             Produits
           </NuxtLink>
           <NuxtLink 
+            to="/suivi" 
+            class="text-charcoal/70 font-medium hover:text-charcoal transition-colors flex items-center gap-1.5"
+            active-class="text-charcoal"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Suivre ma commande
+          </NuxtLink>
+          <NuxtLink 
             to="/a-propos" 
             class="text-charcoal/70 font-medium hover:text-charcoal transition-colors"
             active-class="text-charcoal"
@@ -51,7 +63,9 @@
           </NuxtLink>
         </div>
 
+        <!-- Actions -->
         <div class="flex items-center gap-2 md:gap-4">
+          <!-- Panier -->
           <button 
             type="button"
             class="relative p-2 rounded-lg hover:bg-charcoal/5 transition-colors"
@@ -68,6 +82,7 @@
             </span>
           </button>
 
+          <!-- Bouton Commander (desktop) -->
           <NuxtLink 
             to="/produits" 
             class="hidden md:inline-flex bg-gold hover:bg-gold-400 text-charcoal px-4 py-2 rounded-full font-medium text-sm transition-colors"
@@ -75,6 +90,7 @@
             Commander
           </NuxtLink>
 
+          <!-- Menu mobile -->
           <button 
             type="button"
             class="p-2 rounded-lg hover:bg-charcoal/5 transition-colors md:hidden"
@@ -92,7 +108,6 @@
       :is-open="mobileMenuOpen" 
       @close="mobileMenuOpen = false" 
     />
-
     <CartDrawer />
   </header>
 </template>
