@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between mb-6">
       <div>
         <h1 class="text-2xl font-bold text-charcoal">Commandes</h1>
-        <p class="text-gray-500">Gerez toutes les commandes</p>
+        <p class="text-gray-500">Gérez toutes les commandes</p>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
             <input
               v-model="search"
               type="text"
-              placeholder="Rechercher par nom, numero..."
+              placeholder="Rechercher par nom, numéro..."
               class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
             />
           </div>
@@ -31,11 +31,12 @@
           class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
         >
           <option value="">Tous les statuts</option>
-          <option value="pending">En attente</option>
-          <option value="confirmed">Confirmee</option>
-          <option value="shipped">Expediee</option>
-          <option value="delivered">Livree</option>
-          <option value="cancelled">Annulee</option>
+          <option value="en_attente">⏳ En attente</option>
+          <option value="confirmee">✅ Confirmée</option>
+          <option value="en_preparation">📦 En préparation</option>
+          <option value="en_livraison">🚚 En livraison</option>
+          <option value="livree">✨ Livrée</option>
+          <option value="annulee">❌ Annulée</option>
         </select>
 
         <!-- Refresh -->
@@ -66,7 +67,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
           </svg>
         </div>
-        <p class="text-gray-500">Aucune commande trouvee</p>
+        <p class="text-gray-500">Aucune commande trouvée</p>
       </div>
 
       <!-- Orders -->
@@ -122,7 +123,7 @@
                 <button
                   @click="openOrderDetails(order)"
                   class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
-                  title="Voir les details"
+                  title="Voir les détails"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -136,11 +137,12 @@
                   @change="updateStatus(order.id, ($event.target as HTMLSelectElement).value)"
                   class="px-2 py-1 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
                 >
-                  <option value="pending">En attente</option>
-                  <option value="confirmed">Confirmee</option>
-                  <option value="shipped">Expediee</option>
-                  <option value="delivered">Livree</option>
-                  <option value="cancelled">Annulee</option>
+                  <option value="en_attente">⏳ En attente</option>
+                  <option value="confirmee">✅ Confirmée</option>
+                  <option value="en_preparation">📦 En préparation</option>
+                  <option value="en_livraison">🚚 En livraison</option>
+                  <option value="livree">✨ Livrée</option>
+                  <option value="annulee">❌ Annulée</option>
                 </select>
               </div>
             </div>
@@ -185,11 +187,12 @@
                   @change="updateStatus(selectedOrder.id, ($event.target as HTMLSelectElement).value); selectedOrder.status = ($event.target as HTMLSelectElement).value"
                   class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
                 >
-                  <option value="pending">En attente</option>
-                  <option value="confirmed">Confirmee</option>
-                  <option value="shipped">Expediee</option>
-                  <option value="delivered">Livree</option>
-                  <option value="cancelled">Annulee</option>
+                  <option value="en_attente">⏳ En attente</option>
+                  <option value="confirmee">✅ Confirmée</option>
+                  <option value="en_preparation">📦 En préparation</option>
+                  <option value="en_livraison">🚚 En livraison</option>
+                  <option value="livree">✨ Livrée</option>
+                  <option value="annulee">❌ Annulée</option>
                 </select>
               </div>
 
@@ -211,10 +214,10 @@
                     class="flex justify-between py-2 border-b border-gray-100 last:border-0"
                   >
                     <div>
-                      <p class="font-medium text-charcoal">{{ item.product_title }}</p>
-                      <p class="text-sm text-gray-500">{{ formatPrice(item.product_price) }} x {{ item.quantity }}</p>
+                      <p class="font-medium text-charcoal">{{ item.product_title || item.title }}</p>
+                      <p class="text-sm text-gray-500">{{ formatPrice(item.product_price || item.price) }} × {{ item.quantity }}</p>
                     </div>
-                    <p class="font-bold text-charcoal">{{ formatPrice(item.subtotal) }}</p>
+                    <p class="font-bold text-charcoal">{{ formatPrice(item.subtotal || (item.price * item.quantity)) }}</p>
                   </div>
                 </div>
               </div>
@@ -227,7 +230,7 @@
                 </div>
                 <div class="flex justify-between mb-2">
                   <span class="text-white/70">Livraison</span>
-                  <span>{{ selectedOrder.shipping_fee > 0 ? formatPrice(selectedOrder.shipping_fee) : 'A confirmer' }}</span>
+                  <span>{{ selectedOrder.shipping_fee > 0 ? formatPrice(selectedOrder.shipping_fee) : 'À confirmer' }}</span>
                 </div>
                 <div class="flex justify-between text-lg font-bold pt-2 border-t border-white/20">
                   <span>Total</span>
@@ -249,16 +252,28 @@
                   Confirmer au client via WhatsApp
                 </a>
                 
-                <!-- Expedier -->
+                <!-- En préparation -->
                 <a
-                  :href="getShippingWhatsApp(selectedOrder)"
+                  :href="getPreparationWhatsApp(selectedOrder)"
                   target="_blank"
                   class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-purple-700 transition-colors"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                  </svg>
+                  Informer préparation
+                </a>
+
+                <!-- En livraison -->
+                <a
+                  :href="getShippingWhatsApp(selectedOrder)"
+                  target="_blank"
+                  class="w-full bg-orange-500 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
                   </svg>
-                  Informer expedition
+                  Informer livraison
                 </a>
 
                 <button
@@ -295,22 +310,21 @@ const search = ref('')
 const statusFilter = ref(route.query.status as string || '')
 const selectedOrder = ref<any | null>(null)
 
-// Status labels
+// Status labels - FRANÇAIS
 const ORDER_STATUS_LABELS: Record<string, string> = {
-  pending: 'En attente',
-  confirmed: 'Confirmee',
-  shipped: 'Expediee',
-  delivered: 'Livree',
-  cancelled: 'Annulee',
-}
-
-const PAYMENT_LABELS: Record<string, string> = {
-  cash: 'Cash a la livraison',
-  airtel_money: 'Airtel Money',
-  moov_money: 'Moov Money',
-  western_union: 'Western Union',
-  express_union: 'Express Union',
-  moneygram: 'MoneyGram',
+  en_attente: '⏳ En attente',
+  confirmee: '✅ Confirmée',
+  en_preparation: '📦 En préparation',
+  en_livraison: '🚚 En livraison',
+  livree: '✨ Livrée',
+  annulee: '❌ Annulée',
+  // Fallback pour anciens statuts anglais
+  pending: '⏳ En attente',
+  confirmed: '✅ Confirmée',
+  processing: '📦 En préparation',
+  shipped: '🚚 En livraison',
+  delivered: '✨ Livrée',
+  cancelled: '❌ Annulée',
 }
 
 // Filtered orders
@@ -320,9 +334,9 @@ const filteredOrders = computed(() => {
   if (search.value) {
     const q = search.value.toLowerCase()
     result = result.filter(o =>
-      o.order_number.toLowerCase().includes(q) ||
-      o.client_name.toLowerCase().includes(q) ||
-      o.client_phone.includes(q)
+      o.order_number?.toLowerCase().includes(q) ||
+      o.client_name?.toLowerCase().includes(q) ||
+      o.client_phone?.includes(q)
     )
   }
 
@@ -366,7 +380,7 @@ const updateStatus = async (orderId: string, newStatus: string) => {
     if (order) order.status = newStatus
   } catch (error) {
     console.error('Error updating status:', error)
-    alert('Erreur lors de la mise a jour du statut')
+    alert('Erreur lors de la mise à jour du statut')
   }
 }
 
@@ -387,9 +401,17 @@ const statusLabel = (status: string) => ORDER_STATUS_LABELS[status] || status
 
 const statusClass = (status: string) => {
   const classes: Record<string, string> = {
+    en_attente: 'bg-yellow-100 text-yellow-800',
+    confirmee: 'bg-blue-100 text-blue-800',
+    en_preparation: 'bg-purple-100 text-purple-800',
+    en_livraison: 'bg-orange-100 text-orange-800',
+    livree: 'bg-green-100 text-green-800',
+    annulee: 'bg-red-100 text-red-800',
+    // Fallback
     pending: 'bg-yellow-100 text-yellow-800',
     confirmed: 'bg-blue-100 text-blue-800',
-    shipped: 'bg-purple-100 text-purple-800',
+    processing: 'bg-purple-100 text-purple-800',
+    shipped: 'bg-orange-100 text-orange-800',
     delivered: 'bg-green-100 text-green-800',
     cancelled: 'bg-red-100 text-red-800',
   }
@@ -398,24 +420,20 @@ const statusClass = (status: string) => {
 
 // Formater numero tchadien pour WhatsApp
 const formatPhoneForWhatsApp = (phone: string) => {
-  // Enlever espaces et caracteres speciaux
   let cleaned = phone.replace(/[\s\-\(\)\.]/g, '')
   
-  // Si commence par 0, remplacer par +235
   if (cleaned.startsWith('0')) {
     cleaned = '235' + cleaned.substring(1)
   }
   
-  // Si pas de code pays, ajouter +235 (Tchad)
   if (!cleaned.startsWith('+') && !cleaned.startsWith('235')) {
     cleaned = '235' + cleaned
   }
   
-  // Enlever le + pour l'URL WhatsApp
   return cleaned.replace('+', '')
 }
 
-// WhatsApp link TO CLIENT (pas a la boutique!)
+// WhatsApp link TO CLIENT
 const getWhatsAppLinkToClient = (order: any) => {
   const phone = formatPhoneForWhatsApp(order.client_phone)
   const msg = 'Bonjour ' + order.client_name + ', concernant votre commande ' + order.order_number + ' chez Samiah Cosmetics...'
@@ -427,44 +445,65 @@ const getConfirmationWhatsApp = (order: any) => {
   const phone = formatPhoneForWhatsApp(order.client_phone)
   
   const lines = [
-    'Bonjour ' + order.client_name + '!',
+    'Bonjour ' + order.client_name + ' ! 🌸',
     '',
-    'Votre commande ' + order.order_number + ' est CONFIRMEE!',
+    '✅ Votre commande ' + order.order_number + ' est CONFIRMÉE !',
     '',
-    '--- DETAILS ---',
+    '📦 Détails :',
   ]
   
   order.items?.forEach((item: any) => {
-    lines.push('- ' + item.product_title + ' x' + item.quantity)
+    const title = item.product_title || item.title
+    lines.push('• ' + title + ' × ' + item.quantity)
   })
   
   lines.push('')
-  lines.push('Total: ' + formatPrice(order.total))
+  lines.push('💰 Total : ' + formatPrice(order.total))
   lines.push('')
-  lines.push('Nous preparons votre colis et vous informerons de l\'expedition.')
+  lines.push('Nous préparons votre colis et vous informerons de l\'expédition.')
   lines.push('')
-  lines.push('Merci pour votre confiance!')
-  lines.push('- Samiah Cosmetics')
+  lines.push('Merci pour votre confiance ! 💖')
+  lines.push('— Samiah Cosmetics')
   
   return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
 }
 
-// Message d'expedition au client
+// Message de préparation au client
+const getPreparationWhatsApp = (order: any) => {
+  const phone = formatPhoneForWhatsApp(order.client_phone)
+  
+  const lines = [
+    'Bonjour ' + order.client_name + ' ! 🌸',
+    '',
+    '📦 Votre commande ' + order.order_number + ' est EN PRÉPARATION !',
+    '',
+    'Notre équipe prépare soigneusement votre colis.',
+    '',
+    'Vous serez informé(e) dès l\'expédition.',
+    '',
+    'Merci pour votre patience ! 💖',
+    '— Samiah Cosmetics',
+  ]
+  
+  return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
+}
+
+// Message d'expédition au client
 const getShippingWhatsApp = (order: any) => {
   const phone = formatPhoneForWhatsApp(order.client_phone)
   
   const lines = [
-    'Bonjour ' + order.client_name + '!',
+    'Bonjour ' + order.client_name + ' ! 🌸',
     '',
-    'Bonne nouvelle! Votre commande ' + order.order_number + ' a ete EXPEDIEE!',
+    '🚚 Bonne nouvelle ! Votre commande ' + order.order_number + ' est EN LIVRAISON !',
     '',
-    'Adresse de livraison:',
+    '📍 Adresse de livraison :',
     order.client_address + ', ' + order.client_city,
     '',
-    'Vous serez contacte(e) par notre livreur tres bientot.',
+    'Notre livreur vous contactera très bientôt.',
     '',
-    'Merci pour votre confiance!',
-    '- Samiah Cosmetics',
+    'Merci pour votre confiance ! 💖',
+    '— Samiah Cosmetics',
   ]
   
   return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(lines.join('\n'))
