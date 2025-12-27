@@ -20,9 +20,9 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Samiah Cosmetics',
+      name: 'Samiah Cosmetics Tchad',
       short_name: 'Samiah',
-      description: 'Consultation capillaire et produits cosmétiques au Tchad.',
+      description: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus.',
       theme_color: '#0A0A0A',
       background_color: '#ffffff',
       lang: 'fr',
@@ -64,29 +64,34 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
-      // Tarte : J'ai mis un titre plus court et percutant pour qu'il ne soit pas coupé sur mobile
-      title: 'Samiah Cosmetics : Soins Capillaires au Tchad',
+      title: 'Samiah Cosmetics Tchad — Soins Capillaires & Consultation',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Consultation capillaire en ligne et produits cosmétiques au Tchad. Réservez via WhatsApp.' },
+        { name: 'description', content: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés. Livraison à N\'Djamena.' },
         { name: 'theme-color', content: '#0A0A0A' },
+        { name: 'robots', content: 'index, follow' },
         
-        // Open Graph
-        { property: 'og:site_name', content: 'Samiah Cosmetics' }, // <-- IMPORTANT : Nom du site pour Facebook/WhatsApp
+        // Open Graph (Facebook, WhatsApp, LinkedIn)
+        { property: 'og:site_name', content: 'Samiah Cosmetics Tchad' },
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: 'Samiah Cosmetics — Soins Capillaires' },
-        { property: 'og:description', content: 'Réservez votre consultation capillaire et découvrez nos shampoings & soins.' },
-        { property: 'og:image', content: '/icon-512.png' },
-        { property: 'og:locale', content: 'fr_FR' },
+        { property: 'og:title', content: 'Samiah Cosmetics Tchad — Soins Capillaires & Consultation' },
+        { property: 'og:description', content: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés.' },
+        { property: 'og:image', content: 'https://www.samiahcosmetics.shop/og-image.jpg' },
+        { property: 'og:url', content: 'https://www.samiahcosmetics.shop' },
+        { property: 'og:locale', content: 'fr_TD' },
         
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'Samiah Cosmetics Tchad — Soins Capillaires' },
+        { name: 'twitter:description', content: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus.' },
+        { name: 'twitter:image', content: 'https://www.samiahcosmetics.shop/og-image.jpg' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'alternate icon', type: 'image/png', href: '/icon-192.png' },
         { rel: 'apple-touch-icon', href: '/icon-192.png' },
+        { rel: 'canonical', href: 'https://www.samiahcosmetics.shop' },
         { rel: 'preconnect', href: 'https://dzzblqlteirtzyegplgu.supabase.co', crossorigin: '' },
       ],
       // === DONNÉES STRUCTURÉES (JSON-LD) ===
@@ -94,11 +99,11 @@ export default defineNuxtConfig({
         {
           type: 'application/ld+json',
           children: JSON.stringify([
-            // 1. L'ORGANISATION (Pour le Logo et les infos de contact)
+            // 1. L'ORGANISATION
             {
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Samiah Cosmetics",
+              "name": "Samiah Cosmetics Tchad",
               "url": "https://www.samiahcosmetics.shop",
               "logo": "https://www.samiahcosmetics.shop/icon-512.png",
               "sameAs": [
@@ -109,16 +114,37 @@ export default defineNuxtConfig({
                 "@type": "ContactPoint",
                 "telephone": "+235-62-75-21-05",
                 "contactType": "customer service",
-                "areaServed": "TD"
+                "areaServed": "TD",
+                "availableLanguage": "French"
               }
             },
-            // 2. LE SITE WEB (C'est ICI qu'on force le nom "Samiah Cosmetics" sur Google)
+            // 2. LE SITE WEB
             {
               "@context": "https://schema.org",
               "@type": "WebSite",
-              "name": "Samiah Cosmetics",
-              "alternateName": ["Samiah Cosmétique", "Samiah Tchad"], // Google comprendra aussi ces recherches
+              "name": "Samiah Cosmetics Tchad",
+              "alternateName": ["Samiah Cosmetics", "Samiah Cosmétique", "Samiah Tchad"],
               "url": "https://www.samiahcosmetics.shop"
+            },
+            // 3. LE COMMERCE LOCAL
+            {
+              "@context": "https://schema.org",
+              "@type": "Store",
+              "name": "Samiah Cosmetics Tchad",
+              "description": "Boutique de soins capillaires au Tchad. Produits pour cheveux crépus et frisés.",
+              "url": "https://www.samiahcosmetics.shop",
+              "telephone": "+235-62-75-21-05",
+              "priceRange": "$$",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "N'Djamena",
+                "addressCountry": "TD"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "12.1348",
+                "longitude": "15.0557"
+              }
             }
           ])
         }
@@ -172,8 +198,8 @@ export default defineNuxtConfig({
       supabaseUrl: process.env.SUPABASE_URL || 'https://dzzblqlteirtzyegplgu.supabase.co',
       supabaseKey: process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6emJscWx0ZWlydHp5ZWdwbGd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0MjgyMDgsImV4cCI6MjA3NTAwNDIwOH0.WbjNAjF2qxly8QMu-3VJLPQE88UgzkeAn9XPj0lcb1Y',
       whatsappNumber: '23562752105',
-      siteName: 'Samiah Cosmetics',
-      siteUrl: process.env.SITE_URL || 'https://samiahcosmetics.shop',
+      siteName: 'Samiah Cosmetics Tchad',
+      siteUrl: 'https://www.samiahcosmetics.shop',
     },
   },
 
@@ -185,6 +211,7 @@ export default defineNuxtConfig({
     '/produits': { isr: 300 },
     '/produits/**': { isr: 300 },
     '/a-propos': { isr: 3600 },
+    '/suivi': { ssr: true },
     '/panier': { ssr: true },
     '/commander': { ssr: true },
     '/commande/**': { ssr: true },
