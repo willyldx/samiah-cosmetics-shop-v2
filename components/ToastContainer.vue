@@ -1,60 +1,88 @@
 <template>
   <Teleport to="body">
-    <div class="fixed bottom-20 right-4 z-50 space-y-2">
+    <div class="fixed bottom-24 right-4 z-[100] flex flex-col items-end space-y-3 pointer-events-none">
+      
       <TransitionGroup
-        enter-active-class="transition-all duration-300 ease-out"
-        enter-from-class="opacity-0 translate-x-8"
-        enter-to-class="opacity-100 translate-x-0"
-        leave-active-class="transition-all duration-200 ease-in"
-        leave-from-class="opacity-100 translate-x-0"
-        leave-to-class="opacity-0 translate-x-8"
+        enter-active-class="transition-all duration-400 cubic-bezier(0.16, 1, 0.3, 1)"
+        enter-from-class="opacity-0 translate-x-8 scale-90"
+        enter-to-class="opacity-100 translate-x-0 scale-100"
+        leave-active-class="transition-all duration-300 ease-in absolute"
+        leave-from-class="opacity-100 translate-x-0 scale-100"
+        leave-to-class="opacity-0 translate-x-8 scale-90"
+        move-class="transition-all duration-300 ease-out"
       >
         <div
           v-for="toast in toasts"
           :key="toast.id"
-          class="px-5 py-3 rounded-xl font-medium shadow-strong flex items-center gap-3 max-w-sm"
-          :class="toastClasses(toast.type)"
+          class="pointer-events-auto flex items-start gap-4 p-4 rounded-2xl shadow-strong 
+                 backdrop-blur-md border min-w-[300px] max-w-sm group overflow-hidden relative"
+          :class="getToastStyles(toast.type)"
         >
-          <!-- Icon -->
-          <span v-if="toast.type === 'success'" class="text-lg">✓</span>
-          <span v-else-if="toast.type === 'error'" class="text-lg">✕</span>
-          <span v-else-if="toast.type === 'info'" class="text-lg">ℹ</span>
-          
-          <!-- Message -->
-          <span>{{ toast.message }}</span>
-          
-          <!-- Close button -->
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shine" />
+
+          <div class="flex-shrink-0 mt-0.5">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm border border-white/10">
+              <svg v-if="toast.type === 'success'" class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+              <svg v-else-if="toast.type === 'error'" class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              <svg v-else class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+          </div>
+
+          <div class="flex-1 pt-1">
+            <h4 class="text-sm font-bold text-white mb-0.5 capitalize">
+              {{ getTitle(toast.type) }}
+            </h4>
+            <p class="text-sm text-gray-300 leading-snug">
+              {{ toast.message }}
+            </p>
+          </div>
+
           <button
             @click="removeToast(toast.id)"
-            class="ml-auto opacity-70 hover:opacity-100 transition-opacity"
+            class="flex-shrink-0 text-gray-500 hover:text-white transition-colors pt-1"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
       </TransitionGroup>
+      
     </div>
   </Teleport>
 </template>
 
 <script setup lang="ts">
+// TYPES
 interface Toast {
   id: number
   message: string
   type: 'success' | 'error' | 'info'
 }
 
+// ÉTAT GLOBAL (Partagé via useState de Nuxt)
 const toasts = useState<Toast[]>('toasts', () => [])
 
-const toastClasses = (type: Toast['type']) => {
-  return {
-    success: 'bg-green-500 text-white',
-    error: 'bg-red-500 text-white',
-    info: 'bg-charcoal text-white',
-  }[type]
+// STYLES DYNAMIQUES
+const getToastStyles = (type: Toast['type']) => {
+  switch (type) {
+    case 'success':
+      return 'bg-charcoal/90 border-green-500/30' // Fond sombre avec bordure verte subtile
+    case 'error':
+      return 'bg-charcoal/90 border-red-500/30' // Fond sombre avec bordure rouge
+    default:
+      return 'bg-charcoal/90 border-gold/30' // Fond sombre avec bordure or
+  }
 }
 
+// TITRES AUTOMATIQUES
+const getTitle = (type: Toast['type']) => {
+  switch (type) {
+    case 'success': return 'Succès'
+    case 'error': return 'Erreur'
+    default: return 'Information'
+  }
+}
+
+// LOGIQUE DE SUPPRESSION
 const removeToast = (id: number) => {
   const index = toasts.value.findIndex(t => t.id === id)
   if (index >= 0) {
@@ -62,17 +90,22 @@ const removeToast = (id: number) => {
   }
 }
 
-// Expose globally via composable
-const addToast = (message: string, type: Toast['type'] = 'info', duration: number = 3000) => {
+// LOGIQUE D'AJOUT (EXPOSÉE GLOBALEMENT)
+const addToast = (message: string, type: Toast['type'] = 'info', duration: number = 4000) => {
   const id = Date.now()
   toasts.value.push({ id, message, type })
   
+  // Petit son de notification (optionnel mais sympa)
+  // const audio = new Audio('/notification.mp3')
+  // audio.play().catch(() => {})
+
   setTimeout(() => {
     removeToast(id)
   }, duration)
 }
 
-// Make available globally
+// EXPOSITION POUR L'UTILISATION DANS TOUTE L'APP
+// Cela permet d'appeler window.__addToast('Bravo!', 'success') depuis n'importe où si besoin
 if (import.meta.client) {
   (window as any).__addToast = addToast
 }
