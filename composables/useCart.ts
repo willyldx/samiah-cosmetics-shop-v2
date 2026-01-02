@@ -1,40 +1,112 @@
 // ==========================================
-// COMPOSABLE: useCart (Version Hybride Pro + Luxe)
-// Gestion du panier avec Supabase + UX 2026
+// COMPOSABLE: useCart (Version Flash Cart)
+// Le panier s'ouvre et se referme tout seul
 // ==========================================
 
 import type { Product, CartItem } from '~/types'
 
 const CART_STORAGE_KEY = 'samiah_cart'
 
+// Variable pour gérer le chrono (en dehors de la fonction pour être unique)
+let autoCloseTimer: any = null
+
 export const useCart = () => {
   const supabase = useSupabaseClient()
-  // AJOUT : Système de notification
-  const toast = useToast() 
+  const toast = useToast()
   
-  // État réactif du panier (Partagé via useState de Nuxt)
+  // État réactif
   const items = useState<CartItem[]>('cart-items', () => [])
   const isOpen = useState<boolean>('cart-open', () => false)
-  const removedItems = useState<string[]>('cart-removed', () => []) 
+  const removedItems = useState<string[]>('cart-removed', () => [])
 
   // ==========================================
   // COMPUTED
   // ==========================================
   
-  const itemCount = computed(() => {
-    return items.value.reduce((sum, item) => sum + item.quantity, 0)
-  })
-
-  const subtotal = computed(() => {
-    return items.value.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
-  })
-
+  const itemCount = computed(() => items.value.reduce((sum, item) => sum + item.quantity, 0))
+  const subtotal = computed(() => items.value.reduce((sum, item) => sum + (item.product.price * item.quantity), 0))
   const isEmpty = computed(() => items.value.length === 0)
 
   // ==========================================
-  // VALIDATION DU PANIER (Logique Avancée)
+  // ACTIONS
   // ==========================================
 
+  const addItem = (product: Product, quantity: number = 1) => {
+    // Vérification produit actif
+    if (product.active === false) {
+      toast.error("Ce produit n'est plus disponible")
+      return
+    }
+
+    const existingIndex = items.value.findIndex(item => item.product.id === product.id)
+    
+    if (existingIndex >= 0) {
+      items.value[existingIndex].quantity += quantity
+    } else {
+      items.value.push({ product, quantity })
+    }
+    
+    saveToStorage()
+    
+    // --- LE COMPORTEMENT QUE TU VOULAIS ---
+    
+    // 1. On ouvre le panier
+    isOpen.value = true
+    toast.success(`Ajouté : ${product.title}`)
+    
+    // 2. On annule l'ancien chrono s'il y en avait un (si le client clique vite)
+    if (autoCloseTimer) clearTimeout(autoCloseTimer)
+
+    // 3. On lance un nouveau chrono de 2.5 secondes
+    autoCloseTimer = setTimeout(() => {
+      isOpen.value = false
+    }, 2500) 
+  }
+
+  const updateQuantity = (productId: string, quantity: number) => {
+    // Si l'utilisateur modifie la quantité DANS le panier, on annule la fermeture auto
+    // pour ne pas que le panier se ferme pendant qu'il clique sur "+"
+    if (autoCloseTimer) clearTimeout(autoCloseTimer)
+
+    const index = items.value.findIndex(item => item.product.id === productId)
+    if (index >= 0) {
+      if (quantity <= 0) {
+        removeItem(productId)
+      } else {
+        items.value[index].quantity = quantity
+        saveToStorage()
+      }
+    }
+  }
+
+  const removeItem = (productId: string) => {
+    const index = items.value.findIndex(item => item.product.id === productId)
+    if (index >= 0) {
+      const productName = items.value[index].product.title
+      items.value.splice(index, 1)
+      saveToStorage()
+      toast.info(`${productName} retiré`)
+    }
+  }
+
+  const clearCart = () => {
+    items.value = []
+    saveToStorage()
+  }
+
+  const toggleCart = () => isOpen.value = !isOpen.value
+  
+  const openCart = () => {
+    isOpen.value = true
+    // Si on ouvre manuellement, on annule la fermeture auto
+    if (autoCloseTimer) clearTimeout(autoCloseTimer)
+  }
+  
+  const closeCart = () => isOpen.value = false
+
+  // ==========================================
+  // VALIDATION & SYNC (Ton ancien code conservé)
+  // ==========================================
   const validateCart = async (): Promise<{ valid: boolean; removed: string[] }> => {
     if (items.value.length === 0) return { valid: true, removed: [] }
 
@@ -48,16 +120,11 @@ export const useCart = () => {
         .in('id', productIds)
         .eq('active', true)
 
-      if (error) {
-        console.warn('Erreur validation panier:', error)
-        return { valid: true, removed: [] }
-      }
+      if (error) return { valid: true, removed: [] }
 
       const validItems: CartItem[] = []
-
       for (const item of items.value) {
         const activeProduct = activeProducts?.find(p => p.id === item.product.id)
-        
         if (activeProduct) {
           validItems.push({
             ...item,
@@ -78,92 +145,20 @@ export const useCart = () => {
         removedItems.value = removedProducts
         saveToStorage()
       }
-
       return { valid: removedProducts.length === 0, removed: removedProducts }
-
     } catch (e) {
-      console.warn('Erreur validation panier:', e)
       return { valid: true, removed: [] }
     }
   }
 
-  const clearRemovedItems = () => {
-    removedItems.value = []
-  }
+  const clearRemovedItems = () => { removedItems.value = [] }
 
   // ==========================================
-  // ACTIONS
+  // PERSISTENCE & HELPERS
   // ==========================================
-
-  const addItem = (product: Product, quantity: number = 1) => {
-    if (product.active === false) {
-      toast.error("Ce produit n'est plus disponible")
-      return
-    }
-
-    const existingIndex = items.value.findIndex(item => item.product.id === product.id)
-    
-    if (existingIndex >= 0) {
-      items.value[existingIndex].quantity += quantity
-    } else {
-      items.value.push({ product, quantity })
-    }
-    
-    saveToStorage()
-    
-    // UX AMÉLIORÉE : On ouvre et on notifie
-    isOpen.value = true
-    toast.success(`Ajouté : ${product.title}`)
-    
-    // J'ai retiré le setTimeout qui refermait le panier (c'est mieux pour l'UX)
-  }
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    const index = items.value.findIndex(item => item.product.id === productId)
-    
-    if (index >= 0) {
-      if (quantity <= 0) {
-        // On redirige vers removeItem pour avoir le toast
-        removeItem(productId)
-      } else {
-        items.value[index].quantity = quantity
-        saveToStorage()
-      }
-    }
-  }
-
-  const removeItem = (productId: string) => {
-    const index = items.value.findIndex(item => item.product.id === productId)
-    if (index >= 0) {
-      // UX AMÉLIORÉE : On récupère le nom pour le message
-      const productName = items.value[index].product.title
-      
-      items.value.splice(index, 1)
-      saveToStorage()
-      
-      // On notifie l'utilisateur
-      toast.info(`${productName} retiré du panier`)
-    }
-  }
-
-  const clearCart = () => {
-    items.value = []
-    saveToStorage()
-  }
-
-  const toggleCart = () => isOpen.value = !isOpen.value
-  const openCart = () => isOpen.value = true
-  const closeCart = () => isOpen.value = false
-
-  // ==========================================
-  // PERSISTENCE
-  // ==========================================
-
   const saveToStorage = () => {
     if (import.meta.client) {
-      try {
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value))
-      } catch (e) { console.warn(e) }
+      try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items.value)) } catch (e) {}
     }
   }
 
@@ -172,35 +167,23 @@ export const useCart = () => {
       try {
         const saved = localStorage.getItem(CART_STORAGE_KEY)
         if (saved) {
-          const parsed = JSON.parse(saved)
-          if (Array.isArray(parsed)) {
-            items.value = parsed
-            // On valide silencieusement au chargement
-            await validateCart()
-          }
+          items.value = JSON.parse(saved)
+          await validateCart()
         }
-      } catch (e) { console.warn(e) }
+      } catch (e) {}
     }
   }
 
-  // ==========================================
-  // HELPERS
-  // ==========================================
-
-  const isInCart = (productId: string): boolean => {
-    return items.value.some(item => item.product.id === productId)
-  }
-
-  const getQuantity = (productId: string): number => {
+  const isInCart = (productId: string) => items.value.some(item => item.product.id === productId)
+  
+  const getQuantity = (productId: string) => {
     const item = items.value.find(item => item.product.id === productId)
     return item?.quantity ?? 0
   }
 
-  const formatPrice = (price: number): string => {
-    return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
-  }
+  const formatPrice = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
 
-  const generateWhatsAppMessage = (): string => {
+  const generateWhatsAppMessage = () => {
     if (isEmpty.value) return ''
     let message = 'Bonjour Samiah Cosmetics, je souhaite commander :\n\n'
     items.value.forEach(item => {
@@ -210,10 +193,7 @@ export const useCart = () => {
     return encodeURIComponent(message)
   }
 
-  // Chargement initial
-  if (import.meta.client) {
-    loadFromStorage()
-  }
+  if (import.meta.client) loadFromStorage()
 
   return {
     items: readonly(items),
