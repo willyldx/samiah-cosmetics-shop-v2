@@ -51,62 +51,27 @@
 </template>
 
 <script setup lang="ts">
-// TYPES
-interface Toast {
-  id: number
-  message: string
-  type: 'success' | 'error' | 'info'
-}
+// On importe ton composable existant
+const { toasts, removeToast } = useToast()
 
-// ÉTAT GLOBAL (Partagé via useState de Nuxt)
-const toasts = useState<Toast[]>('toasts', () => [])
-
-// STYLES DYNAMIQUES
-const getToastStyles = (type: Toast['type']) => {
+// Styles dynamiques (Version Luxe Dark)
+const getToastStyles = (type: string) => {
   switch (type) {
     case 'success':
-      return 'bg-charcoal/90 border-green-500/30' // Fond sombre avec bordure verte subtile
+      return 'bg-charcoal/90 border-green-500/30'
     case 'error':
-      return 'bg-charcoal/90 border-red-500/30' // Fond sombre avec bordure rouge
+      return 'bg-charcoal/90 border-red-500/30'
     default:
-      return 'bg-charcoal/90 border-gold/30' // Fond sombre avec bordure or
+      return 'bg-charcoal/90 border-gold/30'
   }
 }
 
-// TITRES AUTOMATIQUES
-const getTitle = (type: Toast['type']) => {
+// Titres automatiques
+const getTitle = (type: string) => {
   switch (type) {
     case 'success': return 'Succès'
     case 'error': return 'Erreur'
     default: return 'Information'
   }
-}
-
-// LOGIQUE DE SUPPRESSION
-const removeToast = (id: number) => {
-  const index = toasts.value.findIndex(t => t.id === id)
-  if (index >= 0) {
-    toasts.value.splice(index, 1)
-  }
-}
-
-// LOGIQUE D'AJOUT (EXPOSÉE GLOBALEMENT)
-const addToast = (message: string, type: Toast['type'] = 'info', duration: number = 4000) => {
-  const id = Date.now()
-  toasts.value.push({ id, message, type })
-  
-  // Petit son de notification (optionnel mais sympa)
-  // const audio = new Audio('/notification.mp3')
-  // audio.play().catch(() => {})
-
-  setTimeout(() => {
-    removeToast(id)
-  }, duration)
-}
-
-// EXPOSITION POUR L'UTILISATION DANS TOUTE L'APP
-// Cela permet d'appeler window.__addToast('Bravo!', 'success') depuis n'importe où si besoin
-if (import.meta.client) {
-  (window as any).__addToast = addToast
 }
 </script>
