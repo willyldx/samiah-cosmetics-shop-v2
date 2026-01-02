@@ -1,6 +1,5 @@
 // ==========================================
-// COMPOSABLE: useToast
-// Notifications toast
+// COMPOSABLE: useToast (Version Améliorée 2026)
 // ==========================================
 
 interface Toast {
@@ -12,7 +11,20 @@ interface Toast {
 export const useToast = () => {
   const toasts = useState<Toast[]>('toasts', () => [])
 
-  const addToast = (message: string, type: Toast['type'] = 'info', duration: number = 3000) => {
+  const addToast = (message: string, type: Toast['type'] = 'info', duration: number = 4000) => {
+    
+    // AMÉLIORATION 1 : Anti-Doublon
+    // Si le dernier message affiché est identique, on ne fait rien (évite le spam)
+    if (toasts.value.length > 0 && toasts.value[toasts.value.length - 1].message === message) {
+      return
+    }
+
+    // AMÉLIORATION 2 : Limite à 3 notifications max
+    // Si on en a déjà 3, on supprime la plus vieille pour faire de la place
+    if (toasts.value.length >= 3) {
+      toasts.value.shift()
+    }
+
     const id = Date.now()
     toasts.value.push({ id, message, type })
     
