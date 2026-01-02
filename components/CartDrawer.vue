@@ -45,6 +45,42 @@
           </button>
         </div>
 
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 -translate-y-2 height-0"
+          enter-to-class="opacity-100 translate-y-0 height-auto"
+          leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0 height-auto"
+          leave-to-class="opacity-0 -translate-y-2 height-0"
+        >
+          <div v-if="removedItems.length > 0" class="px-6 pt-4">
+            <div class="p-4 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-3 relative overflow-hidden">
+              <div class="absolute left-0 top-0 bottom-0 w-1 bg-amber-300"></div>
+              
+              <div class="flex-shrink-0 mt-0.5 text-amber-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-bold text-amber-900">Mise à jour du stock</h4>
+                <p class="text-xs text-amber-700 mt-1 leading-relaxed">
+                  Les articles suivants ne sont plus disponibles et ont été retirés :
+                  <span class="font-medium italic block mt-1 text-amber-800">
+                    {{ removedItems.join(', ') }}
+                  </span>
+                </p>
+              </div>
+              
+              <button 
+                @click="clearRemovedItems"
+                class="flex-shrink-0 text-amber-400 hover:text-amber-700 transition-colors"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+          </div>
+        </Transition>
+
         <div class="flex-1 overflow-y-auto scrollbar-thin">
           
           <div v-if="isEmpty" class="flex flex-col items-center justify-center h-full px-8 text-center pb-20">
@@ -163,18 +199,18 @@
 </template>
 
 <script setup lang="ts">
-// On importe le store mis à jour (sans removedItems)
+// On récupère TOUT depuis useCart (y compris removedItems et clearRemovedItems)
 const { 
   items, 
   isOpen, 
   itemCount, 
   subtotal, 
   isEmpty, 
+  removedItems, 
   updateQuantity, 
   removeItem, 
   closeCart, 
-  formatPrice
-} = useCartStore() 
-// Note : Si ton fichier s'appelle 'useCart.ts', utilise `useCartStore` car c'est le nom de l'export que je t'ai donné avant.
-// Si ça ne marche pas, essaie `useCart`.
+  formatPrice, 
+  clearRemovedItems 
+} = useCart()
 </script>
