@@ -18,7 +18,7 @@ export default {
       // COULEURS SAMIAH COSMETICS - Thème Luxe Noir/Blanc/Or
       // ==========================================
       colors: {
-        // Noir principal
+        // Noir principal (Charcoal)
         charcoal: {
           DEFAULT: '#0A0A0A',
           50: '#fafafa',
@@ -33,7 +33,7 @@ export default {
           900: '#171717',
           950: '#0A0A0A',
         },
-        // Blanc/Gris clair
+        // Blanc/Gris clair (Ivory)
         ivory: {
           DEFAULT: '#FAFAFA',
           50: '#FFFFFF',
@@ -43,7 +43,7 @@ export default {
           400: '#D4D4D4',
           500: '#A3A3A3',
         },
-        // Or luxe (accent)
+        // Or luxe (Gold)
         gold: {
           DEFAULT: '#C6A961',
           50: '#FBF9F3',
@@ -57,7 +57,7 @@ export default {
           800: '#7C6633',
           900: '#5E4D27',
         },
-        // Rose poudré (accent subtil)
+        // Rose poudré (Blush)
         blush: {
           DEFAULT: '#E8D5D5',
           50: '#FAF7F7',
@@ -74,7 +74,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif'],
         serif: ['Georgia', 'ui-serif', 'Times New Roman', 'serif'],
-        display: ['Georgia', 'ui-serif', 'Times New Roman', 'serif'],
+        display: ['Playfair Display', 'Georgia', 'serif'], // J'ai ajouté Playfair Display si tu l'utilises, sinon garde Georgia
       },
 
       // ==========================================
@@ -86,14 +86,15 @@ export default {
       borderRadius: {
         'xl': '16px',
         '2xl': '20px',
+        '3xl': '24px', // Ajouté pour les cartes modernes
       },
 
       // ==========================================
-      // ANIMATIONS
+      // ANIMATIONS (Mises à jour pour 2026)
       // ==========================================
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
-        'fade-in-up': 'fadeInUp 0.6s ease-out',
+        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)', // Plus fluide
         'fade-in-down': 'fadeInDown 0.6s ease-out',
         'slide-in-right': 'slideInRight 0.4s ease-out',
         'slide-in-left': 'slideInLeft 0.4s ease-out',
@@ -103,6 +104,10 @@ export default {
         'shimmer': 'shimmer 1.5s infinite linear',
         'bounce-soft': 'bounceSoft 1s infinite',
         'spin-slow': 'spin 3s linear infinite',
+        // NOUVEAUX AJOUTS
+        'float': 'float 3s ease-in-out infinite', // Pour les badges
+        'shine': 'shine 0.7s ease-in-out', // Pour le bouton gold
+        'pulse-gold': 'pulseGold 2s infinite', // Pour les bordures actives
       },
       keyframes: {
         fadeIn: {
@@ -110,27 +115,27 @@ export default {
           '100%': { opacity: '1' },
         },
         fadeInUp: {
-          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         fadeInDown: {
-          '0%': { opacity: '0', transform: 'translateY(-30px)' },
+          '0%': { opacity: '0', transform: 'translateY(-20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         slideInRight: {
-          '0%': { opacity: '0', transform: 'translateX(100px)' },
+          '0%': { opacity: '0', transform: 'translateX(50px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         slideInLeft: {
-          '0%': { opacity: '0', transform: 'translateX(-100px)' },
+          '0%': { opacity: '0', transform: 'translateX(-50px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(100px)' },
+          '0%': { opacity: '0', transform: 'translateY(50px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.9)' },
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
         pulseSoft: {
@@ -145,6 +150,19 @@ export default {
           '0%, 100%': { transform: 'translateY(-5%)' },
           '50%': { transform: 'translateY(0)' },
         },
+        // NOUVEAUX KEYFRAMES
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' },
+        },
+        shine: {
+          '0%': { transform: 'translateX(-150%) skewX(-15deg)' },
+          '100%': { transform: 'translateX(150%) skewX(-15deg)' },
+        },
+        pulseGold: {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(198, 169, 97, 0.4)' },
+          '70%': { boxShadow: '0 0 0 10px rgba(198, 169, 97, 0)' },
+        }
       },
 
       // ==========================================
@@ -156,14 +174,15 @@ export default {
       },
 
       // ==========================================
-      // SHADOWS
+      // SHADOWS (Lumières)
       // ==========================================
       boxShadow: {
         'soft': '0 4px 12px rgba(0, 0, 0, 0.04)',
         'medium': '0 10px 30px rgba(0, 0, 0, 0.08)',
         'strong': '0 16px 40px rgba(0, 0, 0, 0.12)',
-        'gold': '0 8px 20px rgba(217, 181, 108, 0.3)',
+        'gold': '0 8px 20px rgba(198, 169, 97, 0.3)', // Ajusté à la couleur gold définie
         'whatsapp': '0 10px 30px rgba(37, 211, 102, 0.3)',
+        'inner-light': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.3)', // Nouvel effet relief
       },
 
       // ==========================================
