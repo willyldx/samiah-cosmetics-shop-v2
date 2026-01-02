@@ -289,6 +289,8 @@ const config = useRuntimeConfig()
 const router = useRouter()
 const { items, subtotal, isEmpty, formatPrice, clearCart } = useCart()
 const { createOrder } = useOrders()
+// 1. AJOUT DU TOAST
+const toast = useToast()
 
 useHead({ title: 'Commander - Samiah Cosmetics' })
 
@@ -400,57 +402,12 @@ const validate = () => {
   return isValid
 }
 
-const generateWhatsAppMessage = (orderNumber: string) => {
-  const formatPriceSimple = (price: number) => {
-    return new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
-  }
-
-  const lines: string[] = []
-  
-  lines.push('=============================')
-  lines.push('   NOUVELLE COMMANDE')
-  lines.push('=============================')
-  lines.push('')
-  lines.push('Numéro: ' + orderNumber)
-  lines.push('')
-  lines.push('--- INFORMATIONS CLIENT ---')
-  lines.push('Nom: ' + form.name)
-  lines.push('Tél: ' + form.phone)
-  lines.push('Ville: ' + form.city)
-  lines.push('Adresse: ' + form.address)
-  lines.push('')
-  lines.push('--- PRODUITS COMMANDÉS ---')
-  
-  items.value.forEach(item => {
-    const itemTotal = item.product.price * item.quantity
-    lines.push('- ' + item.product.title + ' x' + item.quantity + ' = ' + formatPriceSimple(itemTotal))
-  })
-  
-  lines.push('')
-  lines.push('--- RÉCAPITULATIF ---')
-  lines.push('Sous-total: ' + formatPriceSimple(subtotal.value))
-  lines.push('Livraison: À confirmer')
-  lines.push('Mode de paiement: ' + paymentLabelsWhatsApp[form.paymentMethod])
-  
-  if (form.transactionRef) {
-    lines.push('Réf. Transaction: ' + form.transactionRef)
-  }
-  
-  if (form.notes) {
-    lines.push('')
-    lines.push('Notes: ' + form.notes)
-  }
-  
-  lines.push('')
-  lines.push('=============================')
-  lines.push('Merci de confirmer ma commande!')
-  lines.push('=============================')
-
-  return lines.join('\n')
-}
-
 const submitOrder = async () => {
-  if (!validate()) return
+  // 2. ERREUR VALIDATION
+  if (!validate()) {
+    toast.error("Veuillez corriger les erreurs avant de continuer")
+    return
+  }
   
   isSubmitting.value = true
   isProcessing.value = true
@@ -471,7 +428,6 @@ const submitOrder = async () => {
 
     processingStep.value = "Envoi de votre commande..."
 
-    // STATUT FRANÇAIS : 'en_attente'
     const { order, error } = await createOrder({
       client_name: form.name,
       client_phone: form.phone,
@@ -495,6 +451,9 @@ const submitOrder = async () => {
     processingStep.value = "Commande validée avec succès!"
     await new Promise(r => setTimeout(r, 800))
 
+    // 3. SUCCES AVANT REDIRECTION
+    toast.success("Commande validée ! Redirection...")
+
     clearCart()
     router.push('/commande/recu?id=' + order.id)
     
@@ -502,7 +461,8 @@ const submitOrder = async () => {
     console.error(e)
     isProcessing.value = false
     isSubmitting.value = false
-    alert('Une erreur est survenue lors de la commande. Veuillez vérifier votre connexion et réessayer.')
+    // 4. ERREUR SERVEUR
+    toast.error("Erreur de connexion. Veuillez réessayer.")
   }
 }
 </script>
