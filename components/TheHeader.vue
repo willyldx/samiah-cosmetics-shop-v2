@@ -3,8 +3,8 @@
     class="sticky top-0 z-50 transition-all duration-500"
     :class="[
       isScrolled 
-        ? 'bg-white/85 backdrop-blur-xl shadow-md border-b border-gray-100/50' 
-        : 'bg-white'
+        ? 'bg-white/85 dark:bg-charcoal/90 backdrop-blur-xl shadow-md border-b border-gray-100/50 dark:border-white/10' 
+        : 'bg-white dark:bg-charcoal'
     ]"
   >
     <div class="max-w-7xl mx-auto px-4">
@@ -80,14 +80,30 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex items-center gap-2 md:gap-4">
+        <div class="flex items-center gap-2 md:gap-3">
+          <!-- Dark Mode Toggle (Desktop only) -->
+          <div class="hidden md:block">
+            <DarkModeToggle />
+          </div>
+          
+          <!-- Bouton Recherche -->
+          <button 
+            type="button"
+            class="p-2.5 rounded-xl hover:bg-charcoal/5 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
+            @click="searchOpen = true"
+          >
+            <svg class="w-5 h-5 text-charcoal dark:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+          
           <!-- Panier avec animation -->
           <button 
             type="button"
-            class="relative p-2 rounded-xl hover:bg-charcoal/5 transition-all duration-300 hover:scale-105 active:scale-95"
+            class="relative p-2.5 rounded-xl hover:bg-charcoal/5 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
             @click="openCart"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-charcoal transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-charcoal dark:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
             </svg>
             <span 
@@ -97,6 +113,7 @@
               {{ itemCount > 9 ? '9+' : itemCount }}
             </span>
           </button>
+
 
           <!-- Bouton Commander avec effet shine -->
           <NuxtLink 
@@ -126,6 +143,10 @@
       @close="mobileMenuOpen = false" 
     />
     <CartDrawer />
+    <SearchModal 
+      :is-open="searchOpen" 
+      @close="searchOpen = false" 
+    />
   </header>
 </template>
 
@@ -136,18 +157,29 @@ const { itemCount, openCart } = useCart()
 // State
 const isScrolled = ref(false)
 const mobileMenuOpen = ref(false)
+const searchOpen = ref(false)
 
 // Handle scroll
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 10
 }
 
+// Global keyboard shortcut for search (Ctrl+K or Cmd+K)
+const handleKeydown = (e: KeyboardEvent) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault()
+    searchOpen.value = true
+  }
+}
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('keydown', handleKeydown)
 })
 
 // Close mobile menu on route change
@@ -155,3 +187,4 @@ watch(() => route.path, () => {
   mobileMenuOpen.value = false
 })
 </script>
+
