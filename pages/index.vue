@@ -1,19 +1,19 @@
 <template>
-  <div>
+  <div class="bg-white dark:bg-charcoal">
     <HeroSection />
 
-    <section class="py-16 lg:py-24">
+    <section class="py-16 lg:py-24 bg-white dark:bg-charcoal">
       <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-end justify-between mb-10">
           <div>
             <span class="text-gold font-medium text-sm uppercase tracking-wider">Catalogue</span>
-            <h2 class="text-3xl lg:text-4xl font-bold text-charcoal mt-2">
+            <h2 class="text-3xl lg:text-4xl font-bold text-charcoal dark:text-white mt-2">
               Nos produits
             </h2>
           </div>
           <NuxtLink 
             to="/produits"
-            class="hidden sm:flex items-center gap-2 text-charcoal font-medium hover:text-gold transition-colors group"
+            class="hidden sm:flex items-center gap-2 text-charcoal dark:text-white font-medium hover:text-gold transition-colors group"
           >
             Voir tout
             <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,9 +24,9 @@
 
         <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
           <div v-for="i in 8" :key="i" class="animate-pulse">
-            <div class="aspect-square bg-gray-200 rounded-2xl mb-4"></div>
-            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div class="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl mb-4"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
           </div>
         </div>
 
@@ -41,7 +41,7 @@
         </div>
 
         <div v-else class="text-center py-12">
-          <p class="text-gray-500">Aucun produit disponible pour le moment.</p>
+          <p class="text-gray-500 dark:text-gray-400">Aucun produit disponible pour le moment.</p>
         </div>
 
         <div class="mt-8 text-center sm:hidden">
