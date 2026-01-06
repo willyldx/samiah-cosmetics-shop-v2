@@ -55,42 +55,42 @@
       </div>
     </section>
 
-    <section class="py-20 lg:py-24 bg-gradient-to-b from-gray-50 to-white">
+    <section class="py-20 lg:py-24 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-charcoal">
       <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
           <span class="text-gold font-medium text-sm uppercase tracking-wider">Pourquoi nous choisir</span>
-          <h2 class="text-2xl lg:text-3xl font-bold text-charcoal mt-2">Une expérience unique</h2>
+          <h2 class="text-2xl lg:text-3xl font-bold text-charcoal dark:text-white mt-2">Une expérience unique</h2>
         </div>
         
         <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
-          <div class="group bg-white rounded-3xl p-8 shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-gold/20">
+          <div class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-soft hover:shadow-strong dark:shadow-none dark:border dark:border-gray-700 transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-gold/20 dark:hover:border-gold/30">
             <div class="w-16 h-16 bg-gradient-to-br from-gold/20 to-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
               <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
               </svg>
             </div>
-            <h3 class="font-bold text-charcoal text-lg mb-3 group-hover:text-gold transition-colors">Conseils personnalisés</h3>
-            <p class="text-gray-600 leading-relaxed">Une analyse complète de vos cheveux et une routine sur mesure adaptée à vos besoins.</p>
+            <h3 class="font-bold text-charcoal dark:text-white text-lg mb-3 group-hover:text-gold transition-colors">Conseils personnalisés</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">Une analyse complète de vos cheveux et une routine sur mesure adaptée à vos besoins.</p>
           </div>
 
-          <div class="group bg-white rounded-3xl p-8 shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-gold/20">
+          <div class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-soft hover:shadow-strong dark:shadow-none dark:border dark:border-gray-700 transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-gold/20 dark:hover:border-gold/30">
             <div class="w-16 h-16 bg-gradient-to-br from-gold/20 to-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
               <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path>
               </svg>
             </div>
-            <h3 class="font-bold text-charcoal text-lg mb-3 group-hover:text-gold transition-colors">Livraison au Tchad</h3>
-            <p class="text-gray-600 leading-relaxed">Disponible dans les grandes villes : N'Djamena, Moundou, Sarh et bien d'autres.</p>
+            <h3 class="font-bold text-charcoal dark:text-white text-lg mb-3 group-hover:text-gold transition-colors">Livraison au Tchad</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">Disponible dans les grandes villes : N'Djamena, Moundou, Sarh et bien d'autres.</p>
           </div>
 
-          <div class="group bg-white rounded-3xl p-8 shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-gold/20">
+          <div class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-soft hover:shadow-strong dark:shadow-none dark:border dark:border-gray-700 transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-gold/20 dark:hover:border-gold/30">
             <div class="w-16 h-16 bg-gradient-to-br from-gold/20 to-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
               <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
               </svg>
             </div>
-            <h3 class="font-bold text-charcoal text-lg mb-3 group-hover:text-gold transition-colors">Produits de qualité</h3>
-            <p class="text-gray-600 leading-relaxed">Des soins sélectionnés pour les cheveux afro et crépus, testés et approuvés.</p>
+            <h3 class="font-bold text-charcoal dark:text-white text-lg mb-3 group-hover:text-gold transition-colors">Produits de qualité</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">Des soins sélectionnés pour les cheveux afro et crépus, testés et approuvés.</p>
           </div>
         </div>
       </div>
