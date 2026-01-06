@@ -71,7 +71,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés. Livraison à N\'Djamena.' },
         { name: 'theme-color', content: '#0A0A0A' },
         { name: 'robots', content: 'index, follow' },
-        
+
         // Open Graph (Facebook, WhatsApp, LinkedIn)
         { property: 'og:site_name', content: 'Samiah Cosmetics Tchad' },
         { property: 'og:type', content: 'website' },
@@ -80,7 +80,7 @@ export default defineNuxtConfig({
         { property: 'og:image', content: 'https://samiahcosmetics.shop/icon-512.png' },
         { property: 'og:url', content: 'https://samiahcosmetics.shop' },
         { property: 'og:locale', content: 'fr_TD' },
-        
+
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'Samiah Cosmetics Tchad — Soins Capillaires' },
@@ -92,7 +92,13 @@ export default defineNuxtConfig({
         { rel: 'alternate icon', type: 'image/png', href: '/icon-192.png' },
         { rel: 'apple-touch-icon', href: '/icon-192.png' },
         { rel: 'canonical', href: 'https://samiahcosmetics.shop' },
+        // Performance: Preconnect to external domains
         { rel: 'preconnect', href: 'https://dzzblqlteirtzyegplgu.supabase.co', crossorigin: '' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        // DNS Prefetch for faster resolution
+        { rel: 'dns-prefetch', href: 'https://dzzblqlteirtzyegplgu.supabase.co' },
+        { rel: 'dns-prefetch', href: 'https://wa.me' },
       ],
       // === DONNÉES STRUCTURÉES (JSON-LD) ===
       script: [
@@ -217,7 +223,7 @@ export default defineNuxtConfig({
     '/commande/**': { ssr: true },
     '/admin': { ssr: false },
     '/admin/**': { ssr: false },
-    '/api/**': { 
+    '/api/**': {
       cors: true,
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
     },
@@ -254,6 +260,8 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: true,
     typedPages: true,
+    componentIslands: true, // Enables partial hydration
+    treeshakeClientOnly: true, // Better tree-shaking
   },
 
   compatibilityDate: '2024-04-03',
