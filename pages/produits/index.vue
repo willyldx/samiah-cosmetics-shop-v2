@@ -88,11 +88,7 @@
 
       <!-- Loading -->
       <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-        <div v-for="i in 12" :key="i" class="animate-pulse">
-          <div class="aspect-square bg-gray-200 rounded-3xl mb-4" />
-          <div class="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-          <div class="h-4 bg-gray-200 rounded w-1/2" />
-        </div>
+        <SkeletonLoader v-for="i in 12" :key="i" type="product-card" />
       </div>
 
       <!-- Produits -->
