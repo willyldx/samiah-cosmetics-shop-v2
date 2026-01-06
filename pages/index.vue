@@ -23,11 +23,7 @@
         </div>
 
         <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-          <div v-for="i in 8" :key="i" class="animate-pulse">
-            <div class="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl mb-4"></div>
-            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-          </div>
+          <SkeletonLoader v-for="i in 8" :key="i" type="product-card" />
         </div>
 
         <div v-else-if="featuredProducts.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
