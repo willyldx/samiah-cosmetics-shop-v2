@@ -2,13 +2,13 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-charcoal">Commandes</h1>
-        <p class="text-gray-500">Gérez toutes les commandes</p>
+        <h1 class="text-2xl font-bold text-charcoal dark:text-white">Commandes</h1>
+        <p class="text-gray-500 dark:text-gray-400">Gérez toutes les commandes</p>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-none dark:border dark:border-gray-700 p-4 mb-6">
       <div class="flex flex-wrap items-center gap-4">
         <!-- Search -->
         <div class="flex-1 min-w-[200px]">
@@ -20,7 +20,7 @@
               v-model="search"
               type="text"
               placeholder="Rechercher par nom, numéro..."
-              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none text-charcoal dark:text-white"
             />
           </div>
         </div>
@@ -52,12 +52,10 @@
     </div>
 
     <!-- Orders List -->
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-none dark:border dark:border-gray-700 overflow-hidden">
       <!-- Loading -->
-      <div v-if="loading" class="p-8">
-        <div class="animate-pulse space-y-4">
-          <div v-for="i in 5" :key="i" class="h-20 bg-gray-100 rounded-xl"></div>
-        </div>
+      <div v-if="loading" class="p-4 space-y-4">
+        <SkeletonLoader v-for="i in 5" :key="i" type="order-card" />
       </div>
 
       <!-- Empty -->
