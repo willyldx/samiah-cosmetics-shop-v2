@@ -1,14 +1,15 @@
 <template>
   <aside
-    class="fixed inset-y-0 left-0 z-40 w-64 bg-charcoal transform transition-transform duration-300 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-charcoal to-gray-900 transform transition-transform duration-300 lg:translate-x-0"
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
+    <!-- Logo -->
     <div class="flex items-center gap-3 h-16 px-6 border-b border-white/10">
-      <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center overflow-hidden">
+      <div class="w-10 h-10 bg-gradient-to-br from-gold to-yellow-500 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-gold/20">
         <img 
           src="/icon-192.png" 
           alt="Admin Logo" 
-          class="w-full h-full object-cover p-1" 
+          class="w-8 h-8 object-cover" 
         />
       </div>
       <div>
@@ -17,23 +18,33 @@
       </div>
     </div>
 
+    <!-- Navigation -->
     <nav class="p-4 space-y-1">
       <NuxtLink
         v-for="item in menuItems"
         :key="item.to"
         :to="item.to"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-        :class="{ 'bg-white/10 text-white': isActive(item.to) }"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
+        :class="[
+          isActive(item.to) 
+            ? 'bg-gold/20 text-gold shadow-lg shadow-gold/10' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
         @click="$emit('close')"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.iconPath" />
-        </svg>
+        <div 
+          class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+          :class="isActive(item.to) ? 'bg-gold/20' : 'bg-white/5'"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.iconPath" />
+          </svg>
+        </div>
         
-        <span>{{ item.label }}</span>
+        <span class="font-medium">{{ item.label }}</span>
         <span
           v-if="item.badge && item.badge > 0"
-          class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"
+          class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse"
         >
           {{ item.badge > 99 ? '99+' : item.badge }}
         </span>
