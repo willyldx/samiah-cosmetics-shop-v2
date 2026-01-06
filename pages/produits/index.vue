@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-charcoal">
     <!-- Header amélioré -->
     <div class="bg-gradient-to-br from-charcoal via-gray-900 to-charcoal text-white relative overflow-hidden">
       <div class="absolute inset-0">
@@ -19,7 +19,7 @@
 
     <div class="max-w-7xl mx-auto px-4 py-8">
       <!-- Filtres modernisés -->
-      <div class="bg-white rounded-3xl shadow-soft p-5 mb-8 border border-gray-100">
+      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 p-5 mb-8 border border-gray-100">
         <div class="flex flex-wrap items-center gap-4">
           <!-- Recherche -->
           <div class="flex-1 min-w-[200px]">
@@ -31,7 +31,7 @@
                 v-model="filters.search"
                 type="text"
                 placeholder="Rechercher un produit..."
-                class="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-gold/50 focus:shadow-lg focus:shadow-gold/10 transition-all text-charcoal placeholder:text-gray-400"
+                class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:bg-white dark:focus:bg-gray-600 focus:border-gold/50 focus:shadow-lg focus:shadow-gold/10 transition-all text-charcoal dark:text-white placeholder:text-gray-400"
               />
             </div>
           </div>
