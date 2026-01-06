@@ -3,6 +3,9 @@ import forms from '@tailwindcss/forms'
 import typography from '@tailwindcss/typography'
 
 export default {
+  // Enable class-based dark mode
+  darkMode: 'class',
+
   content: [
     './components/**/*.{js,vue,ts}',
     './layouts/**/*.vue',
@@ -11,7 +14,7 @@ export default {
     './app.vue',
     './error.vue',
   ],
-  
+
   theme: {
     extend: {
       // ==========================================
