@@ -1,26 +1,36 @@
 // ==========================================
 // COMPOSABLE: useProducts
-// Récupération et gestion des produits
+// Récupération et gestion des produits avec cache
 // ==========================================
 
 import type { Product, ProductFilters, SortOption } from '~/types'
 
+// Cache configuration
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+let lastFetchTime = 0
+
 export const useProducts = () => {
   const supabase = useSupabaseClient()
-  
+
   // État
   const products = useState<Product[]>('products', () => [])
   const loading = useState<boolean>('products-loading', () => false)
   const error = useState<string | null>('products-error', () => null)
 
   // ==========================================
-  // FETCH ALL PRODUCTS
+  // FETCH ALL PRODUCTS (WITH CACHE)
   // ==========================================
-  
-  const fetchProducts = async () => {
+
+  const fetchProducts = async (forceRefresh = false) => {
+    // Skip fetch if data is still fresh (unless forced)
+    const now = Date.now()
+    if (!forceRefresh && products.value.length > 0 && (now - lastFetchTime) < CACHE_DURATION) {
+      return products.value
+    }
+
     loading.value = true
     error.value = null
-    
+
     try {
       const { data, error: fetchError } = await supabase
         .from('products')
@@ -31,10 +41,13 @@ export const useProducts = () => {
       if (fetchError) throw fetchError
 
       products.value = data || []
-      
+      lastFetchTime = now
+
+      return products.value
     } catch (e: any) {
       console.error('Erreur fetchProducts:', e)
       error.value = e.message || 'Erreur de chargement des produits'
+      return []
     } finally {
       loading.value = false
     }
@@ -43,7 +56,7 @@ export const useProducts = () => {
   // ==========================================
   // FETCH SINGLE PRODUCT
   // ==========================================
-  
+
   const fetchProduct = async (id: string): Promise<Product | null> => {
     try {
       const { data, error: fetchError } = await supabase
@@ -53,7 +66,7 @@ export const useProducts = () => {
         .single()
 
       if (fetchError) throw fetchError
-      
+
       return data as Product
     } catch (e: any) {
       console.error('Erreur fetchProduct:', e)
@@ -74,7 +87,7 @@ export const useProducts = () => {
     // Filtre par recherche
     if (filters.search) {
       const q = filters.search.toLowerCase()
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.title.toLowerCase().includes(q) ||
         (p.category?.toLowerCase().includes(q)) ||
         (p.short_description?.toLowerCase().includes(q))
@@ -101,14 +114,14 @@ export const useProducts = () => {
 
   const sortProducts = (list: Product[], sort: SortOption): Product[] => {
     const sorted = [...list]
-    
+
     switch (sort) {
       case 'newest':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
       case 'oldest':
-        return sorted.sort((a, b) => 
+        return sorted.sort((a, b) =>
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         )
       case 'price_asc':
@@ -142,10 +155,10 @@ export const useProducts = () => {
 
   const buildGallery = (product: Product): string[] => {
     const gallery: string[] = []
-    
+
     if (product.image) gallery.push(product.image)
     if (product.images?.length) gallery.push(...product.images)
-    
+
     return [...new Set(gallery)]
   }
 
