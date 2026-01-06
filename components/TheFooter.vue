@@ -1,25 +1,25 @@
 <template>
-  <footer class="bg-charcoal text-white mt-auto">
-    <div class="container-main py-12 md:py-16">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+  <footer class="bg-gradient-to-b from-charcoal to-gray-950 text-white mt-auto">
+    <div class="container-main py-16 md:py-20">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
         <div class="lg:col-span-1">
-          <NuxtLink to="/" class="flex items-center gap-3 mb-4">
+          <NuxtLink to="/" class="flex items-center gap-3 mb-5 group">
             
-            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-gold to-yellow-500 flex items-center justify-center overflow-hidden shadow-lg shadow-gold/20 transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-3deg]">
               <img 
                 src="/icon-192.png" 
                 alt="Logo Samiah" 
-                class="w-full h-full object-cover p-1" 
+                class="w-full h-full object-cover p-1.5" 
               />
             </div>
             
-            <span class="font-display font-bold tracking-wider text-sm">
+            <span class="font-display font-bold tracking-wider text-base">
               SAMIAH COSMETICS
             </span>
           </NuxtLink>
           
-          <p class="text-white/60 text-sm leading-relaxed mb-4">
-            Spécialiste en consultation capillaire et produits cosmétiques pour cheveux afro au Tchad.
+          <p class="text-white/60 text-sm leading-relaxed mb-6">
+            Spécialiste en consultation capillaire et produits cosmétiques naturels pour cheveux afro au Tchad.
           </p>
           
           <div class="flex gap-3">
@@ -27,7 +27,7 @@
               :href="`https://wa.me/${config.public.whatsappNumber}`"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-full bg-white/10 hover:bg-[#25D366] flex items-center justify-center transition-colors"
+              class="w-11 h-11 rounded-xl bg-white/10 hover:bg-[#25D366] flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#25D366]/30"
               aria-label="WhatsApp"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -38,7 +38,7 @@
               href="https://instagram.com/samiahcosmetics"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-full bg-white/10 hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 flex items-center justify-center transition-all"
+              class="w-11 h-11 rounded-xl bg-white/10 hover:bg-gradient-to-br hover:from-purple-500 hover:via-pink-500 hover:to-orange-400 flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
               aria-label="Instagram"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@
               href="https://facebook.com/samiahcosmetics"
               target="_blank"
               rel="noopener noreferrer"
-              class="w-10 h-10 rounded-full bg-white/10 hover:bg-[#1877F2] flex items-center justify-center transition-colors"
+              class="w-11 h-11 rounded-xl bg-white/10 hover:bg-[#1877F2] flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-[#1877F2]/30"
               aria-label="Facebook"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -60,30 +60,35 @@
         </div>
 
         <div>
-          <h3 class="font-semibold text-white mb-4">Navigation</h3>
+          <h3 class="font-bold text-white mb-5 text-sm uppercase tracking-wider">Navigation</h3>
           <ul class="space-y-3">
             <li>
-              <NuxtLink to="/" class="text-white/60 hover:text-gold transition-colors text-sm">
+              <NuxtLink to="/" class="text-white/60 hover:text-gold transition-colors text-sm inline-flex items-center gap-1 group">
+                <span class="w-0 group-hover:w-2 h-0.5 bg-gold transition-all duration-300"></span>
                 Accueil
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/produits" class="text-white/60 hover:text-gold transition-colors text-sm">
+              <NuxtLink to="/produits" class="text-white/60 hover:text-gold transition-colors text-sm inline-flex items-center gap-1 group">
+                <span class="w-0 group-hover:w-2 h-0.5 bg-gold transition-all duration-300"></span>
                 Tous les produits
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/produits?category=Shampoings" class="text-white/60 hover:text-gold transition-colors text-sm">
+              <NuxtLink to="/produits?category=Shampoings" class="text-white/60 hover:text-gold transition-colors text-sm inline-flex items-center gap-1 group">
+                <span class="w-0 group-hover:w-2 h-0.5 bg-gold transition-all duration-300"></span>
                 Shampoings
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/produits?category=Soins+cheveux" class="text-white/60 hover:text-gold transition-colors text-sm">
+              <NuxtLink to="/produits?category=Soins+cheveux" class="text-white/60 hover:text-gold transition-colors text-sm inline-flex items-center gap-1 group">
+                <span class="w-0 group-hover:w-2 h-0.5 bg-gold transition-all duration-300"></span>
                 Soins cheveux
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/a-propos" class="text-white/60 hover:text-gold transition-colors text-sm">
+              <NuxtLink to="/a-propos" class="text-white/60 hover:text-gold transition-colors text-sm inline-flex items-center gap-1 group">
+                <span class="w-0 group-hover:w-2 h-0.5 bg-gold transition-all duration-300"></span>
                 À propos
               </NuxtLink>
             </li>
@@ -91,26 +96,36 @@
         </div>
 
         <div>
-          <h3 class="font-semibold text-white mb-4">Services</h3>
+          <h3 class="font-bold text-white mb-5 text-sm uppercase tracking-wider">Services</h3>
           <ul class="space-y-3">
             <li>
               <a 
                 :href="`https://wa.me/${config.public.whatsappNumber}?text=${encodeURIComponent('Bonjour Samiah Cosmetics, je souhaite réserver une consultation capillaire.')}`"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-white/60 hover:text-gold transition-colors text-sm"
+                class="text-white/60 hover:text-gold transition-colors text-sm inline-flex items-center gap-1 group"
               >
+                <span class="w-0 group-hover:w-2 h-0.5 bg-gold transition-all duration-300"></span>
                 Consultation capillaire
               </a>
             </li>
             <li>
-              <span class="text-white/60 text-sm">Livraison N'Djamena</span>
+              <span class="text-white/50 text-sm flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                Livraison N'Djamena
+              </span>
             </li>
             <li>
-              <span class="text-white/60 text-sm">Livraison provinces</span>
+              <span class="text-white/50 text-sm flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                Livraison provinces
+              </span>
             </li>
             <li>
-              <span class="text-white/60 text-sm">Paiement à la livraison</span>
+              <span class="text-white/50 text-sm flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-gold" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                Paiement à la livraison
+              </span>
             </li>
           </ul>
         </div>
