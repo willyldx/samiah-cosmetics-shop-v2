@@ -2,39 +2,42 @@
   <Teleport to="body">
     <!-- Overlay -->
     <Transition
-      enter-active-class="transition-opacity duration-300"
+      enter-active-class="transition-opacity duration-300 ease-out"
       enter-from-class="opacity-0"
       enter-to-class="opacity-100"
-      leave-active-class="transition-opacity duration-200"
+      leave-active-class="transition-opacity duration-250 ease-in"
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
       <div 
         v-if="isOpen"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+        class="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
         @click="$emit('close')"
       />
     </Transition>
 
     <!-- Menu -->
     <Transition
-      enter-active-class="transition-transform duration-300 ease-out"
-      enter-from-class="-translate-x-full"
-      enter-to-class="translate-x-0"
-      leave-active-class="transition-transform duration-200 ease-in"
-      leave-from-class="translate-x-0"
-      leave-to-class="-translate-x-full"
+      enter-active-class="transition-all duration-400 ease-out"
+      enter-from-class="-translate-x-full opacity-0"
+      enter-to-class="translate-x-0 opacity-100"
+      leave-active-class="transition-all duration-300 ease-in"
+      leave-from-class="translate-x-0 opacity-100"
+      leave-to-class="-translate-x-full opacity-0"
     >
       <div 
         v-if="isOpen"
-        class="fixed left-0 top-0 h-full w-full max-w-[300px] bg-white shadow-2xl z-50 flex flex-col"
+        class="fixed left-0 top-0 h-full w-full max-w-[320px] bg-white shadow-2xl z-50 flex flex-col"
       >
-        <!-- Header avec logo -->
-        <div class="relative px-6 py-5 bg-gradient-to-r from-charcoal to-gray-800">
+        <!-- Header avec logo amélioré -->
+        <div class="relative px-6 py-5 bg-gradient-to-br from-charcoal via-gray-800 to-charcoal overflow-hidden">
+          <!-- Effet shimmer en arrière-plan -->
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-shimmer"></div>
+          
           <!-- Bouton fermer -->
           <button
             @click="$emit('close')"
-            class="absolute top-4 right-4 p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-all"
+            class="absolute top-4 right-4 p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -43,12 +46,12 @@
 
           <!-- Logo et titre -->
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 bg-gold rounded-xl flex items-center justify-center shadow-lg">
+            <div class="w-12 h-12 rounded-xl bg-gold flex items-center justify-center shadow-lg shadow-gold/30 transition-transform duration-300 hover:scale-105 hover:rotate-[-3deg]">
               <span class="text-charcoal font-bold text-xl">S</span>
             </div>
             <div>
               <h2 class="font-bold text-white tracking-wide">SAMIAH</h2>
-              <p class="text-white/60 text-xs">Cosmetics</p>
+              <p class="text-gold/80 text-xs font-medium">Cosmetics</p>
             </div>
           </div>
         </div>
