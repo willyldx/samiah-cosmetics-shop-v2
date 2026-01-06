@@ -1,13 +1,13 @@
 <template>
-  <section class="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-white via-white to-amber-50/30">
+  <section class="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-white via-white to-amber-50/30 dark:from-charcoal dark:via-gray-900 dark:to-gray-900">
     <!-- Background decorations améliorées -->
     <div class="absolute inset-0 overflow-hidden">
-      <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-amber-50/60 via-amber-50/30 to-transparent"></div>
-      <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-gold/10 rounded-full blur-[100px] animate-pulse-slow"></div>
+      <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-amber-50/60 via-amber-50/30 to-transparent dark:from-gold/10 dark:via-gold/5 dark:to-transparent"></div>
+      <div class="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-gold/10 dark:bg-gold/5 rounded-full blur-[100px] animate-pulse-slow"></div>
       <div class="absolute top-1/4 right-1/4 w-64 h-64 bg-gold/5 rounded-full blur-3xl animate-float"></div>
       <!-- Motif décoratif subtil -->
       <div class="absolute top-20 left-10 w-20 h-20 border border-gold/10 rounded-full"></div>
-      <div class="absolute bottom-32 right-20 w-12 h-12 border border-charcoal/5 rounded-full"></div>
+      <div class="absolute bottom-32 right-20 w-12 h-12 border border-charcoal/5 dark:border-white/5 rounded-full"></div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 py-16 lg:py-24 relative z-10">
@@ -15,7 +15,7 @@
         <div class="space-y-8">
           <!-- Badge amélioré avec animation -->
           <div 
-            class="inline-flex items-center gap-2 bg-charcoal text-white rounded-full px-5 py-2.5 shadow-lg animate-fade-in-down backdrop-blur-sm"
+            class="inline-flex items-center gap-2 bg-charcoal dark:bg-white text-white dark:text-charcoal rounded-full px-5 py-2.5 shadow-lg animate-fade-in-down backdrop-blur-sm"
             style="animation-delay: 0.1s;"
           >
             <span class="relative flex h-2.5 w-2.5">
@@ -27,7 +27,7 @@
 
           <!-- Titre avec typographie premium -->
           <h1 
-            class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold text-charcoal leading-[1.1] animate-fade-in-up"
+            class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold text-charcoal dark:text-white leading-[1.1] animate-fade-in-up"
             style="animation-delay: 0.2s;"
           >
             <span class="block">{{ settings.title_line1 }}</span>
@@ -62,7 +62,7 @@
 
           <!-- Description avec meilleur espacement -->
           <p 
-            class="text-lg lg:text-xl text-gray-600 max-w-lg leading-relaxed animate-fade-in-up"
+            class="text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-lg leading-relaxed animate-fade-in-up"
             style="animation-delay: 0.4s;"
           >
             {{ settings.description }}
@@ -97,7 +97,7 @@
             <NuxtLink
               v-if="settings.show_products_btn"
               to="/produits"
-              class="group inline-flex items-center gap-3 bg-transparent border-2 border-charcoal text-charcoal font-bold px-8 py-4 rounded-full transition-all duration-500 hover:bg-charcoal hover:text-white hover:-translate-y-2 hover:shadow-2xl hover:shadow-charcoal/20 active:scale-95"
+              class="group inline-flex items-center gap-3 bg-transparent border-2 border-charcoal dark:border-white text-charcoal dark:text-white font-bold px-8 py-4 rounded-full transition-all duration-500 hover:bg-charcoal dark:hover:bg-white hover:text-white dark:hover:text-charcoal hover:-translate-y-2 hover:shadow-2xl hover:shadow-charcoal/20 dark:hover:shadow-white/20 active:scale-95"
             >
               <span>Voir les produits</span>
               <svg 
