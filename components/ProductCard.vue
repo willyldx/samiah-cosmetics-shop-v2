@@ -1,6 +1,6 @@
 <template>
   <article
-    class="group relative bg-white rounded-3xl overflow-hidden shadow-soft hover:shadow-strong transition-all duration-500 cursor-pointer transform hover:-translate-y-3"
+    class="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-soft hover:shadow-strong dark:shadow-none dark:border dark:border-gray-700 transition-all duration-500 cursor-pointer transform hover:-translate-y-3"
     @click="$emit('click', product)"
   >
     <!-- Badge Nouveau (priorité 1) -->
@@ -69,14 +69,14 @@
       </p>
 
       <!-- Titre -->
-      <h3 class="font-bold text-charcoal line-clamp-2 leading-snug group-hover:text-gold transition-colors duration-300">
+      <h3 class="font-bold text-charcoal dark:text-white line-clamp-2 leading-snug group-hover:text-gold transition-colors duration-300">
         {{ product.title }}
       </h3>
 
       <!-- Description courte -->
       <p 
         v-if="product.short_description" 
-        class="text-sm text-gray-500 line-clamp-2"
+        class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2"
       >
         {{ product.short_description }}
       </p>
