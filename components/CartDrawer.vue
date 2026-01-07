@@ -10,7 +10,7 @@
     >
       <div 
         v-if="isOpen"
-        class="fixed inset-0 bg-charcoal/60 backdrop-blur-sm z-[90]"
+        class="fixed inset-0 bg-charcoal/60 backdrop-blur-sm z-[200]"
         @click="closeCart"
       ></div>
     </Transition>
@@ -25,7 +25,7 @@
     >
       <div 
         v-if="isOpen"
-        class="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-[95] flex flex-col border-l border-gray-100"
+        class="fixed right-0 top-0 h-full w-full max-w-md bg-white dark:bg-gray-800 shadow-2xl z-[201] flex flex-col border-l border-gray-100 dark:border-gray-700"
       >
         <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-charcoal to-gray-800 text-white z-10">
           <h2 class="text-xl font-bold flex items-center gap-3">
@@ -89,13 +89,13 @@
         <div class="flex-1 overflow-y-auto scrollbar-thin">
           
           <div v-if="isEmpty" class="flex flex-col items-center justify-center h-full px-8 text-center pb-20">
-            <div class="w-28 h-28 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-              <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-28 h-28 bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
+              <svg class="w-12 h-12 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
               </svg>
             </div>
-            <h3 class="text-xl font-bold text-charcoal mb-2">Votre panier est vide</h3>
-            <p class="text-gray-500 mb-8">Il semblerait que vous n'ayez pas encore craqué pour nos produits.</p>
+            <h3 class="text-xl font-bold text-charcoal dark:text-white mb-2">Votre panier est vide</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">Il semblerait que vous n'ayez pas encore craqué pour nos produits.</p>
             
             <button
               @click="closeCart"
@@ -119,9 +119,9 @@
               <div
                 v-for="item in items"
                 :key="item.product.id"
-                class="group flex gap-4 relative bg-white p-3 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all"
+                class="group flex gap-4 relative bg-white dark:bg-gray-700 p-3 rounded-2xl border border-gray-100 dark:border-gray-600 hover:border-gray-200 dark:hover:border-gray-500 hover:shadow-md transition-all"
               >
-                <div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+                <div class="w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-600 dark:to-gray-700">
                   <img
                     :src="item.product.image || '/images/placeholder.svg'"
                     :alt="item.product.title"
@@ -132,7 +132,7 @@
                 <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
                   <div>
                     <div class="flex justify-between items-start gap-2">
-                      <h4 class="font-bold text-charcoal line-clamp-2 leading-tight">
+                      <h4 class="font-bold text-charcoal dark:text-white line-clamp-2 leading-tight">
                         {{ item.product.title }}
                       </h4>
                       <button 
@@ -143,13 +143,13 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                       </button>
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">{{ item.product.category }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ item.product.category }}</p>
                   </div>
 
                   <div class="flex items-center justify-between mt-2">
                     <p class="text-gold font-bold">{{ formatPrice(item.product.price) }}</p>
                     
-                    <div class="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-200">
+                    <div class="flex items-center bg-gray-50 dark:bg-gray-600 rounded-lg p-1 border border-gray-200 dark:border-gray-500">
                       <button 
                         @click="updateQuantity(item.product.id, item.quantity - 1)" 
                         class="w-7 h-7 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm text-charcoal transition-all disabled:opacity-50"
