@@ -11,7 +11,7 @@
     >
       <div 
         v-if="isOpen"
-        class="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
+        class="fixed inset-0 bg-black/60 backdrop-blur-md z-[200]"
         @click="$emit('close')"
       />
     </Transition>
@@ -27,7 +27,7 @@
     >
       <div 
         v-if="isOpen"
-        class="fixed left-0 top-0 h-full w-full max-w-[320px] bg-white dark:bg-gray-800 shadow-2xl z-50 flex flex-col"
+        class="fixed left-0 top-0 h-full w-full max-w-[320px] bg-white dark:bg-gray-800 shadow-2xl z-[201] flex flex-col"
       >
         <!-- Header avec logo amélioré -->
         <div class="relative px-6 py-5 bg-gradient-to-br from-charcoal via-gray-800 to-charcoal overflow-hidden">
