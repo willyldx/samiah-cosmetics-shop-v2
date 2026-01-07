@@ -1,26 +1,26 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="bg-white border-b border-gray-100">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 py-6">
-        <NuxtLink to="/produits" class="inline-flex items-center gap-2 text-gray-500 hover:text-charcoal transition-colors mb-4">
+        <NuxtLink to="/produits" class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-charcoal dark:hover:text-white transition-colors mb-4">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
           </svg>
           Continuer mes achats
         </NuxtLink>
-        <h1 class="text-2xl lg:text-3xl font-bold text-charcoal">Finaliser ma commande</h1>
+        <h1 class="text-2xl lg:text-3xl font-bold text-charcoal dark:text-white">Finaliser ma commande</h1>
       </div>
     </div>
 
     <div v-if="isEmpty" class="max-w-7xl mx-auto px-4 py-16 text-center">
-      <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+      <div class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
         <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
         </svg>
       </div>
-      <h2 class="text-xl font-bold text-charcoal mb-2">Votre panier est vide</h2>
-      <p class="text-gray-500 mb-6">Ajoutez des produits pour passer commande</p>
-      <NuxtLink to="/produits" class="inline-flex items-center gap-2 bg-charcoal text-white px-6 py-3 rounded-full font-medium">
+      <h2 class="text-xl font-bold text-charcoal dark:text-white mb-2">Votre panier est vide</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Ajoutez des produits pour passer commande</p>
+      <NuxtLink to="/produits" class="inline-flex items-center gap-2 bg-charcoal dark:bg-white text-white dark:text-charcoal px-6 py-3 rounded-full font-medium">
         Voir les produits
       </NuxtLink>
     </div>
@@ -29,18 +29,18 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-6">
           
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">1</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-none border border-gray-100 dark:border-gray-700">
+            <h2 class="text-lg font-bold text-charcoal dark:text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 bg-charcoal dark:bg-gold text-white dark:text-charcoal rounded-full flex items-center justify-center text-sm">1</span>
               Identification
             </h2>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Numéro de Téléphone (WhatsApp) <span class="text-red-500">*</span>
               </label>
               <div class="flex gap-2">
-                <span class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-500 font-bold flex items-center">+235</span>
+                <span class="p-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-300 font-bold flex items-center">+235</span>
                 <input
                   v-model="form.phone"
                   @blur="checkUser"
@@ -64,20 +64,20 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-2xl p-6 shadow-sm transition-all duration-500" :class="{ 'opacity-50 pointer-events-none': isLoadingUser }">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">2</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-none dark:border dark:border-gray-700 transition-all duration-500" :class="{ 'opacity-50 pointer-events-none': isLoadingUser }">
+            <h2 class="text-lg font-bold text-charcoal dark:text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 bg-charcoal dark:bg-gold text-white dark:text-charcoal rounded-full flex items-center justify-center text-sm">2</span>
               Vos coordonnées
             </h2>
             
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Nom complet <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nom complet <span class="text-red-500">*</span></label>
                 <input
                   v-model="form.name"
                   type="text"
                   placeholder="John Doe"
-                  class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all"
+                  class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-charcoal dark:text-white placeholder-gray-400"
                   :class="{ 'border-red-500': errors.name }"
                 />
                 <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
@@ -85,10 +85,10 @@
 
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Ville <span class="text-red-500">*</span></label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Ville <span class="text-red-500">*</span></label>
                   <select
                     v-model="form.city"
-                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all bg-white"
+                    class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all bg-white dark:bg-gray-700 text-charcoal dark:text-white"
                     :class="{ 'border-red-500': errors.city }"
                   >
                     <option value="">Sélectionnez une ville</option>
@@ -98,12 +98,12 @@
                 </div>
                 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Quartier / Adresse <span class="text-red-500">*</span></label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Quartier / Adresse <span class="text-red-500">*</span></label>
                   <input
                     v-model="form.address"
                     type="text"
                     placeholder="Ex: Moursal, près de..."
-                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all"
+                    class="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-charcoal dark:text-white placeholder-gray-400"
                     :class="{ 'border-red-500': errors.address }"
                   />
                   <p v-if="errors.address" class="text-red-500 text-sm mt-1">{{ errors.address }}</p>
@@ -112,9 +112,9 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">3</span>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm dark:shadow-none dark:border dark:border-gray-700">
+            <h2 class="text-lg font-bold text-charcoal dark:text-white mb-4 flex items-center gap-2">
+              <span class="w-8 h-8 bg-charcoal dark:bg-gold text-white dark:text-charcoal rounded-full flex items-center justify-center text-sm">3</span>
               Paiement Sécurisé
             </h2>
             
@@ -122,10 +122,10 @@
               <label
                 v-for="method in paymentMethods"
                 :key="method.value"
-                class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md"
+                class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md dark:text-white"
                 :class="form.paymentMethod === method.value 
-                  ? 'border-gold bg-gold/5' 
-                  : 'border-gray-200 hover:border-gray-300'"
+                  ? 'border-gold bg-gold/5 dark:bg-gold/10' 
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
               >
                 <input v-model="form.paymentMethod" type="radio" :value="method.value" class="sr-only" />
                 <span class="text-2xl">{{ method.icon }}</span>
