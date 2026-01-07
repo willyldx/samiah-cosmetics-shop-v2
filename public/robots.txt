@@ -1,0 +1,15 @@
+# Robots.txt pour Samiah Cosmetics
+# https://samiahcosmetics.shop
+
+User-agent: *
+Allow: /
+
+# Bloquer les pages admin
+Disallow: /admin/
+Disallow: /admin/*
+
+# Bloquer les pages de login
+Disallow: /admin/login
+
+# Sitemap
+Sitemap: https://samiahcosmetics.shop/sitemap.xml
