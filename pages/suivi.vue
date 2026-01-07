@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-100">
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
       <div class="max-w-2xl mx-auto px-4 py-8 lg:py-12 text-center">
         <div class="w-16 h-16 bg-gold/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
         </div>
-        <h1 class="text-3xl lg:text-4xl font-bold text-charcoal">
+        <h1 class="text-3xl lg:text-4xl font-bold text-charcoal dark:text-white">
           Suivre ma commande
         </h1>
-        <p class="text-gray-600 mt-2">
+        <p class="text-gray-600 dark:text-gray-400 mt-2">
           Entrez votre numéro de téléphone pour voir vos commandes
         </p>
       </div>
@@ -19,10 +19,10 @@
 
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Formulaire de recherche -->
-      <div class="bg-white rounded-2xl shadow-soft p-6 mb-8">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 p-6 mb-8">
         <form @submit.prevent="searchOrders" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Numéro de téléphone
             </label>
             <div class="relative">
@@ -36,11 +36,11 @@
                 type="tel"
                 placeholder="Ex: 66123456 ou +235 66 12 34 56"
                 required
-                class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all"
+                class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-charcoal dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                 :class="{ 'border-red-300 bg-red-50': error }"
               />
             </div>
-            <p class="text-xs text-gray-500 mt-2">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
               Le numéro utilisé lors de votre commande
             </p>
           </div>
@@ -48,7 +48,7 @@
           <button
             type="submit"
             :disabled="loading || !phone.trim()"
-            class="w-full bg-charcoal text-white py-3.5 rounded-xl font-bold hover:bg-charcoal/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full bg-charcoal dark:bg-white text-white dark:text-charcoal py-3.5 rounded-xl font-bold hover:bg-charcoal/90 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg v-if="loading" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -84,14 +84,14 @@
       >
         <div v-if="searched && !loading">
           <!-- Aucune commande -->
-          <div v-if="orders.length === 0" class="bg-white rounded-2xl shadow-soft p-8 text-center">
-            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div v-if="orders.length === 0" class="bg-white dark:bg-gray-800 rounded-2xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 p-8 text-center">
+            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-charcoal mb-2">Aucune commande trouvée</h3>
-            <p class="text-gray-500 text-sm mb-6">
+            <h3 class="text-lg font-semibold text-charcoal dark:text-white mb-2">Aucune commande trouvée</h3>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">
               Vérifiez que vous avez entré le bon numéro de téléphone
             </p>
             <NuxtLink
@@ -104,20 +104,20 @@
 
           <!-- Liste des commandes -->
           <div v-else class="space-y-4">
-            <h2 class="text-lg font-semibold text-charcoal">
+            <h2 class="text-lg font-semibold text-charcoal dark:text-white">
               {{ orders.length }} commande{{ orders.length > 1 ? 's' : '' }} trouvée{{ orders.length > 1 ? 's' : '' }}
             </h2>
 
             <div 
               v-for="order in orders" 
               :key="order.id"
-              class="bg-white rounded-2xl shadow-soft overflow-hidden"
+              class="bg-white dark:bg-gray-800 rounded-2xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 overflow-hidden"
             >
               <!-- Header commande -->
-              <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                 <div>
-                  <p class="font-bold text-charcoal">{{ order.order_number }}</p>
-                  <p class="text-sm text-gray-500">{{ formatDate(order.created_at) }}</p>
+                  <p class="font-bold text-charcoal dark:text-white">{{ order.order_number }}</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(order.created_at) }}</p>
                 </div>
                 <div 
                   class="px-3 py-1.5 rounded-full text-sm font-medium"
