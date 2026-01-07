@@ -10,7 +10,7 @@
     >
       <div 
         v-if="isOpen"
-        class="fixed inset-0 bg-charcoal/70 backdrop-blur-md z-[60]"
+        class="fixed inset-0 bg-charcoal/70 backdrop-blur-md z-[200]"
         @click="$emit('close')"
       />
     </Transition>
@@ -26,7 +26,7 @@
       <div 
         v-if="isOpen"
         class="fixed top-4 left-4 right-4 md:top-24 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-2xl 
-               bg-white rounded-3xl shadow-2xl z-[70] overflow-hidden border border-gray-100"
+               bg-white rounded-3xl shadow-2xl z-[201] overflow-hidden border border-gray-100"
         @keydown="handleKeydown"
       >
         <!-- Search Header -->
