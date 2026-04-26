@@ -1,24 +1,24 @@
 <template>
   <article
-    class="group relative bg-white dark:bg-charcoal rounded-sm overflow-hidden transition-all duration-500 cursor-pointer"
+    class="group relative bg-white rounded-sm overflow-hidden transition-all duration-500 cursor-pointer"
     @click="$emit('click', product)"
   >
     <!-- Badge -->
     <div
       v-if="isNew"
-      class="absolute top-4 left-4 z-10 bg-white text-charcoal dark:bg-charcoal dark:text-white border border-gray-100 dark:border-gray-800 text-[10px] uppercase tracking-widest font-medium px-3 py-1 shadow-sm"
+      class="absolute top-4 left-4 z-10 bg-white text-charcoal border border-gray-100 text-[10px] uppercase tracking-[0.2em] font-medium px-3 py-1 shadow-sm"
     >
       Nouveau
     </div>
     <div
       v-else-if="product.featured"
-      class="absolute top-4 left-4 z-10 bg-gold text-white text-[10px] uppercase tracking-widest font-medium px-3 py-1 shadow-sm"
+      class="absolute top-4 left-4 z-10 bg-gold text-white text-[10px] uppercase tracking-[0.2em] font-medium px-3 py-1 shadow-sm"
     >
       En vedette
     </div>
 
     <!-- Image Container -->
-    <div class="relative aspect-[4/5] overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div class="relative aspect-[4/5] overflow-hidden bg-gray-50">
       <!-- Image Principale -->
       <img
         :src="primaryImage"
@@ -40,27 +40,27 @@
       <div 
         class="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex justify-center"
       >
-        <span class="bg-white/90 dark:bg-charcoal/90 backdrop-blur-sm text-charcoal dark:text-white text-xs uppercase tracking-widest font-medium px-6 py-3 shadow-sm hover:bg-charcoal hover:text-white dark:hover:bg-white dark:hover:text-charcoal transition-colors duration-300">
+        <span class="bg-white/90 backdrop-blur-sm text-charcoal text-[10px] uppercase tracking-[0.2em] font-medium px-6 py-3 shadow-sm hover:bg-charcoal hover:text-white transition-colors duration-300">
           Découvrir
         </span>
       </div>
     </div>
 
     <!-- Infos Produit -->
-    <div class="pt-5 pb-2 text-center space-y-1">
+    <div class="pt-5 pb-2 text-center space-y-2">
       <!-- Catégorie -->
-      <p v-if="product.category" class="text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+      <p v-if="product.category" class="text-[10px] font-medium text-gray-400 uppercase tracking-[0.2em]">
         {{ product.category }}
       </p>
 
       <!-- Titre -->
-      <h3 class="font-serif text-lg text-charcoal dark:text-white line-clamp-1 group-hover:text-gold transition-colors duration-300">
+      <h3 class="font-serif text-lg text-charcoal line-clamp-1 group-hover:text-gold transition-colors duration-300">
         {{ product.title }}
       </h3>
 
       <!-- Prix -->
       <div class="pt-1">
-        <span class="text-sm font-light text-gray-600 dark:text-gray-300">
+        <span class="text-sm font-light text-gray-500">
           {{ formattedPrice }}
         </span>
       </div>

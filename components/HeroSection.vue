@@ -1,22 +1,22 @@
 <template>
-  <section class="relative min-h-[85vh] flex items-center bg-white dark:bg-charcoal overflow-hidden">
+  <section class="relative min-h-[85vh] flex items-center bg-white overflow-hidden">
     <div class="max-w-7xl mx-auto px-4 py-16 lg:py-24 relative z-10 w-full">
       <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         <!-- Contenu Textuel -->
         <div class="space-y-8 animate-fade-in-up">
           <div class="inline-flex items-center gap-3">
             <span class="w-10 h-[1px] bg-gold"></span>
-            <span class="text-sm font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400">
+            <span class="text-[10px] font-medium tracking-[0.2em] uppercase text-gray-400">
               {{ settings.badge_text }}
             </span>
           </div>
 
-          <h1 class="text-5xl sm:text-6xl lg:text-7xl font-serif font-light text-charcoal dark:text-white leading-[1.1]">
+          <h1 class="text-5xl sm:text-6xl lg:text-7xl font-serif font-light text-charcoal leading-[1.1]">
             <span class="block mb-2">{{ settings.title_line1 }}</span>
             <span class="block italic text-gold">{{ settings.title_line2 }} {{ settings.title_highlight }}</span>
           </h1>
 
-          <p class="text-lg text-gray-600 dark:text-gray-300 max-w-lg leading-relaxed font-light">
+          <p class="text-lg text-gray-500 max-w-lg leading-relaxed font-light">
             {{ settings.description }}
           </p>
 
@@ -26,7 +26,7 @@
               :href="whatsappLink"
               target="_blank"
               rel="noopener"
-              class="inline-flex items-center justify-center px-8 py-4 bg-charcoal text-white dark:bg-white dark:text-charcoal text-sm font-medium tracking-wide uppercase hover:bg-gold hover:text-white transition-colors duration-300"
+              class="inline-flex items-center justify-center px-10 py-4 bg-charcoal text-white text-[10px] font-medium tracking-[0.2em] uppercase hover:bg-gold transition-colors duration-300"
             >
               Réserver
             </a>
@@ -34,7 +34,7 @@
             <NuxtLink
               v-if="settings.show_products_btn"
               to="/produits"
-              class="inline-flex items-center justify-center px-8 py-4 bg-transparent border border-gray-300 dark:border-gray-600 text-charcoal dark:text-white text-sm font-medium tracking-wide uppercase hover:border-charcoal dark:hover:border-white transition-colors duration-300"
+              class="inline-flex items-center justify-center px-10 py-4 bg-transparent border border-gray-200 text-charcoal text-[10px] font-medium tracking-[0.2em] uppercase hover:border-charcoal transition-colors duration-300"
             >
               Voir la collection
             </NuxtLink>

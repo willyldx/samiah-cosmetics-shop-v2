@@ -3,6 +3,7 @@ import forms from '@tailwindcss/forms'
 import typography from '@tailwindcss/typography'
 
 export default {
+  darkMode: 'class', // Forcer le mode manuel (jamais actif vu qu'on l'a enlevé de app.vue)
   content: [
     './components/**/*.{js,vue,ts}',
     './layouts/**/*.vue',
