@@ -10,7 +10,7 @@
     <button
       v-if="isVisible"
       @click="scrollToTop"
-      class="fixed bottom-24 right-6 z-40 w-12 h-12 bg-charcoal dark:bg-white text-white dark:text-charcoal rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:-translate-y-1 active:scale-95 group"
+      class="fixed bottom-24 right-6 z-40 w-12 h-12 bg-charcoal  text-white  rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:-translate-y-1 active:scale-95 group"
       aria-label="Retour en haut"
     >
       <svg 

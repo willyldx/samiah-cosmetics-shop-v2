@@ -1,281 +1,262 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="bg-white border-b border-gray-100">
-      <div class="max-w-7xl mx-auto px-4 py-6">
-        <NuxtLink to="/produits" class="inline-flex items-center gap-2 text-gray-500 hover:text-charcoal:text-white transition-colors mb-4">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+  <div class="min-h-screen bg-white">
+    <!-- Header -->
+    <div class="border-b border-gray-100 pt-24 pb-8">
+      <div class="max-w-5xl mx-auto px-4 text-center">
+        <h1 class="text-3xl lg:text-4xl font-serif font-light text-charcoal tracking-wide mb-4">Finaliser la commande</h1>
+        <NuxtLink to="/produits" class="inline-flex items-center text-[10px] uppercase tracking-[0.2em] text-gray-400 hover:text-charcoal transition-colors">
+          <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
           </svg>
-          Continuer mes achats
+          Retour à la collection
         </NuxtLink>
-        <h1 class="text-2xl lg:text-3xl font-bold text-charcoal">Finaliser ma commande</h1>
       </div>
     </div>
 
-    <div v-if="isEmpty" class="max-w-7xl mx-auto px-4 py-16 text-center">
-      <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-        </svg>
-      </div>
-      <h2 class="text-xl font-bold text-charcoal mb-2">Votre panier est vide</h2>
-      <p class="text-gray-500 mb-6">Ajoutez des produits pour passer commande</p>
-      <NuxtLink to="/produits" class="inline-flex items-center gap-2 bg-charcoal text-white px-6 py-3 rounded-full font-medium">
-        Voir les produits
+    <!-- Empty State -->
+    <div v-if="isEmpty" class="max-w-5xl mx-auto px-4 py-32 text-center">
+      <p class="text-gray-400 font-light mb-8">Votre panier est vide. Découvrez notre collection pour commencer.</p>
+      <NuxtLink to="/produits" class="inline-flex items-center justify-center px-8 py-4 border border-gray-200 text-charcoal text-[10px] uppercase tracking-[0.2em] font-medium hover:border-charcoal transition-colors">
+        Découvrir la collection
       </NuxtLink>
     </div>
 
-    <div v-else class="max-w-7xl mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-6">
+    <!-- Checkout Form -->
+    <div v-else class="max-w-7xl mx-auto px-4 py-12 lg:py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
+        
+        <!-- Left Column: Form -->
+        <div class="lg:col-span-7 space-y-16">
           
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">1</span>
-              Identification
+          <!-- Section 1: Identification -->
+          <section>
+            <h2 class="text-xs uppercase tracking-[0.2em] text-gray-400 font-medium mb-8 flex items-center">
+              <span class="w-8 border-t border-gray-200 mr-4"></span>
+              01. Identification
             </h2>
             
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                Numéro de Téléphone (WhatsApp) <span class="text-red-500">*</span>
+              <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">
+                Numéro WhatsApp <span class="text-red-400">*</span>
               </label>
-              <div class="flex gap-2">
-                <span class="p-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-500 font-bold flex items-center">+235</span>
+              <div class="flex">
+                <span class="px-4 py-3 bg-gray-50 border border-r-0 border-gray-200 text-gray-500 text-sm flex items-center">+235</span>
                 <input
                   v-model="form.phone"
                   @blur="checkUser"
                   type="tel"
-                  placeholder="66 XX XX XX"
-                  class="flex-1 px-4 py-3 border-2 rounded-xl outline-none transition-all font-bold tracking-wide"
-                  :class="userExists ? 'border-green-500 bg-green-50 text-green-700' : (errors.phone ? 'border-red-500' : 'border-gray-200 focus:border-gold')"
+                  placeholder="66 00 00 00"
+                  class="w-full px-4 py-3 border border-gray-200 outline-none transition-colors text-charcoal focus:border-charcoal font-light"
+                  :class="userExists ? 'border-charcoal bg-gray-50' : (errors.phone ? 'border-red-400' : 'bg-white')"
                 />
               </div>
               
-              <div v-if="isLoadingUser" class="text-gray-400 text-xs mt-2 flex items-center gap-1">
-                <span class="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></span>
-                Recherche du compte...
+              <div v-if="isLoadingUser" class="text-gray-400 text-[10px] tracking-widest uppercase mt-3 animate-pulse">
+                Recherche...
               </div>
               
-              <p v-if="userExists" class="text-green-600 text-sm mt-2 flex items-center gap-1 font-medium animate-pulse">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                Bon retour parmi nous, {{ form.name }} !
+              <p v-if="userExists" class="text-charcoal text-[10px] tracking-widest uppercase mt-3">
+                Ravi de vous revoir, {{ form.name }}
               </p>
-              <p v-if="errors.phone" class="text-red-500 text-sm mt-1">{{ errors.phone }}</p>
+              <p v-if="errors.phone" class="text-red-400 text-[10px] tracking-widest uppercase mt-2">{{ errors.phone }}</p>
             </div>
-          </div>
+          </section>
 
-          <div class="bg-white rounded-2xl p-6 shadow-sm transition-all duration-500" :class="{ 'opacity-50 pointer-events-none': isLoadingUser }">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">2</span>
-              Vos coordonnées
+          <!-- Section 2: Coordonnées -->
+          <section :class="{ 'opacity-50 pointer-events-none grayscale': isLoadingUser }">
+            <h2 class="text-xs uppercase tracking-[0.2em] text-gray-400 font-medium mb-8 flex items-center">
+              <span class="w-8 border-t border-gray-200 mr-4"></span>
+              02. Livraison
             </h2>
             
-            <div class="space-y-4">
+            <div class="space-y-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Nom complet <span class="text-red-500">*</span></label>
+                <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">Nom complet <span class="text-red-400">*</span></label>
                 <input
                   v-model="form.name"
                   type="text"
-                  placeholder="John Doe"
-                  class="w-full px-4 py-3 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-charcoal placeholder-gray-400"
-                  :class="{ 'border-red-500': errors.name }"
+                  placeholder="Votre nom"
+                  class="w-full px-4 py-3 border border-gray-200 bg-white focus:border-charcoal outline-none transition-colors text-charcoal font-light"
+                  :class="{ 'border-red-400': errors.name }"
                 />
-                <p v-if="errors.name" class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
+                <p v-if="errors.name" class="text-red-400 text-[10px] tracking-widest uppercase mt-2">{{ errors.name }}</p>
               </div>
 
-              <div class="grid md:grid-cols-2 gap-4">
+              <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Ville <span class="text-red-500">*</span></label>
+                  <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">Ville <span class="text-red-400">*</span></label>
                   <select
                     v-model="form.city"
-                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all bg-white text-charcoal"
-                    :class="{ 'border-red-500': errors.city }"
+                    class="w-full px-4 py-3 border border-gray-200 focus:border-charcoal outline-none transition-colors bg-white text-charcoal font-light appearance-none"
+                    :class="{ 'border-red-400': errors.city }"
                   >
-                    <option value="">Sélectionnez une ville</option>
+                    <option value="" disabled>Sélectionner</option>
                     <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
                   </select>
-                  <p v-if="errors.city" class="text-red-500 text-sm mt-1">{{ errors.city }}</p>
+                  <p v-if="errors.city" class="text-red-400 text-[10px] tracking-widest uppercase mt-2">{{ errors.city }}</p>
                 </div>
                 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">Quartier / Adresse <span class="text-red-500">*</span></label>
+                  <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">Quartier / Adresse <span class="text-red-400">*</span></label>
                   <input
                     v-model="form.address"
                     type="text"
-                    placeholder="Ex: Moursal, près de..."
-                    class="w-full px-4 py-3 border border-gray-200 bg-white rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-charcoal placeholder-gray-400"
-                    :class="{ 'border-red-500': errors.address }"
+                    placeholder="Précisions de livraison"
+                    class="w-full px-4 py-3 border border-gray-200 bg-white focus:border-charcoal outline-none transition-colors text-charcoal font-light"
+                    :class="{ 'border-red-400': errors.address }"
                   />
-                  <p v-if="errors.address" class="text-red-500 text-sm mt-1">{{ errors.address }}</p>
+                  <p v-if="errors.address" class="text-red-400 text-[10px] tracking-widest uppercase mt-2">{{ errors.address }}</p>
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-charcoal text-white rounded-full flex items-center justify-center text-sm">3</span>
-              Paiement Sécurisé
+          <!-- Section 3: Paiement -->
+          <section>
+            <h2 class="text-xs uppercase tracking-[0.2em] text-gray-400 font-medium mb-8 flex items-center">
+              <span class="w-8 border-t border-gray-200 mr-4"></span>
+              03. Paiement
             </h2>
             
-            <div class="grid sm:grid-cols-2 gap-3 mb-6">
+            <div class="grid sm:grid-cols-2 gap-4 mb-8">
               <label
                 v-for="method in paymentMethods"
                 :key="method.value"
-                class="relative flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-md"
+                class="relative p-4 border cursor-pointer transition-colors"
                 :class="form.paymentMethod === method.value 
-                  ? 'border-gold bg-gold/5' 
-                  : 'border-gray-200 hover:border-gray-300:border-gray-500'"
+                  ? 'border-charcoal' 
+                  : 'border-gray-200 hover:border-gray-400'"
               >
                 <input v-model="form.paymentMethod" type="radio" :value="method.value" class="sr-only" />
-                <span class="text-2xl">{{ method.icon }}</span>
-                <span class="font-medium text-charcoal">{{ method.label }}</span>
-                <span v-if="form.paymentMethod === method.value" class="absolute top-2 right-2 w-5 h-5 bg-gold rounded-full flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <span class="block text-[10px] uppercase tracking-widest" :class="form.paymentMethod === method.value ? 'text-charcoal font-medium' : 'text-gray-500'">
+                  {{ method.label }}
                 </span>
+                <span v-if="form.paymentMethod === method.value" class="absolute top-4 right-4 w-1.5 h-1.5 bg-charcoal"></span>
               </label>
             </div>
 
-            <div v-if="['airtel_money', 'moov_money'].includes(form.paymentMethod)" class="bg-gray-50 border border-gray-200 rounded-xl p-5 animate-fade-in-up">
-              <h3 class="font-bold text-gray-800 mb-2 flex items-center gap-2">
-                Comment payer par {{ form.paymentMethod === 'airtel_money' ? 'Airtel Money' : 'Moov Money' }} ?
-              </h3>
-              <ol class="list-decimal list-inside text-sm text-gray-600 space-y-2 mb-4">
-                <li>Ouvrez votre application téléphone.</li>
-                <li>Envoyez le montant de <strong class="text-charcoal">{{ formatPrice(subtotal) }}</strong> au numéro ci-dessous.</li>
-                <li>Une fois envoyé, vous recevrez un SMS avec un <strong>ID de transaction</strong>.</li>
-                <li>Entrez cet ID dans la case ci-dessous pour valider.</li>
-              </ol>
+            <div v-if="['airtel_money', 'moov_money'].includes(form.paymentMethod)" class="p-6 border border-gray-200 bg-gray-50 space-y-6">
+              <h3 class="text-xs uppercase tracking-widest text-charcoal font-medium">Instructions</h3>
               
-              <div class="flex items-center justify-between bg-white p-3 rounded-lg border border-dashed border-gray-300 mb-4">
-                <span class="text-gray-500 text-sm">Numéro {{ form.paymentMethod === 'airtel_money' ? 'Airtel' : 'Moov' }} :</span>
+              <div class="space-y-4 text-sm font-light text-gray-500">
+                <p>1. Transférez le montant de <span class="text-charcoal font-medium">{{ formatPrice(subtotal) }}</span> au numéro ci-dessous.</p>
                 
-                <div class="flex items-center gap-3">
-                  <span class="font-mono font-bold text-lg text-charcoal select-all">
+                <div class="flex items-center justify-between p-4 bg-white border border-gray-200">
+                  <span class="text-charcoal tracking-widest font-mono text-lg">
                     {{ form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43' }}
                   </span>
-                  
                   <button 
                     type="button"
                     @click="copyToClipboard(form.paymentMethod === 'airtel_money' ? '62 75 21 05' : '90 53 86 43')"
-                    class="px-3 py-1.5 rounded-md text-xs font-bold transition-all border flex items-center gap-1.5"
-                    :class="copied ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200'"
+                    class="text-[10px] uppercase tracking-widest transition-colors"
+                    :class="copied ? 'text-green-600' : 'text-gray-400 hover:text-charcoal'"
                   >
-                    <span v-if="copied">✓ Copié</span>
-                    <span v-else>Copier</span>
+                    {{ copied ? 'Copié' : 'Copier' }}
                   </button>
                 </div>
-              </div>
 
-              <div>
-                <label class="block text-sm font-bold text-charcoal mb-1.5">ID DE TRANSACTION (Reçu par SMS)</label>
-                <input 
-                  v-model="form.transactionRef" 
-                  type="text" 
-                  placeholder="Ex: TX-19384020" 
-                  class="w-full px-4 py-3 border-2 border-charcoal rounded-xl focus:ring-2 focus:ring-gold/50 outline-none font-mono uppercase"
-                  :class="{ 'border-red-500': errors.transactionRef }"
-                />
-                <p v-if="errors.transactionRef" class="text-red-500 text-sm mt-1">{{ errors.transactionRef }}</p>
+                <p>2. Saisissez l'ID de transaction reçu par SMS :</p>
+                
+                <div>
+                  <input 
+                    v-model="form.transactionRef" 
+                    type="text" 
+                    placeholder="Ex: TX-19384020" 
+                    class="w-full px-4 py-3 border border-gray-200 bg-white focus:border-charcoal outline-none text-charcoal font-mono uppercase text-sm tracking-wider"
+                    :class="{ 'border-red-400': errors.transactionRef }"
+                  />
+                  <p v-if="errors.transactionRef" class="text-red-400 text-[10px] tracking-widest uppercase mt-2">{{ errors.transactionRef }}</p>
+                </div>
               </div>
             </div>
 
-            <p v-if="errors.paymentMethod" class="text-red-500 text-sm mt-2">{{ errors.paymentMethod }}</p>
-          </div>
+            <p v-if="errors.paymentMethod" class="text-red-400 text-[10px] tracking-widest uppercase mt-2">{{ errors.paymentMethod }}</p>
+          </section>
 
-          <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-charcoal mb-4 flex items-center gap-2">
-              <span class="w-8 h-8 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-sm">4</span>
-              Notes (optionnel)
+          <!-- Section 4: Notes -->
+          <section>
+            <h2 class="text-xs uppercase tracking-[0.2em] text-gray-400 font-medium mb-8 flex items-center">
+              <span class="w-8 border-t border-gray-200 mr-4"></span>
+              04. Notes
             </h2>
             <textarea
               v-model="form.notes"
               rows="3"
-              placeholder="Instructions spéciales pour la livraison..."
-              class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all resize-none"
+              placeholder="Instructions particulières..."
+              class="w-full px-4 py-3 border border-gray-200 bg-white focus:border-charcoal outline-none transition-colors resize-none font-light text-charcoal"
             ></textarea>
-          </div>
+          </section>
         </div>
 
-        <div class="lg:col-span-1">
-          <div class="bg-white rounded-2xl p-6 shadow-sm sticky top-24">
-            <h2 class="text-lg font-bold text-charcoal mb-4">Récapitulatif</h2>
+        <!-- Right Column: Summary -->
+        <div class="lg:col-span-5">
+          <div class="border border-gray-200 p-8 sticky top-24 bg-gray-50/50">
+            <h2 class="text-xs uppercase tracking-[0.2em] text-charcoal font-medium mb-8">Récapitulatif</h2>
             
-            <div class="space-y-3 mb-4">
-              <div v-for="item in items" :key="item.product.id" class="flex gap-3">
-                <img :src="item.product.image || 'https://via.placeholder.com/100'" :alt="item.product.title" class="w-16 h-16 rounded-lg object-cover bg-gray-100" />
+            <div class="space-y-6 mb-8">
+              <div v-for="item in items" :key="item.product.id" class="flex gap-4 items-center">
+                <div class="w-16 h-20 bg-gray-100 flex-shrink-0">
+                  <img :src="item.product.image || 'https://via.placeholder.com/100'" :alt="item.product.title" class="w-full h-full object-cover grayscale opacity-80" />
+                </div>
                 <div class="flex-1 min-w-0">
-                  <h4 class="font-medium text-sm text-charcoal line-clamp-1">{{ item.product.title }}</h4>
-                  <p class="text-gray-500 text-sm">Qté: {{ item.quantity }}</p>
-                  <p class="text-gold font-semibold text-sm">{{ formatPrice(item.product.price * item.quantity) }}</p>
+                  <h4 class="font-serif text-charcoal text-sm line-clamp-1 mb-1">{{ item.product.title }}</h4>
+                  <p class="text-[10px] tracking-widest text-gray-400 uppercase">Qté: {{ item.quantity }}</p>
+                </div>
+                <div class="text-sm font-light text-gray-500">
+                  {{ formatPrice(item.product.price * item.quantity) }}
                 </div>
               </div>
             </div>
 
-            <hr class="my-4 border-gray-100" />
-
-            <div class="space-y-2 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-600">Sous-total</span>
-                <span class="font-medium">{{ formatPrice(subtotal) }}</span>
+            <div class="border-t border-gray-200 pt-6 space-y-4 mb-6">
+              <div class="flex justify-between items-center text-sm font-light text-gray-500">
+                <span>Sous-total</span>
+                <span>{{ formatPrice(subtotal) }}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600">Livraison</span>
-                <span class="text-gold font-medium">À confirmer</span>
+              <div class="flex justify-between items-center text-sm font-light text-gray-500">
+                <span>Livraison</span>
+                <span class="text-[10px] tracking-widest uppercase">Calculée ultérieurement</span>
               </div>
             </div>
 
-            <hr class="my-4 border-gray-100" />
-
-            <div class="flex justify-between items-center mb-6">
-              <span class="font-bold text-charcoal">Total</span>
-              <span class="text-xl font-bold text-charcoal">{{ formatPrice(subtotal) }}</span>
+            <div class="border-t border-gray-200 pt-6 flex justify-between items-center mb-8">
+              <span class="text-xs uppercase tracking-[0.2em] font-medium text-charcoal">Total estimé</span>
+              <span class="text-xl font-light text-charcoal">{{ formatPrice(subtotal) }}</span>
             </div>
 
             <button
               @click="submitOrder"
               :disabled="isSubmitting"
-              class="w-full bg-charcoal text-white py-4 rounded-xl font-bold hover:bg-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              class="w-full bg-charcoal text-white py-5 text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-gold transition-colors duration-300 disabled:opacity-50"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-              Confirmer la commande
+              Confirmer l'achat
             </button>
             
-            <div class="mt-4 flex justify-center gap-2 text-gray-400">
-               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-               <span class="text-xs">Paiement sécurisé et données cryptées</span>
-            </div>
+            <p class="mt-6 text-center text-[10px] uppercase tracking-widest text-gray-400">
+              Paiement sécurisé
+            </p>
           </div>
         </div>
       </div>
     </div>
 
-
-
+    <!-- Processing Overlay -->
     <Transition
-      enter-active-class="transition duration-200 ease-out"
+      enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0"
       enter-to-class="opacity-100"
-      leave-active-class="transition duration-150 ease-in"
+      leave-active-class="transition duration-300 ease-in"
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="isProcessing" class="fixed inset-0 bg-charcoal/90 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-sm">
+      <div v-if="isProcessing" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center p-4">
         
-        <div class="relative w-24 h-24 mb-8">
-          <div class="absolute inset-0 border-4 border-white/20 rounded-full"></div>
-          <div class="absolute inset-0 border-4 border-gold rounded-full border-t-transparent animate-spin"></div>
-          <div class="absolute inset-0 flex items-center justify-center">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-            </svg>
-          </div>
-        </div>
+        <div class="w-12 h-12 border border-gray-200 border-t-charcoal rounded-full animate-spin mb-8"></div>
 
-        <h3 class="text-2xl font-bold text-white mb-2 text-center animate-pulse">
+        <h3 class="text-xs uppercase tracking-[0.2em] text-charcoal font-medium mb-4 animate-pulse">
           {{ processingStep }}
         </h3>
-        <p class="text-white/60 text-sm text-center">Ne fermez pas cette fenêtre...</p>
+        <p class="text-[10px] uppercase tracking-widest text-gray-400">Veuillez patienter...</p>
 
       </div>
     </Transition>

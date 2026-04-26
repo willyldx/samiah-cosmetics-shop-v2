@@ -1,126 +1,93 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-white">
     <!-- Header -->
-    <div class="bg-white border-b border-gray-100">
-      <div class="max-w-2xl mx-auto px-4 py-8 lg:py-12 text-center">
-        <div class="w-16 h-16 bg-gold/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-        </div>
-        <h1 class="text-3xl lg:text-4xl font-serif font-light text-charcoal">
+    <div class="border-b border-gray-100 pt-24 pb-8">
+      <div class="max-w-2xl mx-auto px-4 text-center">
+        <h1 class="text-3xl lg:text-4xl font-serif font-light text-charcoal mb-4">
           Suivre ma commande
         </h1>
-        <p class="text-gray-500 font-light mt-2">
-          Entrez votre numéro de téléphone pour voir vos commandes
+        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">
+          Entrez votre numéro pour consulter vos suivis
         </p>
       </div>
     </div>
 
-    <div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto px-4 py-16">
       <!-- Formulaire de recherche -->
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
-        <form @submit.prevent="searchOrders" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2 uppercase tracking-widest text-[10px]">
-              Numéro de téléphone
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                </svg>
-              </div>
-              <input
-                v-model="phone"
-                type="tel"
-                placeholder="Ex: 66123456 ou +235 66 12 34 56"
-                required
-                class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none transition-all text-charcoal placeholder-gray-400 font-medium"
-                :class="{ 'border-red-300 bg-red-50': error }"
-              />
-            </div>
-            <p class="text-xs text-gray-500 mt-2 font-light">
-              Le numéro utilisé lors de votre commande
-            </p>
+      <div class="mb-12">
+        <form @submit.prevent="searchOrders" class="flex flex-col sm:flex-row gap-4">
+          <div class="flex-1 relative">
+            <input
+              v-model="phone"
+              type="tel"
+              placeholder="Numéro WhatsApp (ex: 66 00 00 00)"
+              required
+              class="w-full px-4 py-4 border border-gray-200 focus:border-charcoal outline-none transition-colors text-charcoal font-light placeholder-gray-400"
+              :class="{ 'border-red-400': error }"
+            />
           </div>
 
           <button
             type="submit"
             :disabled="loading || !phone.trim()"
-            class="w-full bg-charcoal text-white py-4 rounded-xl text-xs tracking-widest uppercase font-medium hover:bg-gold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="bg-charcoal text-white px-8 py-4 text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-gold transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
           >
-            <svg v-if="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
             {{ loading ? 'Recherche...' : 'Rechercher' }}
           </button>
         </form>
 
         <!-- Message d'erreur -->
         <Transition
-          enter-active-class="transition-all duration-300"
-          enter-from-class="opacity-0 -translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
+          enter-active-class="transition-opacity duration-300"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
         >
-          <div v-if="error" class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
-            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <p class="text-sm text-red-600">{{ error }}</p>
+          <div v-if="error" class="mt-4 p-4 border border-red-200 text-red-500 text-[10px] uppercase tracking-widest text-center">
+            {{ error }}
           </div>
         </Transition>
       </div>
 
       <!-- Résultats -->
       <Transition
-        enter-active-class="transition-all duration-500"
-        enter-from-class="opacity-0 translate-y-4"
-        enter-to-class="opacity-100 translate-y-0"
+        enter-active-class="transition-opacity duration-500"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
       >
         <div v-if="searched && !loading">
           <!-- Aucune commande -->
-          <div v-if="orders.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
-            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
-              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-              </svg>
-            </div>
-            <h3 class="text-lg font-serif text-charcoal mb-2">Aucune commande trouvée</h3>
-            <p class="text-gray-500 font-light text-sm mb-6">
-              Vérifiez que vous avez entré le bon numéro de téléphone
+          <div v-if="orders.length === 0" class="text-center py-16 border border-gray-100">
+            <h3 class="text-xl font-serif font-light text-charcoal mb-4">Aucune commande active</h3>
+            <p class="text-gray-400 font-light text-sm mb-8">
+              Vérifiez le numéro saisi ou explorez notre collection.
             </p>
             <NuxtLink
               to="/produits"
-              class="inline-flex items-center gap-2 bg-charcoal text-white px-6 py-3 text-xs tracking-widest uppercase hover:bg-gold transition-colors"
+              class="inline-block border border-gray-200 text-charcoal px-8 py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:border-charcoal transition-colors"
             >
-              Découvrir nos produits
+              Découvrir la collection
             </NuxtLink>
           </div>
 
           <!-- Liste des commandes -->
-          <div v-else class="space-y-4">
-            <h2 class="text-xs uppercase tracking-widest font-medium text-gray-500 mb-4 px-2">
-              {{ orders.length }} commande{{ orders.length > 1 ? 's' : '' }} trouvée{{ orders.length > 1 ? 's' : '' }}
+          <div v-else class="space-y-8">
+            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-6">
+              {{ orders.length }} commande{{ orders.length > 1 ? 's' : '' }} en cours
             </h2>
 
             <div 
               v-for="order in orders" 
               :key="order.id"
-              class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+              class="border border-gray-200 bg-white"
             >
               <!-- Header commande -->
-              <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+              <div class="p-6 md:p-8 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <p class="font-serif text-charcoal text-lg">{{ order.order_number }}</p>
-                  <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">{{ formatDate(order.created_at) }}</p>
+                  <p class="font-serif text-2xl text-charcoal mb-1">{{ order.order_number }}</p>
+                  <p class="text-[10px] text-gray-400 uppercase tracking-widest">{{ formatDate(order.created_at) }}</p>
                 </div>
                 <div 
-                  class="px-3 py-1.5 rounded-full text-xs font-medium tracking-wide border"
+                  class="px-4 py-2 text-[10px] uppercase tracking-[0.2em] border w-fit"
                   :class="getStatusClass(order.status)"
                 >
                   {{ getStatusLabel(order.status) }}
@@ -128,12 +95,12 @@
               </div>
 
               <!-- Timeline du statut -->
-              <div class="p-6 bg-gray-50/50">
+              <div class="p-6 md:p-8 bg-gray-50/50 border-b border-gray-100">
                 <div class="flex items-center justify-between relative">
                   <!-- Ligne de progression -->
-                  <div class="absolute top-4 left-0 right-0 h-px bg-gray-200 mx-8"></div>
+                  <div class="absolute top-2 left-0 right-0 h-[1px] bg-gray-200 mx-4"></div>
                   <div 
-                    class="absolute top-4 left-0 h-px bg-gold mx-8 transition-all duration-500"
+                    class="absolute top-2 left-0 h-[1px] bg-charcoal mx-4 transition-all duration-1000"
                     :style="{ width: getProgressWidth(order.status) }"
                   ></div>
 
@@ -144,73 +111,71 @@
                     class="relative z-10 flex flex-col items-center"
                   >
                     <div 
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-300 border bg-white"
+                      class="w-4 h-4 rounded-full border bg-white mb-3 transition-colors duration-500"
                       :class="isStepCompleted(order.status, step.value) 
-                        ? 'border-gold text-gold' 
+                        ? 'border-charcoal' 
                         : isStepCurrent(order.status, step.value)
-                          ? 'border-charcoal text-charcoal shadow-sm'
-                          : 'border-gray-200 text-gray-300'"
+                          ? 'border-charcoal bg-charcoal'
+                          : 'border-gray-200'"
                     >
-                      <svg v-if="isStepCompleted(order.status, step.value) && !isStepCurrent(order.status, step.value)" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                      </svg>
-                      <span v-else class="text-[10px]">{{ step.icon }}</span>
                     </div>
                     <span 
-                      class="text-[10px] mt-2 text-center max-w-[60px] uppercase tracking-wider"
+                      class="text-[9px] uppercase tracking-widest text-center hidden md:block"
                       :class="isStepCompleted(order.status, step.value) || isStepCurrent(order.status, step.value)
-                        ? 'text-charcoal font-medium'
-                        : 'text-gray-400'"
+                        ? 'text-charcoal'
+                        : 'text-gray-300'"
                     >
                       {{ step.label }}
                     </span>
                   </div>
                 </div>
+                <p class="md:hidden text-center text-[10px] uppercase tracking-widest text-charcoal mt-6">
+                  Étape : {{ getStatusLabel(order.status) }}
+                </p>
               </div>
 
               <!-- Détails commande -->
-              <div class="p-6 space-y-4">
+              <div class="p-6 md:p-8 space-y-6">
                 <!-- Articles -->
                 <div>
-                  <p class="text-xs uppercase tracking-widest text-gray-400 mb-3">Articles commandés</p>
-                  <div class="space-y-2">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4">Articles</p>
+                  <div class="space-y-3">
                     <div 
                       v-for="(item, index) in parseItems(order.items)" 
                       :key="index"
-                      class="text-sm flex justify-between font-light"
+                      class="flex justify-between font-light text-sm"
                     >
-                      <span class="text-charcoal">{{ item.title }} <span class="text-gray-400 ml-1">× {{ item.quantity }}</span></span>
+                      <span class="text-charcoal">{{ item.title }} <span class="text-gray-400 text-xs ml-2">x{{ item.quantity }}</span></span>
                       <span class="text-gray-500">{{ formatPrice(item.price * item.quantity) }}</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Livraison -->
-                <div class="pt-4 border-t border-gray-100">
-                  <p class="text-xs uppercase tracking-widest text-gray-400 mb-1">Livraison à</p>
-                  <p class="text-sm text-charcoal font-light">
-                    {{ order.client_address }}, {{ order.client_city }}
-                  </p>
-                </div>
+                <div class="grid md:grid-cols-2 gap-6 pt-6 border-t border-gray-100">
+                  <!-- Livraison -->
+                  <div>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Livraison</p>
+                    <p class="text-sm text-charcoal font-light">
+                      {{ order.client_address }}, {{ order.client_city }}
+                    </p>
+                  </div>
 
-                <!-- Total -->
-                <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                  <span class="text-xs uppercase tracking-widest text-gray-400">Total</span>
-                  <span class="font-serif text-xl text-charcoal">{{ formatPrice(order.total) }}</span>
+                  <!-- Total -->
+                  <div class="md:text-right">
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Total</p>
+                    <p class="font-serif text-2xl text-charcoal">{{ formatPrice(order.total) }}</p>
+                  </div>
                 </div>
 
                 <!-- Bouton WhatsApp si en attente -->
-                <div v-if="order.status === 'en_attente'" class="pt-4">
+                <div v-if="order.status === 'en_attente'" class="pt-6 border-t border-gray-100">
                   <a
                     :href="getWhatsAppLink(order)"
                     target="_blank"
                     rel="noopener"
-                    class="w-full flex items-center justify-center gap-2 border border-green-500 text-green-600 py-3 text-xs tracking-widest uppercase font-medium hover:bg-green-500 hover:text-white transition-colors"
+                    class="block w-full text-center border border-charcoal text-charcoal py-4 text-[10px] tracking-[0.2em] uppercase font-medium hover:bg-charcoal hover:text-white transition-colors"
                   >
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                    </svg>
-                    Contacter pour confirmer
+                    Confirmer via WhatsApp
                   </a>
                 </div>
               </div>
@@ -220,31 +185,26 @@
       </Transition>
 
       <!-- Info supplémentaire -->
-      <div class="mt-8 text-center border-t border-gray-100 pt-8">
-        <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">
-          Besoin d'aide ?
+      <div class="mt-16 text-center">
+        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4">
+          Besoin d'assistance ?
         </p>
         <a
           :href="`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, j\'ai une question concernant ma commande.')}`"
           target="_blank"
           rel="noopener"
-          class="inline-flex items-center gap-2 text-charcoal font-medium text-sm hover:text-gold transition-colors"
+          class="text-charcoal text-[10px] uppercase tracking-[0.2em] border-b border-charcoal pb-1 hover:text-gold hover:border-gold transition-colors"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-          </svg>
-          Contactez-nous sur WhatsApp
+          Contactez-nous
         </a>
       </div>
     </div>
-
-
   </div>
 </template>
 
 <script setup lang="ts">
 useHead({
-  title: 'Suivre ma commande — Samiah Cosmetics',
+  title: 'Suivi - Samiah Cosmetics',
   meta: [
     { name: 'description', content: 'Suivez l\'état de votre commande Samiah Cosmetics en entrant votre numéro de téléphone.' }
   ]
@@ -261,37 +221,25 @@ const searched = ref(false)
 const error = ref('')
 const orders = ref<any[]>([])
 
-// Étapes de commande
+// Étapes de commande (Sans emojis)
 const orderSteps = [
-  { value: 'en_attente', label: 'En attente', icon: '⏳' },
-  { value: 'confirmee', label: 'Confirmée', icon: '✓' },
-  { value: 'en_preparation', label: 'Préparation', icon: '📦' },
-  { value: 'en_livraison', label: 'Livraison', icon: '🚚' },
-  { value: 'livree', label: 'Livrée', icon: '✨' },
+  { value: 'en_attente', label: 'En attente' },
+  { value: 'confirmee', label: 'Confirmée' },
+  { value: 'en_preparation', label: 'Préparation' },
+  { value: 'en_livraison', label: 'Livraison' },
+  { value: 'livree', label: 'Livrée' },
 ]
 
 const statusOrder = ['en_attente', 'confirmee', 'en_preparation', 'en_livraison', 'livree']
 
-// Normaliser le numéro de téléphone
 const normalizePhone = (phoneNumber: string): string => {
-  // Enlever tous les caractères non numériques sauf +
   let cleaned = phoneNumber.replace(/[^\d+]/g, '')
-  
-  // Si commence par +235, garder tel quel
-  // Si commence par 235, ajouter +
-  // Sinon ajouter +235
-  if (cleaned.startsWith('+235')) {
-    return cleaned
-  } else if (cleaned.startsWith('235')) {
-    return '+' + cleaned
-  } else if (cleaned.startsWith('+')) {
-    return cleaned
-  } else {
-    return '+235' + cleaned
-  }
+  if (cleaned.startsWith('+235')) return cleaned
+  if (cleaned.startsWith('235')) return '+' + cleaned
+  if (cleaned.startsWith('+')) return cleaned
+  return '+235' + cleaned
 }
 
-// Rechercher les commandes
 const searchOrders = async () => {
   if (!phone.value.trim()) return
 
@@ -303,7 +251,6 @@ const searchOrders = async () => {
   try {
     const normalizedPhone = normalizePhone(phone.value)
     
-    // Rechercher avec plusieurs formats possibles
     const phoneVariants = [
       normalizedPhone,
       normalizedPhone.replace('+235', ''),
@@ -314,8 +261,8 @@ const searchOrders = async () => {
       .from('orders')
       .select('*')
       .or(phoneVariants.map(p => `client_phone.ilike.%${p.slice(-8)}%`).join(','))
-      .neq('status', 'livree') // Exclure les commandes livrées
-      .neq('status', 'annulee') // Exclure les commandes annulées
+      .neq('status', 'livree') 
+      .neq('status', 'annulee') 
       .order('created_at', { ascending: false })
 
     if (fetchError) throw fetchError
@@ -323,7 +270,7 @@ const searchOrders = async () => {
     orders.value = data || []
   } catch (e: any) {
     console.error('Erreur recherche:', e)
-    error.value = 'Une erreur est survenue. Veuillez réessayer.'
+    error.value = 'Erreur lors de la recherche.'
   } finally {
     loading.value = false
     searched.value = true
@@ -333,46 +280,45 @@ const searchOrders = async () => {
 // Helpers
 const getStatusLabel = (status: string): string => {
   const labels: Record<string, string> = {
-    'en_attente': '⏳ En attente',
-    'confirmee': '✅ Confirmée',
-    'en_preparation': '📦 En préparation',
-    'en_livraison': '🚚 En livraison',
-    'livree': '✨ Livrée',
-    'annulee': '❌ Annulée',
-    // Fallback pour anciens statuts anglais
-    'pending': '⏳ En attente',
-    'confirmed': '✅ Confirmée',
-    'processing': '📦 En préparation',
-    'shipped': '🚚 En livraison',
-    'delivered': '✨ Livrée',
-    'cancelled': '❌ Annulée',
+    'en_attente': 'En attente',
+    'confirmee': 'Confirmée',
+    'en_preparation': 'En préparation',
+    'en_livraison': 'En livraison',
+    'livree': 'Livrée',
+    'annulee': 'Annulée',
+    'pending': 'En attente',
+    'confirmed': 'Confirmée',
+    'processing': 'En préparation',
+    'shipped': 'En livraison',
+    'delivered': 'Livrée',
+    'cancelled': 'Annulée',
   }
   return labels[status] || status
 }
 
 const getStatusClass = (status: string): string => {
   const classes: Record<string, string> = {
-    'en_attente': 'bg-yellow-100 text-yellow-700',
-    'confirmee': 'bg-blue-100 text-blue-700',
-    'en_preparation': 'bg-purple-100 text-purple-700',
-    'en_livraison': 'bg-orange-100 text-orange-700',
-    'livree': 'bg-green-100 text-green-700',
-    'annulee': 'bg-red-100 text-red-700',
+    'en_attente': 'border-gray-300 text-gray-500 bg-white',
+    'confirmee': 'border-charcoal text-charcoal bg-white',
+    'en_preparation': 'border-charcoal text-white bg-charcoal',
+    'en_livraison': 'border-charcoal text-white bg-charcoal',
+    'livree': 'border-gold text-gold bg-white',
+    'annulee': 'border-red-200 text-red-500 bg-white',
     // Fallback
-    'pending': 'bg-yellow-100 text-yellow-700',
-    'confirmed': 'bg-blue-100 text-blue-700',
-    'processing': 'bg-purple-100 text-purple-700',
-    'shipped': 'bg-orange-100 text-orange-700',
-    'delivered': 'bg-green-100 text-green-700',
-    'cancelled': 'bg-red-100 text-red-700',
+    'pending': 'border-gray-300 text-gray-500 bg-white',
+    'confirmed': 'border-charcoal text-charcoal bg-white',
+    'processing': 'border-charcoal text-white bg-charcoal',
+    'shipped': 'border-charcoal text-white bg-charcoal',
+    'delivered': 'border-gold text-gold bg-white',
+    'cancelled': 'border-red-200 text-red-500 bg-white',
   }
-  return classes[status] || 'bg-gray-100 text-gray-700'
+  return classes[status] || 'border-gray-200 text-gray-400 bg-white'
 }
 
 const isStepCompleted = (currentStatus: string, stepValue: string): boolean => {
   const currentIndex = statusOrder.indexOf(currentStatus)
   const stepIndex = statusOrder.indexOf(stepValue)
-  return currentIndex >= stepIndex && currentIndex !== -1
+  return currentIndex > stepIndex && currentIndex !== -1
 }
 
 const isStepCurrent = (currentStatus: string, stepValue: string): boolean => {
@@ -383,7 +329,7 @@ const getProgressWidth = (status: string): string => {
   const index = statusOrder.indexOf(status)
   if (index === -1) return '0%'
   const percentage = (index / (statusOrder.length - 1)) * 100
-  return `calc(${percentage}% - 2rem)`
+  return `calc(${percentage}% - 1rem)`
 }
 
 const parseItems = (items: any): any[] => {
@@ -406,14 +352,12 @@ const formatDate = (dateString: string): string => {
   return date.toLocaleDateString('fr-FR', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    year: 'numeric'
   })
 }
 
 const getWhatsAppLink = (order: any): string => {
-  const message = `Bonjour, je souhaite confirmer ma commande ${order.order_number}.\n\nNom: ${order.client_name}\nTéléphone: ${order.client_phone}`
+  const message = `Bonjour, je confirme ma commande ${order.order_number}.\nNom: ${order.client_name}\nContact: ${order.client_phone}`
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
 }
 </script>

@@ -1,23 +1,23 @@
 <template>
-  <div class="py-16 bg-gray-50 dark:bg-gray-900 min-h-screen">
+  <div class="py-16 bg-gray-50  min-h-screen">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="text-center mb-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-gold/10 dark:bg-gold/20 rounded-2xl mb-6">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gold/10  rounded-2xl mb-6">
           <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <h1 class="text-3xl md:text-4xl font-serif font-bold text-charcoal dark:text-white mb-4">
+        <h1 class="text-3xl md:text-4xl font-serif font-bold text-charcoal  mb-4">
           Conditions Générales de Vente
         </h1>
         <div class="w-20 h-1 bg-gold mx-auto rounded-full"></div>
-        <p class="mt-4 text-gray-500 dark:text-gray-400">Dernière mise à jour : {{ new Date().toLocaleDateString('fr-FR') }}</p>
+        <p class="mt-4 text-gray-500 ">Dernière mise à jour : {{ new Date().toLocaleDateString('fr-FR') }}</p>
       </div>
 
       <!-- Table des matières -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-none dark:border dark:border-gray-700 p-6 mb-8">
-        <h2 class="font-bold text-charcoal dark:text-white mb-4 flex items-center gap-2">
+      <div class="bg-white  rounded-2xl shadow-sm    p-6 mb-8">
+        <h2 class="font-bold text-charcoal  mb-4 flex items-center gap-2">
           <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
           </svg>
@@ -26,24 +26,24 @@
         <nav class="grid md:grid-cols-2 gap-2">
           <a v-for="(section, index) in sections" :key="index" 
              :href="`#section-${index + 1}`"
-             class="text-sm text-gray-600 dark:text-gray-400 hover:text-gold dark:hover:text-gold transition-colors flex items-center gap-2 py-1">
-            <span class="w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center text-xs font-bold">{{ index + 1 }}</span>
+             class="text-sm text-gray-600  hover:text-gold :text-gold transition-colors flex items-center gap-2 py-1">
+            <span class="w-6 h-6 bg-gray-100  rounded-lg flex items-center justify-center text-xs font-bold">{{ index + 1 }}</span>
             {{ section.title }}
           </a>
         </nav>
       </div>
 
       <!-- Contenu -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm dark:shadow-none dark:border dark:border-gray-700 p-8 md:p-12 space-y-8">
+      <div class="bg-white  rounded-2xl shadow-sm    p-8 md:p-12 space-y-8">
         
         <section v-for="(section, index) in sections" :key="index" :id="`section-${index + 1}`" class="scroll-mt-8">
           <div class="flex items-start gap-4 mb-4">
-            <span class="flex-shrink-0 w-10 h-10 bg-gold/10 dark:bg-gold/20 rounded-xl flex items-center justify-center text-gold font-bold">
+            <span class="flex-shrink-0 w-10 h-10 bg-gold/10  rounded-xl flex items-center justify-center text-gold font-bold">
               {{ index + 1 }}
             </span>
-            <h2 class="text-xl font-bold text-charcoal dark:text-white pt-1.5">{{ section.title }}</h2>
+            <h2 class="text-xl font-bold text-charcoal  pt-1.5">{{ section.title }}</h2>
           </div>
-          <div class="pl-14 text-gray-600 dark:text-gray-300 leading-relaxed space-y-3">
+          <div class="pl-14 text-gray-600  leading-relaxed space-y-3">
             <p v-html="section.content"></p>
             <ul v-if="section.list" class="list-disc pl-5 space-y-1">
               <li v-for="(item, i) in section.list" :key="i" v-html="item"></li>
@@ -55,7 +55,7 @@
 
       <!-- Contact -->
       <div class="mt-8 text-center">
-        <p class="text-gray-500 dark:text-gray-400 text-sm mb-4">Une question sur nos conditions ?</p>
+        <p class="text-gray-500  text-sm mb-4">Une question sur nos conditions ?</p>
         <a 
           href="https://wa.me/23562752105"
           target="_blank"
@@ -83,7 +83,7 @@ useHead({
 const sections = [
   {
     title: 'Objet',
-    content: 'Les présentes Conditions Générales de Vente (CGV) régissent les ventes de produits cosmétiques et services de consultation capillaire effectuées par <strong class="text-charcoal dark:text-white">Samiah Cosmetics</strong> via son site internet. Toute commande implique l\'adhésion sans réserve du client aux présentes conditions.'
+    content: 'Les présentes Conditions Générales de Vente (CGV) régissent les ventes de produits cosmétiques et services de consultation capillaire effectuées par <strong class="text-charcoal ">Samiah Cosmetics</strong> via son site internet. Toute commande implique l\'adhésion sans réserve du client aux présentes conditions.'
   },
   {
     title: 'Produits et Services',
@@ -91,26 +91,26 @@ const sections = [
   },
   {
     title: 'Prix',
-    content: 'Les prix sont indiqués en <strong class="text-charcoal dark:text-white">Francs CFA (XAF)</strong>. Samiah Cosmetics se réserve le droit de modifier ses prix à tout moment, mais le produit sera facturé sur la base du tarif en vigueur au moment de la validation de la commande. Les frais de livraison ne sont pas inclus dans le prix affiché.'
+    content: 'Les prix sont indiqués en <strong class="text-charcoal ">Francs CFA (XAF)</strong>. Samiah Cosmetics se réserve le droit de modifier ses prix à tout moment, mais le produit sera facturé sur la base du tarif en vigueur au moment de la validation de la commande. Les frais de livraison ne sont pas inclus dans le prix affiché.'
   },
   {
     title: 'Commande et Paiement',
-    content: 'La validation de la commande entraîne l\'acceptation des présentes CGV.<br><strong class="text-charcoal dark:text-white">Moyens de paiement acceptés :</strong>',
+    content: 'La validation de la commande entraîne l\'acceptation des présentes CGV.<br><strong class="text-charcoal ">Moyens de paiement acceptés :</strong>',
     list: ['Paiement à la livraison (Cash)', 'Airtel Money', 'Moov Money']
   },
   {
     title: 'Livraison',
     content: 'Les livraisons sont effectuées principalement à N\'Djamena et dans les grandes villes du Tchad (Moundou, Sarh, Abéché, etc.).',
-    list: ['<strong class="text-charcoal dark:text-white">N\'Djamena :</strong> Livraison sous 24h à 48h.', '<strong class="text-charcoal dark:text-white">Provinces :</strong> Expédition via les agences de transport partenaires.']
+    list: ['<strong class="text-charcoal ">N\'Djamena :</strong> Livraison sous 24h à 48h.', '<strong class="text-charcoal ">Provinces :</strong> Expédition via les agences de transport partenaires.']
   },
   {
     title: 'Retours et Réclamations',
-    content: 'Pour des raisons d\'hygiène liées aux produits cosmétiques, les retours ne sont acceptés que si le produit est scellé, non utilisé et dans son emballage d\'origine, dans un délai de <strong class="text-charcoal dark:text-white">48h</strong> après réception. En cas de produit défectueux, contactez-nous via WhatsApp.'
+    content: 'Pour des raisons d\'hygiène liées aux produits cosmétiques, les retours ne sont acceptés que si le produit est scellé, non utilisé et dans son emballage d\'origine, dans un délai de <strong class="text-charcoal ">48h</strong> après réception. En cas de produit défectueux, contactez-nous via WhatsApp.'
   },
   {
     title: 'Service Client',
     content: 'Pour toute question, notre service client est disponible :',
-    list: ['<strong class="text-charcoal dark:text-white">WhatsApp / Tél :</strong> +235 62 75 21 05', '<strong class="text-charcoal dark:text-white">Email :</strong> contact@samiahcosmetics.shop']
+    list: ['<strong class="text-charcoal ">WhatsApp / Tél :</strong> +235 62 75 21 05', '<strong class="text-charcoal ">Email :</strong> contact@samiahcosmetics.shop']
   }
 ]
 </script>
