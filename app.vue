@@ -8,7 +8,7 @@
     
     <ToastContainer />
     
-    <WhatsAppFloat />
+
     <ScrollToTop />
   </div>
 </template>
@@ -47,14 +47,7 @@ useHead({
   ]
 })
 
-// Handle hydration
-// Initialize dark mode
-const { init: initDarkMode } = useDarkMode()
-
 onMounted(() => {
-  // Initialize theme
-  initDarkMode()
-  
   // Petit délai pour s'assurer que les animations CSS se chargent bien
   setTimeout(() => {
     document.querySelectorAll('.skeleton').forEach(el => {

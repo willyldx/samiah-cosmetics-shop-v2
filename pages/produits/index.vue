@@ -1,37 +1,37 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-charcoal">
-    <!-- Header amélioré -->
-    <div class="bg-gradient-to-br from-charcoal via-gray-900 to-charcoal text-white relative overflow-hidden">
-      <div class="absolute inset-0">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-[100px]"></div>
-        <div class="absolute bottom-0 left-1/4 w-64 h-64 bg-gold/10 rounded-full blur-[80px]"></div>
-      </div>
-      <div class="max-w-7xl mx-auto px-4 py-12 lg:py-16 relative z-10">
-        <span class="text-gold font-medium text-sm uppercase tracking-wider">Catalogue</span>
-        <h1 class="text-3xl lg:text-5xl font-serif font-bold mt-2">
-          Nos <span class="bg-gradient-to-r from-gold via-yellow-400 to-gold bg-clip-text text-transparent">Produits</span>
+  <div class="min-h-screen bg-white">
+    <!-- Header -->
+    <div class="bg-gray-50 border-b border-gray-100">
+      <div class="max-w-7xl mx-auto px-4 py-16 lg:py-24 text-center">
+        <span class="inline-flex items-center gap-2 text-gold font-medium text-[10px] uppercase tracking-widest mb-4">
+          <span class="w-6 h-px bg-gold"></span>
+          Catalogue
+          <span class="w-6 h-px bg-gold"></span>
+        </span>
+        <h1 class="text-3xl lg:text-5xl font-serif font-light text-charcoal">
+          Nos Produits
         </h1>
-        <p class="text-white/70 mt-3 max-w-xl text-lg">
+        <p class="text-gray-500 font-light mt-4 max-w-xl mx-auto text-sm">
           Découvrez notre sélection de soins capillaires naturels pour sublimer vos cheveux
         </p>
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
-      <!-- Filtres modernisés -->
-      <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 p-5 mb-8 border border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+      <!-- Filtres -->
+      <div class="mb-12">
         <div class="flex flex-wrap items-center gap-4">
           <!-- Recherche -->
           <div class="flex-1 min-w-[200px]">
-            <div class="relative group">
-              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 transition-colors group-focus-within:text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <div class="relative">
+              <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
                 v-model="filters.search"
                 type="text"
                 placeholder="Rechercher un produit..."
-                class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-transparent rounded-xl focus:outline-none focus:bg-white dark:focus:bg-gray-600 focus:border-gold/50 focus:shadow-lg focus:shadow-gold/10 transition-all text-charcoal dark:text-white placeholder:text-gray-400"
+                class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-transparent rounded-none focus:outline-none focus:bg-white focus:border-gray-200 transition-all text-sm text-charcoal placeholder:text-gray-400 font-light"
               />
             </div>
           </div>
@@ -39,7 +39,7 @@
           <!-- Catégorie -->
           <select
             v-model="filters.category"
-            class="px-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-gold/50 transition-all cursor-pointer text-charcoal font-medium"
+            class="px-4 py-3 bg-gray-50 border border-transparent focus:outline-none focus:bg-white focus:border-gray-200 transition-all cursor-pointer text-sm text-charcoal font-light rounded-none min-w-[150px]"
           >
             <option v-for="cat in categories" :key="cat" :value="cat">
               {{ cat }}
@@ -49,7 +49,7 @@
           <!-- Ville -->
           <select
             v-model="filters.city"
-            class="px-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-gold/50 transition-all cursor-pointer text-charcoal font-medium"
+            class="px-4 py-3 bg-gray-50 border border-transparent focus:outline-none focus:bg-white focus:border-gray-200 transition-all cursor-pointer text-sm text-charcoal font-light rounded-none min-w-[150px]"
           >
             <option value="Toutes">Toutes les villes</option>
             <option v-for="city in cities" :key="city" :value="city">
@@ -60,7 +60,7 @@
           <!-- Tri -->
           <select
             v-model="filters.sort"
-            class="px-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:bg-white focus:border-gold/50 transition-all cursor-pointer text-charcoal font-medium"
+            class="px-4 py-3 bg-gray-50 border border-transparent focus:outline-none focus:bg-white focus:border-gray-200 transition-all cursor-pointer text-sm text-charcoal font-light rounded-none min-w-[150px]"
           >
             <option value="newest">Plus récents</option>
             <option value="oldest">Plus anciens</option>
@@ -71,28 +71,27 @@
         </div>
 
         <!-- Résultats count -->
-        <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-          <span class="text-sm text-gray-500">
-            <span class="font-bold text-charcoal">{{ filteredProducts.length }}</span> produit{{ filteredProducts.length > 1 ? 's' : '' }} trouvé{{ filteredProducts.length > 1 ? 's' : '' }}
+        <div class="mt-4 flex items-center justify-between">
+          <span class="text-xs uppercase tracking-widest text-gray-400 font-medium">
+            <span class="text-charcoal">{{ filteredProducts.length }}</span> résultat{{ filteredProducts.length > 1 ? 's' : '' }}
           </span>
           <button 
             v-if="filters.search || filters.category !== 'Toutes' || filters.city !== 'Toutes'"
             @click="resetFilters"
-            class="text-sm text-gold hover:text-yellow-600 font-medium flex items-center gap-1 transition-colors"
+            class="text-[10px] tracking-widest uppercase text-charcoal hover:text-gold transition-colors font-medium border-b border-transparent hover:border-gold pb-0.5"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            Réinitialiser
+            Réinitialiser les filtres
           </button>
         </div>
       </div>
 
       <!-- Loading -->
-      <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
         <SkeletonLoader v-for="i in 12" :key="i" type="product-card" />
       </div>
 
       <!-- Produits -->
-      <div v-else-if="filteredProducts.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div v-else-if="filteredProducts.length" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
         <ProductCard
           v-for="product in filteredProducts"
           :key="product.id"
@@ -104,25 +103,19 @@
       </div>
 
       <!-- Aucun produit -->
-      <div v-else class="text-center py-20">
-        <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-          <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold text-charcoal mb-2">Aucun produit trouvé</h3>
-        <p class="text-gray-500 mb-6">Essayez de modifier vos filtres de recherche</p>
+      <div v-else class="text-center py-32 border border-gray-100">
+        <p class="text-lg font-serif text-charcoal mb-4">Aucun produit trouvé</p>
+        <p class="text-gray-500 font-light text-sm mb-8">Essayez de modifier vos filtres de recherche.</p>
         <button
           @click="resetFilters"
-          class="inline-flex items-center gap-2 bg-gold text-charcoal px-6 py-3 rounded-full font-bold hover:bg-yellow-500 transition-all hover:-translate-y-0.5 hover:shadow-lg"
+          class="inline-flex items-center gap-2 text-[10px] tracking-widest uppercase bg-charcoal text-white px-8 py-3 hover:bg-gold transition-colors"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-          Réinitialiser les filtres
+          Réinitialiser
         </button>
       </div>
     </div>
 
-    <WhatsAppFloat />
+
   </div>
 </template>
 

@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+    <div class="bg-white border-b border-gray-100">
       <div class="max-w-2xl mx-auto px-4 py-8 lg:py-12 text-center">
         <div class="w-16 h-16 bg-gold/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
         </div>
-        <h1 class="text-3xl lg:text-4xl font-bold text-charcoal dark:text-white">
+        <h1 class="text-3xl lg:text-4xl font-serif font-light text-charcoal">
           Suivre ma commande
         </h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">
+        <p class="text-gray-500 font-light mt-2">
           Entrez votre numéro de téléphone pour voir vos commandes
         </p>
       </div>
@@ -19,10 +19,10 @@
 
     <div class="max-w-2xl mx-auto px-4 py-8">
       <!-- Formulaire de recherche -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 p-6 mb-8">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
         <form @submit.prevent="searchOrders" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2 uppercase tracking-widest text-[10px]">
               Numéro de téléphone
             </label>
             <div class="relative">
@@ -36,11 +36,11 @@
                 type="tel"
                 placeholder="Ex: 66123456 ou +235 66 12 34 56"
                 required
-                class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-charcoal dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                class="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none transition-all text-charcoal placeholder-gray-400 font-medium"
                 :class="{ 'border-red-300 bg-red-50': error }"
               />
             </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <p class="text-xs text-gray-500 mt-2 font-light">
               Le numéro utilisé lors de votre commande
             </p>
           </div>
@@ -48,13 +48,13 @@
           <button
             type="submit"
             :disabled="loading || !phone.trim()"
-            class="w-full bg-charcoal dark:bg-white text-white dark:text-charcoal py-3.5 rounded-xl font-bold hover:bg-charcoal/90 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="w-full bg-charcoal text-white py-4 rounded-xl text-xs tracking-widest uppercase font-medium hover:bg-gold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <svg v-if="loading" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+            <svg v-if="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             {{ loading ? 'Recherche...' : 'Rechercher' }}
@@ -84,19 +84,19 @@
       >
         <div v-if="searched && !loading">
           <!-- Aucune commande -->
-          <div v-if="orders.length === 0" class="bg-white dark:bg-gray-800 rounded-2xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 p-8 text-center">
-            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div v-if="orders.length === 0" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
               </svg>
             </div>
-            <h3 class="text-lg font-semibold text-charcoal dark:text-white mb-2">Aucune commande trouvée</h3>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">
+            <h3 class="text-lg font-serif text-charcoal mb-2">Aucune commande trouvée</h3>
+            <p class="text-gray-500 font-light text-sm mb-6">
               Vérifiez que vous avez entré le bon numéro de téléphone
             </p>
             <NuxtLink
               to="/produits"
-              class="inline-flex items-center gap-2 bg-gold text-charcoal px-6 py-3 rounded-full font-bold hover:bg-yellow-400 transition-colors"
+              class="inline-flex items-center gap-2 bg-charcoal text-white px-6 py-3 text-xs tracking-widest uppercase hover:bg-gold transition-colors"
             >
               Découvrir nos produits
             </NuxtLink>
@@ -104,23 +104,23 @@
 
           <!-- Liste des commandes -->
           <div v-else class="space-y-4">
-            <h2 class="text-lg font-semibold text-charcoal dark:text-white">
+            <h2 class="text-xs uppercase tracking-widest font-medium text-gray-500 mb-4 px-2">
               {{ orders.length }} commande{{ orders.length > 1 ? 's' : '' }} trouvée{{ orders.length > 1 ? 's' : '' }}
             </h2>
 
             <div 
               v-for="order in orders" 
               :key="order.id"
-              class="bg-white dark:bg-gray-800 rounded-2xl shadow-soft dark:shadow-none dark:border dark:border-gray-700 overflow-hidden"
+              class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
             >
               <!-- Header commande -->
-              <div class="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div class="p-6 border-b border-gray-100 flex items-center justify-between">
                 <div>
-                  <p class="font-bold text-charcoal dark:text-white">{{ order.order_number }}</p>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(order.created_at) }}</p>
+                  <p class="font-serif text-charcoal text-lg">{{ order.order_number }}</p>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider mt-1">{{ formatDate(order.created_at) }}</p>
                 </div>
                 <div 
-                  class="px-3 py-1.5 rounded-full text-sm font-medium"
+                  class="px-3 py-1.5 rounded-full text-xs font-medium tracking-wide border"
                   :class="getStatusClass(order.status)"
                 >
                   {{ getStatusLabel(order.status) }}
@@ -128,12 +128,12 @@
               </div>
 
               <!-- Timeline du statut -->
-              <div class="p-4 bg-gray-50">
+              <div class="p-6 bg-gray-50/50">
                 <div class="flex items-center justify-between relative">
                   <!-- Ligne de progression -->
-                  <div class="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 mx-8"></div>
+                  <div class="absolute top-4 left-0 right-0 h-px bg-gray-200 mx-8"></div>
                   <div 
-                    class="absolute top-4 left-0 h-0.5 bg-gold mx-8 transition-all duration-500"
+                    class="absolute top-4 left-0 h-px bg-gold mx-8 transition-all duration-500"
                     :style="{ width: getProgressWidth(order.status) }"
                   ></div>
 
@@ -144,20 +144,20 @@
                     class="relative z-10 flex flex-col items-center"
                   >
                     <div 
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-300"
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all duration-300 border bg-white"
                       :class="isStepCompleted(order.status, step.value) 
-                        ? 'bg-gold text-charcoal' 
+                        ? 'border-gold text-gold' 
                         : isStepCurrent(order.status, step.value)
-                          ? 'bg-gold text-charcoal ring-4 ring-gold/30'
-                          : 'bg-gray-200 text-gray-400'"
+                          ? 'border-charcoal text-charcoal shadow-sm'
+                          : 'border-gray-200 text-gray-300'"
                     >
                       <svg v-if="isStepCompleted(order.status, step.value) && !isStepCurrent(order.status, step.value)" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                       </svg>
-                      <span v-else class="text-xs">{{ step.icon }}</span>
+                      <span v-else class="text-[10px]">{{ step.icon }}</span>
                     </div>
                     <span 
-                      class="text-xs mt-2 text-center max-w-[60px] leading-tight"
+                      class="text-[10px] mt-2 text-center max-w-[60px] uppercase tracking-wider"
                       :class="isStepCompleted(order.status, step.value) || isStepCurrent(order.status, step.value)
                         ? 'text-charcoal font-medium'
                         : 'text-gray-400'"
@@ -169,45 +169,45 @@
               </div>
 
               <!-- Détails commande -->
-              <div class="p-4 space-y-3">
+              <div class="p-6 space-y-4">
                 <!-- Articles -->
                 <div>
-                  <p class="text-sm text-gray-500 mb-2">Articles commandés :</p>
-                  <div class="space-y-1">
+                  <p class="text-xs uppercase tracking-widest text-gray-400 mb-3">Articles commandés</p>
+                  <div class="space-y-2">
                     <div 
                       v-for="(item, index) in parseItems(order.items)" 
                       :key="index"
-                      class="text-sm flex justify-between"
+                      class="text-sm flex justify-between font-light"
                     >
-                      <span class="text-charcoal">{{ item.title }} × {{ item.quantity }}</span>
+                      <span class="text-charcoal">{{ item.title }} <span class="text-gray-400 ml-1">× {{ item.quantity }}</span></span>
                       <span class="text-gray-500">{{ formatPrice(item.price * item.quantity) }}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Livraison -->
-                <div class="pt-3 border-t border-gray-100">
-                  <p class="text-sm text-gray-500">Livraison à :</p>
-                  <p class="text-sm text-charcoal font-medium">
+                <div class="pt-4 border-t border-gray-100">
+                  <p class="text-xs uppercase tracking-widest text-gray-400 mb-1">Livraison à</p>
+                  <p class="text-sm text-charcoal font-light">
                     {{ order.client_address }}, {{ order.client_city }}
                   </p>
                 </div>
 
                 <!-- Total -->
-                <div class="pt-3 border-t border-gray-100 flex justify-between items-center">
-                  <span class="font-medium text-charcoal">Total</span>
-                  <span class="font-bold text-lg text-gold">{{ formatPrice(order.total) }}</span>
+                <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                  <span class="text-xs uppercase tracking-widest text-gray-400">Total</span>
+                  <span class="font-serif text-xl text-charcoal">{{ formatPrice(order.total) }}</span>
                 </div>
 
                 <!-- Bouton WhatsApp si en attente -->
-                <div v-if="order.status === 'en_attente'" class="pt-3">
+                <div v-if="order.status === 'en_attente'" class="pt-4">
                   <a
                     :href="getWhatsAppLink(order)"
                     target="_blank"
                     rel="noopener"
-                    class="w-full flex items-center justify-center gap-2 bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors"
+                    class="w-full flex items-center justify-center gap-2 border border-green-500 text-green-600 py-3 text-xs tracking-widest uppercase font-medium hover:bg-green-500 hover:text-white transition-colors"
                   >
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                     </svg>
                     Contacter pour confirmer
@@ -220,25 +220,25 @@
       </Transition>
 
       <!-- Info supplémentaire -->
-      <div class="mt-8 text-center">
-        <p class="text-sm text-gray-500">
-          Un problème avec votre commande ?
+      <div class="mt-8 text-center border-t border-gray-100 pt-8">
+        <p class="text-xs uppercase tracking-widest text-gray-400 mb-2">
+          Besoin d'aide ?
         </p>
         <a
           :href="`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Bonjour, j\'ai une question concernant ma commande.')}`"
           target="_blank"
           rel="noopener"
-          class="inline-flex items-center gap-1 text-gold font-medium hover:underline mt-1"
+          class="inline-flex items-center gap-2 text-charcoal font-medium text-sm hover:text-gold transition-colors"
         >
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
           </svg>
           Contactez-nous sur WhatsApp
         </a>
       </div>
     </div>
 
-    <WhatsAppFloat />
+
   </div>
 </template>
 

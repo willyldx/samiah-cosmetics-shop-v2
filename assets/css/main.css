@@ -115,32 +115,14 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Dark mode */
-  .dark body {
-    @apply bg-charcoal text-white;
-  }
-
-  /* Smooth transition for theme switch */
-  .dark {
-    color-scheme: dark;
-  }
-
   /* Focus visible amélioré */
   *:focus-visible {
     @apply outline-none ring-2 ring-gold ring-offset-2 transition-shadow duration-200;
   }
 
-  .dark *:focus-visible {
-    @apply ring-offset-charcoal;
-  }
-
   /* Sélection de texte couleur Or */
   ::selection {
     @apply bg-gold/20 text-charcoal;
-  }
-
-  .dark ::selection {
-    @apply bg-gold/30 text-white;
   }
 }
 
@@ -216,10 +198,6 @@
   /* Glassmorphism (Effet verre) */
   .glass {
     @apply bg-white/80 backdrop-blur-md border border-white/20;
-  }
-
-  .glass-dark {
-    @apply bg-charcoal/90 backdrop-blur-md border border-white/10 text-white;
   }
 
   /* Lien Magique (Soulignement) */

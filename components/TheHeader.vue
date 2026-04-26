@@ -3,8 +3,8 @@
     class="sticky top-0 z-50 transition-all duration-500"
     :class="[
       isScrolled 
-        ? 'bg-white/85 dark:bg-charcoal/90 backdrop-blur-xl shadow-md border-b border-gray-100/50 dark:border-white/10' 
-        : 'bg-white dark:bg-charcoal'
+        ? 'bg-white/85 backdrop-blur-xl shadow-md border-b border-gray-100/50' 
+        : 'bg-white'
     ]"
   >
     <div class="max-w-7xl mx-auto px-4">
@@ -17,7 +17,7 @@
         >
           <div class="h-14 md:h-16 w-auto flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-3deg]">
             <img 
-              src="/favicon.svg" 
+              src="/logo.png" 
               alt="Samiah Cosmetics" 
               class="h-full w-auto object-contain drop-shadow-sm" 
             />
@@ -32,8 +32,8 @@
         <div class="hidden md:flex items-center gap-8">
           <NuxtLink 
             to="/" 
-            class="relative text-charcoal/70 dark:text-white/70 font-medium hover:text-gold transition-colors duration-300 py-2 group"
-            :class="{ '!text-charcoal dark:!text-white': route.path === '/' }"
+            class="relative text-charcoal/70 text-[11px] tracking-widest uppercase font-medium hover:text-gold transition-colors duration-300 py-2 group"
+            :class="{ '!text-charcoal': route.path === '/' }"
           >
             Accueil
             <span 
@@ -43,8 +43,8 @@
           </NuxtLink>
           <NuxtLink 
             to="/produits" 
-            class="relative text-charcoal/70 dark:text-white/70 font-medium hover:text-gold transition-colors duration-300 py-2 group"
-            :class="{ '!text-charcoal dark:!text-white': route.path.startsWith('/produits') }"
+            class="relative text-charcoal/70 text-[11px] tracking-widest uppercase font-medium hover:text-gold transition-colors duration-300 py-2 group"
+            :class="{ '!text-charcoal': route.path.startsWith('/produits') }"
           >
             Produits
             <span 
@@ -54,7 +54,7 @@
           </NuxtLink>
           <NuxtLink 
             to="/suivi" 
-            class="relative text-charcoal/70 font-medium hover:text-gold transition-colors duration-300 py-2 group flex items-center gap-1.5"
+            class="relative text-charcoal/70 text-[11px] tracking-widest uppercase font-medium hover:text-gold transition-colors duration-300 py-2 group flex items-center gap-1.5"
             :class="{ '!text-charcoal': route.path === '/suivi' }"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@
           </NuxtLink>
           <NuxtLink 
             to="/a-propos" 
-            class="relative text-charcoal/70 font-medium hover:text-gold transition-colors duration-300 py-2 group"
+            class="relative text-charcoal/70 text-[11px] tracking-widest uppercase font-medium hover:text-gold transition-colors duration-300 py-2 group"
             :class="{ '!text-charcoal': route.path === '/a-propos' }"
           >
             À propos
@@ -81,16 +81,14 @@
 
         <!-- Actions -->
         <div class="flex items-center gap-2 md:gap-3">
-          <!-- Dark Mode Toggle (Visible on all screens) -->
-          <DarkModeToggle />
           
           <!-- Bouton Recherche -->
           <button 
             type="button"
-            class="p-2.5 rounded-xl hover:bg-charcoal/5 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
+            class="p-2.5 rounded-xl hover:bg-charcoal/5 transition-all duration-300 hover:scale-105 active:scale-95"
             @click="searchOpen = true"
           >
-            <svg class="w-5 h-5 text-charcoal dark:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-charcoal transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </button>
@@ -98,10 +96,10 @@
           <!-- Panier avec animation -->
           <button 
             type="button"
-            class="relative p-2.5 rounded-xl hover:bg-charcoal/5 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
+            class="relative p-2.5 rounded-xl hover:bg-charcoal/5 transition-all duration-300 hover:scale-105 active:scale-95"
             @click="openCart"
           >
-            <svg class="w-5 h-5 md:w-6 md:h-6 text-charcoal dark:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-charcoal transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
             </svg>
             <span 
@@ -116,7 +114,7 @@
           <!-- Bouton Commander -->
           <NuxtLink 
             to="/produits" 
-            class="hidden md:inline-flex items-center bg-charcoal text-white dark:bg-white dark:text-charcoal px-6 py-2 text-[10px] font-medium tracking-widest uppercase hover:bg-gold hover:text-white dark:hover:bg-gold dark:hover:text-white transition-colors duration-300"
+            class="hidden md:inline-flex items-center bg-charcoal text-white px-6 py-2 text-[10px] font-medium tracking-widest uppercase hover:bg-gold hover:text-white transition-colors duration-300"
           >
             Commander
           </NuxtLink>
@@ -124,10 +122,10 @@
           <!-- Menu mobile -->
           <button 
             type="button"
-            class="p-2 rounded-xl text-charcoal dark:text-white hover:bg-charcoal/5 dark:hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95 md:hidden"
+            class="p-2 rounded-xl text-charcoal hover:bg-charcoal/5 transition-all duration-300 hover:scale-105 active:scale-95 md:hidden"
             @click="mobileMenuOpen = true"
           >
-            <svg class="w-5 h-5 text-charcoal dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
