@@ -1,6 +1,5 @@
 <template>
   <div>
-    <ScrollProgress />
     <NuxtLoadingIndicator color="#C6A961" :height="3" />
 
     <NuxtLayout>

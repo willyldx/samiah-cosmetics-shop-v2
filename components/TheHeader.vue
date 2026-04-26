@@ -113,13 +113,12 @@
           </button>
 
 
-          <!-- Bouton Commander avec effet shine -->
+          <!-- Bouton Commander -->
           <NuxtLink 
             to="/produits" 
-            class="hidden md:inline-flex items-center bg-gold hover:bg-yellow-500 text-charcoal px-5 py-2.5 rounded-full font-bold text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/30 relative overflow-hidden group"
+            class="hidden md:inline-flex items-center bg-charcoal text-white dark:bg-white dark:text-charcoal px-6 py-2 text-[10px] font-medium tracking-widest uppercase hover:bg-gold hover:text-white dark:hover:bg-gold dark:hover:text-white transition-colors duration-300"
           >
-            <span class="relative z-10">Commander</span>
-            <span class="absolute inset-0 bg-white/30 -translate-x-full skew-x-[-15deg] group-hover:translate-x-full transition-transform duration-700 ease-out"></span>
+            Commander
           </NuxtLink>
 
           <!-- Menu mobile -->

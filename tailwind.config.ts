@@ -97,20 +97,14 @@ export default {
       // ==========================================
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
-        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)', // Plus fluide
+        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         'fade-in-down': 'fadeInDown 0.6s ease-out',
         'slide-in-right': 'slideInRight 0.4s ease-out',
         'slide-in-left': 'slideInLeft 0.4s ease-out',
         'slide-up': 'slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         'scale-in': 'scaleIn 0.3s ease-out',
-        'pulse-soft': 'pulseSoft 2s infinite',
         'shimmer': 'shimmer 1.5s infinite linear',
-        'bounce-soft': 'bounceSoft 1s infinite',
         'spin-slow': 'spin 3s linear infinite',
-        // NOUVEAUX AJOUTS
-        'float': 'float 3s ease-in-out infinite', // Pour les badges
-        'shine': 'shine 0.7s ease-in-out', // Pour le bouton gold
-        'pulse-gold': 'pulseGold 2s infinite', // Pour les bordures actives
       },
       keyframes: {
         fadeIn: {
@@ -141,30 +135,9 @@ export default {
           '0%': { opacity: '0', transform: 'scale(0.95)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
-        pulseSoft: {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
-        },
         shimmer: {
           '0%': { backgroundPosition: '-468px 0' },
           '100%': { backgroundPosition: '468px 0' },
-        },
-        bounceSoft: {
-          '0%, 100%': { transform: 'translateY(-5%)' },
-          '50%': { transform: 'translateY(0)' },
-        },
-        // NOUVEAUX KEYFRAMES
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-5px)' },
-        },
-        shine: {
-          '0%': { transform: 'translateX(-150%) skewX(-15deg)' },
-          '100%': { transform: 'translateX(150%) skewX(-15deg)' },
-        },
-        pulseGold: {
-          '0%, 100%': { boxShadow: '0 0 0 0 rgba(198, 169, 97, 0.4)' },
-          '70%': { boxShadow: '0 0 0 10px rgba(198, 169, 97, 0)' },
         }
       },
 
