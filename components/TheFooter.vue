@@ -61,32 +61,27 @@
           <h3 class="font-medium text-charcoal mb-6 text-[10px] uppercase tracking-[0.2em]">Navigation</h3>
           <ul class="space-y-4">
             <li>
-              <NuxtLink to="/" class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm inline-flex items-center gap-2 group">
-                <span class="w-0 group-hover:w-2 h-px bg-charcoal transition-all duration-300"></span>
+              <NuxtLink to="/" class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5">
                 Accueil
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/produits" class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm inline-flex items-center gap-2 group">
-                <span class="w-0 group-hover:w-2 h-px bg-charcoal transition-all duration-300"></span>
+              <NuxtLink to="/produits" class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5">
                 Tous les produits
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/produits?category=Shampoings" class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm inline-flex items-center gap-2 group">
-                <span class="w-0 group-hover:w-2 h-px bg-charcoal transition-all duration-300"></span>
+              <NuxtLink to="/produits?category=Shampoings" class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5">
                 Shampoings
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/produits?category=Soins+cheveux" class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm inline-flex items-center gap-2 group">
-                <span class="w-0 group-hover:w-2 h-px bg-charcoal transition-all duration-300"></span>
+              <NuxtLink to="/produits?category=Soins+cheveux" class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5">
                 Soins cheveux
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/a-propos" class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm inline-flex items-center gap-2 group">
-                <span class="w-0 group-hover:w-2 h-px bg-charcoal transition-all duration-300"></span>
+              <NuxtLink to="/a-propos" class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5">
                 À propos
               </NuxtLink>
             </li>
@@ -101,27 +96,23 @@
                 :href="`https://wa.me/${config.public.whatsappNumber}?text=${encodeURIComponent('Bonjour Samiah Cosmetics, je souhaite réserver une consultation capillaire.')}`"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm inline-flex items-center gap-2 group"
+                class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5"
               >
-                <span class="w-0 group-hover:w-2 h-px bg-charcoal transition-all duration-300"></span>
                 Consultation capillaire
               </a>
             </li>
             <li>
-              <span class="text-gray-400 font-light text-sm flex items-center gap-2">
-                <span class="w-1 h-1 rounded-full bg-gold"></span>
+              <span class="text-gray-400 font-light text-[11px] uppercase tracking-widest">
                 Livraison N'Djamena
               </span>
             </li>
             <li>
-              <span class="text-gray-400 font-light text-sm flex items-center gap-2">
-                <span class="w-1 h-1 rounded-full bg-gold"></span>
+              <span class="text-gray-400 font-light text-[11px] uppercase tracking-widest">
                 Livraison provinces
               </span>
             </li>
             <li>
-              <span class="text-gray-400 font-light text-sm flex items-center gap-2">
-                <span class="w-1 h-1 rounded-full bg-gold"></span>
+              <span class="text-gray-400 font-light text-[11px] uppercase tracking-widest">
                 Paiement à la livraison
               </span>
             </li>
@@ -132,18 +123,18 @@
           <h3 class="font-medium text-charcoal mb-6 text-[10px] uppercase tracking-[0.2em]">Contact</h3>
           <ul class="space-y-4">
             <li class="flex items-start gap-3">
-              <span class="text-gray-500 font-light text-sm">N'Djamena, Tchad</span>
+              <span class="text-gray-500 font-light text-[11px] uppercase tracking-widest">N'Djamena, Tchad</span>
             </li>
             <li class="flex items-start gap-3">
               <a 
                 :href="`tel:+${config.public.whatsappNumber}`"
-                class="text-gray-500 font-light hover:text-charcoal transition-colors text-sm"
+                class="text-gray-500 font-light text-[11px] uppercase tracking-widest hover:text-charcoal transition-colors border-b border-transparent hover:border-charcoal pb-0.5"
               >
                 +235 62 75 21 05
               </a>
             </li>
             <li class="flex items-start gap-3">
-              <span class="text-gray-500 font-light text-sm">Lun - Sam : 8h - 18h</span>
+              <span class="text-gray-500 font-light text-[11px] uppercase tracking-widest">Lun - Sam : 8h - 18h</span>
             </li>
           </ul>
         </div>
