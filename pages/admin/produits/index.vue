@@ -1,40 +1,39 @@
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-charcoal">Produits</h1>
-        <p class="text-gray-500">{{ products.length }} produit(s)</p>
+        <h1 class="text-2xl font-serif font-light text-charcoal mb-1">Produits</h1>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Catalogue et inventaire ({{ products.length }})</p>
       </div>
       <NuxtLink
         to="/admin/produits/nouveau"
-        class="bg-charcoal text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 hover:bg-charcoal-800 transition-colors"
+        class="bg-charcoal text-white px-6 py-2.5 text-[10px] uppercase tracking-widest font-medium hover:bg-charcoal/90 transition-colors border border-charcoal"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Ajouter
+        Nouveau Produit
       </NuxtLink>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-soft p-4 mb-6">
+    <!-- Filters -->
+    <div class="bg-white border border-gray-200 p-4 mb-6">
       <div class="flex flex-wrap items-center gap-4">
+        <!-- Search -->
         <div class="flex-1 min-w-[200px]">
           <div class="relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
               v-model="search"
               type="text"
-              placeholder="Rechercher un produit..."
-              class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+              placeholder="Rechercher par nom ou catégorie..."
+              class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-transparent text-sm text-charcoal focus:bg-white focus:border-gray-200 focus:outline-none focus:ring-0 transition-all font-light"
             />
           </div>
         </div>
 
         <select
           v-model="categoryFilter"
-          class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+          class="px-4 py-2 bg-gray-50 border border-transparent text-sm text-charcoal focus:bg-white focus:border-gray-200 focus:outline-none focus:ring-0 transition-all font-light appearance-none"
         >
           <option value="">Toutes catégories</option>
           <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
@@ -42,97 +41,86 @@
 
         <select
           v-model="statusFilter"
-          class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+          class="px-4 py-2 bg-gray-50 border border-transparent text-sm text-charcoal focus:bg-white focus:border-gray-200 focus:outline-none focus:ring-0 transition-all font-light appearance-none"
         >
-          <option value="">Tous</option>
+          <option value="">Tous les statuts</option>
           <option value="active">Actifs</option>
           <option value="inactive">Inactifs</option>
         </select>
       </div>
     </div>
 
-    <div v-if="loading" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      <div v-for="i in 8" :key="i" class="bg-white rounded-2xl p-4 animate-pulse">
-        <div class="aspect-square bg-gray-200 rounded-xl mb-4" />
-        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-        <div class="h-4 bg-gray-200 rounded w-1/2" />
+    <!-- Loading -->
+    <div v-if="loading" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div v-for="i in 8" :key="i" class="bg-white border border-gray-100 p-4 animate-pulse">
+        <div class="aspect-square bg-gray-50 mb-4" />
+        <div class="h-3 bg-gray-100 w-3/4 mb-2" />
+        <div class="h-3 bg-gray-100 w-1/2" />
       </div>
     </div>
 
-    <div v-else-if="filteredProducts.length === 0" class="bg-white rounded-2xl shadow-soft p-12 text-center">
-      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-        </svg>
-      </div>
-      <p class="text-gray-500 mb-4">Aucun produit trouvé</p>
-      <NuxtLink to="/admin/produits/nouveau" class="text-gold font-medium hover:underline">
-        Ajouter un produit →
+    <!-- Empty State -->
+    <div v-else-if="filteredProducts.length === 0" class="bg-white border border-gray-200 p-16 text-center">
+      <p class="text-sm font-light text-gray-400 mb-4">Aucun produit trouvé dans le catalogue.</p>
+      <NuxtLink to="/admin/produits/nouveau" class="text-xs uppercase tracking-widest text-charcoal border-b border-charcoal pb-0.5 hover:text-gray-500 hover:border-gray-500 transition-colors">
+        Créer le premier produit
       </NuxtLink>
     </div>
 
-    <div v-else class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <!-- Products Grid -->
+    <div v-else class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div
         v-for="product in filteredProducts"
         :key="product.id"
-        class="bg-white rounded-2xl shadow-soft overflow-hidden group"
+        class="bg-white border border-gray-100 group relative hover:border-gray-300 transition-all"
       >
-        <div class="relative aspect-square bg-gray-100">
+        <div class="relative aspect-[4/5] bg-gray-50 overflow-hidden">
           <img
             :src="product.image || '/images/placeholder.svg'"
             :alt="product.title"
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
           
-          <span
-            class="absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-medium"
-            :class="product.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
-          >
-            {{ product.active ? 'Actif' : 'Inactif' }}
-          </span>
+          <div class="absolute top-3 left-3">
+            <span
+              class="px-2 py-1 text-[9px] uppercase tracking-widest bg-white border"
+              :class="product.active ? 'border-gray-200 text-charcoal' : 'border-red-200 text-red-500'"
+            >
+              {{ product.active ? 'Actif' : 'Inactif' }}
+            </span>
+          </div>
 
-          <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <div class="absolute inset-0 bg-charcoal/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
             <NuxtLink
               :to="`/admin/produits/${product.id}`"
-              class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors"
-              title="Modifier"
+              class="w-32 py-2 bg-white text-center text-[10px] uppercase tracking-widest text-charcoal hover:bg-gray-100 transition-colors"
             >
-              <svg class="w-5 h-5 text-charcoal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              Modifier
             </NuxtLink>
             <button
               @click="toggleStatus(product)"
-              class="p-2 bg-white rounded-lg hover:bg-gray-100 transition-colors"
-              :title="product.active ? 'Désactiver' : 'Activer'"
+              class="w-32 py-2 bg-white text-center text-[10px] uppercase tracking-widest text-charcoal hover:bg-gray-100 transition-colors"
             >
-              <svg v-if="product.active" class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-              </svg>
-              <svg v-else class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
+              {{ product.active ? 'Désactiver' : 'Activer' }}
             </button>
             <button
               @click="confirmDelete(product)"
-              class="p-2 bg-white rounded-lg hover:bg-red-50 transition-colors"
-              title="Supprimer"
+              class="w-32 py-2 bg-red-600 text-center text-[10px] uppercase tracking-widest text-white hover:bg-red-700 transition-colors"
             >
-              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              Supprimer
             </button>
           </div>
         </div>
 
         <div class="p-4">
-          <p class="text-xs text-gray-400 mb-1">{{ product.category || 'Sans catégorie' }}</p>
-          <h3 class="font-medium text-charcoal line-clamp-2 mb-2">{{ product.title }}</h3>
-          <p class="text-gold font-bold">{{ formatPrice(product.price) }}</p>
+          <p class="text-[9px] uppercase tracking-[0.2em] text-gray-400 mb-1.5 truncate">{{ product.category || 'Non catégorisé' }}</p>
+          <h3 class="text-sm font-medium text-charcoal mb-2 line-clamp-1" :title="product.title">{{ product.title }}</h3>
+          <p class="text-sm font-serif text-charcoal">{{ formatPrice(product.price) }}</p>
         </div>
       </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
     <Teleport to="body">
       <Transition
         enter-active-class="transition-opacity duration-200"
@@ -144,34 +132,27 @@
       >
         <div
           v-if="productToDelete"
-          class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          class="fixed inset-0 bg-charcoal/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           @click.self="productToDelete = null"
         >
-          <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
-            <div class="text-center">
-              <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold text-charcoal mb-2">Supprimer ce produit ?</h3>
-              <p class="text-gray-500 mb-6">
-                "{{ productToDelete.title }}" sera définitivement supprimé.
-              </p>
-              <div class="flex gap-3">
-                <button
-                  @click="productToDelete = null"
-                  class="flex-1 px-4 py-2 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  @click="deleteProduct"
-                  class="flex-1 px-4 py-2 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors"
-                >
-                  Supprimer
-                </button>
-              </div>
+          <div class="bg-white border border-gray-200 max-w-sm w-full p-8 text-center shadow-2xl">
+            <h3 class="text-xs uppercase tracking-[0.2em] font-medium text-charcoal mb-4">Confirmer la suppression</h3>
+            <p class="text-sm text-gray-500 mb-8 font-light">
+              Le produit "<span class="font-medium text-charcoal">{{ productToDelete.title }}</span>" sera définitivement supprimé.
+            </p>
+            <div class="flex gap-4">
+              <button
+                @click="productToDelete = null"
+                class="flex-1 px-4 py-2.5 border border-gray-200 text-[10px] uppercase tracking-widest text-charcoal hover:border-charcoal hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                @click="deleteProduct"
+                class="flex-1 px-4 py-2.5 bg-red-600 border border-red-600 text-[10px] uppercase tracking-widest text-white hover:bg-red-700 transition-colors"
+              >
+                Supprimer
+              </button>
             </div>
           </div>
         </div>
@@ -273,22 +254,18 @@ const confirmDelete = (product: Product) => {
   productToDelete.value = product
 }
 
-// === C'EST ICI QUE LA MODIFICATION A ÉTÉ FAITE ===
 const deleteProduct = async () => {
   const product = productToDelete.value
   if (!product) return
 
   try {
-    // 1. SUPPRIMER L'IMAGE DU STORAGE (si elle existe)
     if (product.image) {
       const imageName = product.image.split('/').pop()
-      // Note: On assume que le bucket s'appelle 'products'. Si c'est 'images', change-le ici.
       if (imageName) {
         await supabase.storage.from('products').remove([imageName])
       }
     }
 
-    // 2. SUPPRIMER LE PRODUIT DE LA BASE DE DONNÉES
     const { error } = await supabase
       .from('products')
       .delete()
@@ -296,7 +273,6 @@ const deleteProduct = async () => {
 
     if (error) throw error
 
-    // Mise à jour de l'affichage
     products.value = products.value.filter(p => p.id !== product.id)
     productToDelete.value = null
     
@@ -306,8 +282,7 @@ const deleteProduct = async () => {
   }
 }
 
-// Helpers
-const formatPrice = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' F'
+const formatPrice = (price: number) => new Intl.NumberFormat('fr-FR').format(price) + ' FCFA'
 
 onMounted(() => {
   fetchProducts()

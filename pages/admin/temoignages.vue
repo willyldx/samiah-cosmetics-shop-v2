@@ -1,41 +1,33 @@
 <template>
   <div>
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-charcoal">Temoignages</h1>
-        <p class="text-gray-500">Gerez les avis de vos clientes</p>
+        <h1 class="text-2xl font-serif font-light text-charcoal mb-1">Témoignages</h1>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Gestion des avis clients</p>
       </div>
       <button
         @click="openModal()"
-        class="inline-flex items-center gap-2 bg-gold hover:bg-gold-400 text-charcoal px-4 py-2.5 rounded-xl font-medium transition-colors"
+        class="bg-charcoal text-white px-6 py-2.5 text-[10px] uppercase tracking-widest font-medium hover:bg-charcoal/90 transition-colors border border-charcoal"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Ajouter un temoignage
+        Nouveau Témoignage
       </button>
     </div>
 
     <!-- List -->
-    <div v-if="loading" class="bg-white rounded-2xl shadow-soft p-8">
+    <div v-if="loading" class="bg-white border border-gray-200 p-8">
       <div class="animate-pulse space-y-4">
-        <div v-for="i in 3" :key="i" class="h-24 bg-gray-100 rounded-xl" />
+        <div v-for="i in 3" :key="i" class="h-24 bg-gray-50 border border-gray-100" />
       </div>
     </div>
 
-    <div v-else-if="testimonials.length === 0" class="bg-white rounded-2xl shadow-soft p-12 text-center">
-      <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      </div>
-      <p class="text-gray-500 mb-4">Aucun temoignage pour le moment</p>
+    <div v-else-if="testimonials.length === 0" class="bg-white border border-gray-200 p-16 text-center">
+      <p class="text-sm font-light text-gray-400 mb-4">Aucun témoignage pour le moment</p>
       <button
         @click="openModal()"
-        class="inline-flex items-center gap-2 bg-gold text-charcoal px-4 py-2 rounded-xl font-medium"
+        class="text-xs uppercase tracking-widest text-charcoal border-b border-charcoal pb-0.5 hover:text-gray-500 hover:border-gray-500 transition-colors"
       >
-        Ajouter le premier temoignage
+        Ajouter le premier témoignage
       </button>
     </div>
 
@@ -43,12 +35,12 @@
       <div
         v-for="testimonial in testimonials"
         :key="testimonial.id"
-        class="bg-white rounded-2xl shadow-soft p-6"
+        class="bg-white border border-gray-200 p-6 hover:border-charcoal transition-colors group"
       >
-        <div class="flex items-start justify-between gap-4">
-          <div class="flex items-start gap-4 flex-1">
+        <div class="flex items-start justify-between gap-6">
+          <div class="flex items-start gap-6 flex-1">
             <!-- Avatar ou Photo -->
-            <div class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-gold/20">
+            <div class="w-16 h-16 bg-gray-50 border border-gray-100 flex-shrink-0 relative overflow-hidden">
               <img 
                 v-if="getPhotoUrl(testimonial)"
                 :src="getPhotoUrl(testimonial)"
@@ -56,7 +48,7 @@
                 class="w-full h-full object-cover"
               />
               <div v-else class="w-full h-full flex items-center justify-center">
-                <span class="text-gold font-bold text-xl">
+                <span class="text-charcoal font-serif font-light text-xl">
                   {{ testimonial.client_name.charAt(0).toUpperCase() }}
                 </span>
               </div>
@@ -64,70 +56,70 @@
             
             <!-- Content -->
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap mb-1">
-                <h3 class="font-bold text-charcoal">{{ testimonial.client_name }}</h3>
-                <span v-if="testimonial.city" class="text-gray-400 text-sm">• {{ testimonial.city }}</span>
+              <div class="flex items-center gap-3 flex-wrap mb-2">
+                <h3 class="font-medium text-sm text-charcoal">{{ testimonial.client_name }}</h3>
+                <span v-if="testimonial.city" class="text-[10px] uppercase tracking-widest text-gray-400">• {{ testimonial.city }}</span>
                 <span
-                  class="px-2 py-0.5 rounded-full text-xs font-medium"
-                  :class="testimonial.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
+                  class="px-2 py-0.5 text-[9px] uppercase tracking-widest border"
+                  :class="testimonial.active ? 'border-gray-200 text-charcoal' : 'border-red-200 text-red-500'"
                 >
-                  {{ testimonial.active ? 'Visible' : 'Masque' }}
+                  {{ testimonial.active ? 'Visible' : 'Masqué' }}
                 </span>
               </div>
               
               <!-- Rating -->
-              <div v-if="testimonial.rating" class="text-gold text-sm mb-2">
-                {{ '★'.repeat(testimonial.rating) }}{{ '☆'.repeat(5 - testimonial.rating) }}
+              <div v-if="testimonial.rating" class="text-charcoal text-xs mb-3 tracking-widest">
+                {{ '★'.repeat(testimonial.rating) }}<span class="text-gray-300">{{ '★'.repeat(5 - testimonial.rating) }}</span>
               </div>
               
-              <p class="text-gray-600">{{ testimonial.message }}</p>
+              <p class="text-sm text-gray-500 font-light leading-relaxed mb-4">"{{ testimonial.message }}"</p>
               
               <!-- Photo preview -->
-              <div v-if="getPhotoUrl(testimonial)" class="mt-3">
+              <div v-if="getPhotoUrl(testimonial)" class="mt-4">
                 <img 
                   :src="getPhotoUrl(testimonial)" 
                   :alt="'Photo de ' + testimonial.client_name"
-                  class="h-20 w-auto rounded-lg object-cover border border-gray-200"
+                  class="h-24 w-auto object-cover border border-gray-200"
                 />
               </div>
               
-              <p class="text-xs text-gray-400 mt-2">
-                Ajoute le {{ formatDate(testimonial.created_at) }}
+              <p class="text-[9px] uppercase tracking-widest text-gray-400 mt-4">
+                Ajouté le {{ formatDate(testimonial.created_at) }}
               </p>
             </div>
           </div>
 
           <!-- Actions -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               @click="toggleStatus(testimonial)"
-              class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              class="p-2 border border-transparent hover:border-gray-200 text-gray-400 hover:text-charcoal transition-colors"
               :title="testimonial.active ? 'Masquer' : 'Afficher'"
             >
-              <svg v-if="testimonial.active" class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+              <svg v-if="testimonial.active" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
               </svg>
-              <svg v-else class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
             </button>
             <button
               @click="openModal(testimonial)"
-              class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              class="p-2 border border-transparent hover:border-gray-200 text-gray-400 hover:text-charcoal transition-colors"
               title="Modifier"
             >
-              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </button>
             <button
               @click="confirmDelete(testimonial)"
-              class="p-2 rounded-lg hover:bg-red-50 transition-colors"
+              class="p-2 border border-transparent hover:border-red-200 hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors"
               title="Supprimer"
             >
-              <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>
           </div>
@@ -147,45 +139,45 @@
       >
         <div
           v-if="showModal"
-          class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          class="fixed inset-0 bg-charcoal/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           @click.self="closeModal"
         >
-          <div class="bg-white rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold text-charcoal mb-4">
-              {{ editingTestimonial ? 'Modifier le temoignage' : 'Nouveau temoignage' }}
+          <div class="bg-white border border-gray-200 p-8 max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <h3 class="text-xs uppercase tracking-[0.2em] font-medium text-charcoal mb-6 border-b border-gray-100 pb-3">
+              {{ editingTestimonial ? 'Modifier le témoignage' : 'Nouveau témoignage' }}
             </h3>
 
-            <form @submit.prevent="saveTestimonial" class="space-y-4">
+            <form @submit.prevent="saveTestimonial" class="space-y-6">
               <!-- Name -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">
                   Nom de la cliente <span class="text-red-500">*</span>
                 </label>
                 <input
                   v-model="form.client_name"
                   type="text"
                   placeholder="Ex: Fatima I."
-                  class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+                  class="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-charcoal text-sm text-charcoal outline-none transition-colors"
                   required
                 />
               </div>
 
               <!-- City -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">
                   Ville
                 </label>
                 <input
                   v-model="form.city"
                   type="text"
                   placeholder="Ex: N'Djamena"
-                  class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+                  class="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-charcoal text-sm text-charcoal outline-none transition-colors"
                 />
               </div>
 
               <!-- Rating -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">
                   Note
                 </label>
                 <div class="flex gap-2">
@@ -194,8 +186,8 @@
                     :key="star"
                     type="button"
                     @click="form.rating = star"
-                    class="text-3xl transition-colors hover:scale-110 transform"
-                    :class="star <= (form.rating || 0) ? 'text-gold' : 'text-gray-300 hover:text-gold/50'"
+                    class="text-2xl transition-colors hover:scale-110 transform"
+                    :class="star <= (form.rating || 0) ? 'text-charcoal' : 'text-gray-200 hover:text-gray-400'"
                   >
                     ★
                   </button>
@@ -203,7 +195,7 @@
                     v-if="form.rating"
                     type="button"
                     @click="form.rating = null"
-                    class="text-sm text-gray-400 hover:text-gray-600 ml-2"
+                    class="text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-600 ml-4"
                   >
                     Effacer
                   </button>
@@ -212,51 +204,49 @@
 
               <!-- Message -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                  Temoignage <span class="text-red-500">*</span>
+                <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">
+                  Témoignage <span class="text-red-500">*</span>
                 </label>
                 <textarea
                   v-model="form.message"
-                  rows="4"
-                  placeholder="Le temoignage de la cliente..."
-                  class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none resize-none"
+                  rows="5"
+                  placeholder="Le témoignage de la cliente..."
+                  class="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-charcoal text-sm text-charcoal outline-none transition-colors resize-none"
                   required
                 />
               </div>
 
-              <!-- Photo Upload - DRAG & DROP -->
+              <!-- Photo Upload -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">
                   Photo (optionnel)
                 </label>
                 
-                <!-- Preview si image existe -->
-                <div v-if="form.photo_url" class="mb-3 relative inline-block">
+                <div v-if="form.photo_url" class="mb-4 relative inline-block">
                   <img 
                     :src="form.photo_url" 
                     alt="Preview" 
-                    class="h-32 w-auto rounded-xl object-cover border border-gray-200"
+                    class="h-32 w-auto object-cover border border-gray-200"
                   />
                   <button
                     type="button"
                     @click="removePhoto"
-                    class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                    class="absolute -top-2 -right-2 p-1.5 bg-white border border-gray-200 text-charcoal hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
 
-                <!-- Drop zone -->
                 <div
                   v-else
                   @dragover.prevent="isDragging = true"
                   @dragleave.prevent="isDragging = false"
                   @drop.prevent="handleDrop"
                   @click="triggerFileInput"
-                  class="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all"
-                  :class="isDragging ? 'border-gold bg-gold/5' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'"
+                  class="border border-dashed p-6 text-center cursor-pointer transition-all"
+                  :class="isDragging ? 'border-charcoal bg-gray-50' : 'border-gray-300 hover:border-gray-400'"
                 >
                   <input
                     ref="fileInput"
@@ -267,59 +257,60 @@
                   />
                   
                   <div v-if="isUploading" class="flex flex-col items-center">
-                    <div class="w-10 h-10 border-4 border-gold/30 border-t-gold rounded-full animate-spin mb-3"></div>
-                    <p class="text-gray-600 text-sm">Telechargement...</p>
+                    <div class="w-8 h-8 border-2 border-gray-200 border-t-charcoal rounded-full animate-spin mb-3"></div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-500">Téléchargement...</p>
                   </div>
                   
                   <div v-else class="flex flex-col items-center">
-                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <p class="text-gray-600 text-sm mb-1">
-                      <span class="text-gold font-medium">Cliquez</span> ou glissez une image
+                    <svg class="w-6 h-6 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p class="text-sm font-light text-gray-500 mb-1">
+                      <span class="text-charcoal font-medium border-b border-charcoal">Cliquez</span> ou glissez une image
                     </p>
-                    <p class="text-xs text-gray-400">PNG, JPG jusqu'a 5MB</p>
+                    <p class="text-[9px] uppercase tracking-widest text-gray-400">PNG, JPG (Max 5MB)</p>
                   </div>
                 </div>
 
-                <!-- URL manuelle -->
-                <div class="mt-3">
-                  <p class="text-xs text-gray-400 mb-1">Ou collez une URL :</p>
+                <div class="mt-4">
+                  <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-2">Ou importer depuis une URL</p>
                   <input
                     v-model="manualPhotoUrl"
                     type="url"
                     placeholder="https://exemple.com/photo.jpg"
-                    class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none"
+                    class="w-full px-4 py-2.5 bg-gray-50 border border-transparent focus:bg-white focus:border-charcoal text-sm text-charcoal outline-none transition-colors"
                     @blur="applyManualUrl"
                   />
                 </div>
               </div>
 
               <!-- Active -->
-              <label class="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  v-model="form.active"
-                  class="w-5 h-5 rounded border-gray-300 text-gold focus:ring-gold"
-                />
-                <span class="text-gray-700">Afficher sur le site</span>
+              <label class="flex items-center justify-between cursor-pointer pt-4 border-t border-gray-100">
+                <span class="text-sm font-light text-charcoal">Afficher sur le site</span>
+                <div class="relative">
+                  <input
+                    type="checkbox"
+                    v-model="form.active"
+                    class="sr-only peer"
+                  />
+                  <div class="w-10 h-5 bg-gray-200 peer-checked:bg-charcoal transition-colors" />
+                  <div class="absolute left-1 top-1 w-3 h-3 bg-white transition-transform peer-checked:translate-x-5" />
+                </div>
               </label>
 
               <!-- Actions -->
-              <div class="flex gap-3 pt-2">
+              <div class="flex gap-4 pt-6 border-t border-gray-100">
                 <button
                   type="button"
                   @click="closeModal"
-                  class="flex-1 px-4 py-2.5 bg-gray-100 text-charcoal rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                  class="flex-1 px-4 py-3 border border-gray-200 text-charcoal text-[10px] uppercase tracking-widest font-medium hover:bg-gray-50 transition-colors"
                 >
                   Annuler
                 </button>
                 <button
                   type="submit"
                   :disabled="saving"
-                  class="flex-1 px-4 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  class="flex-1 px-4 py-3 bg-charcoal text-white text-[10px] uppercase tracking-widest font-medium hover:bg-charcoal/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <span v-if="saving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
@@ -343,35 +334,28 @@
       >
         <div
           v-if="testimonialToDelete"
-          class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          class="fixed inset-0 bg-charcoal/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           @click.self="testimonialToDelete = null"
         >
-          <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <div class="text-center">
-              <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </div>
-              <h3 class="text-lg font-bold text-charcoal mb-2">Supprimer ce temoignage ?</h3>
-              <p class="text-gray-500 text-sm mb-6">
-                Le temoignage de "{{ testimonialToDelete.client_name }}" sera supprime.
-              </p>
-              <div class="flex gap-3">
-                <button
-                  @click="testimonialToDelete = null"
-                  class="flex-1 px-4 py-2.5 bg-gray-100 text-charcoal rounded-xl font-medium"
-                >
-                  Annuler
-                </button>
-                <button
-                  @click="deleteTestimonial"
-                  :disabled="deleting"
-                  class="flex-1 px-4 py-2.5 bg-red-500 text-white rounded-xl font-medium disabled:opacity-50"
-                >
-                  {{ deleting ? 'Suppression...' : 'Supprimer' }}
-                </button>
-              </div>
+          <div class="bg-white border border-gray-200 p-8 max-w-sm w-full text-center shadow-2xl">
+            <h3 class="text-xs uppercase tracking-[0.2em] font-medium text-charcoal mb-4">Supprimer ce témoignage ?</h3>
+            <p class="text-sm font-light text-gray-500 mb-8">
+              Le témoignage de "<span class="font-medium text-charcoal">{{ testimonialToDelete.client_name }}</span>" sera définitivement supprimé.
+            </p>
+            <div class="flex gap-4">
+              <button
+                @click="testimonialToDelete = null"
+                class="flex-1 px-4 py-2.5 border border-gray-200 text-[10px] uppercase tracking-widest text-charcoal hover:border-charcoal hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                @click="deleteTestimonial"
+                :disabled="deleting"
+                class="flex-1 px-4 py-2.5 bg-red-600 border border-red-600 text-[10px] uppercase tracking-widest text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {{ deleting ? 'Suppression...' : 'Supprimer' }}
+              </button>
             </div>
           </div>
         </div>
@@ -389,7 +373,7 @@ definePageMeta({
 })
 
 useHead({
-  title: 'Temoignages — Admin Samiah',
+  title: 'Témoignages — Admin Samiah',
 })
 
 const supabase = useSupabaseClient()
@@ -494,11 +478,11 @@ const handleDrop = (event: DragEvent) => {
 const uploadPhoto = async (file: File) => {
   // Validation
   if (!file.type.startsWith('image/')) {
-    alert('Veuillez selectionner une image')
+    alert('Veuillez sélectionner une image')
     return
   }
   if (file.size > 5 * 1024 * 1024) {
-    alert('L\'image ne doit pas depasser 5MB')
+    alert('L\'image ne doit pas dépasser 5MB')
     return
   }
 
@@ -525,7 +509,7 @@ const uploadPhoto = async (file: File) => {
     form.photo_url = urlData.publicUrl
   } catch (error: any) {
     console.error('Upload error:', error)
-    alert('Erreur lors du telechargement: ' + error.message)
+    alert('Erreur lors du téléchargement: ' + error.message)
   } finally {
     isUploading.value = false
     if (fileInput.value) fileInput.value.value = ''

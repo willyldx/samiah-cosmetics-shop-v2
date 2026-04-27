@@ -1,20 +1,16 @@
 <template>
   <aside
-    class="fixed inset-y-0 left-0 z-40 w-64 bg-gradient-to-b from-charcoal to-gray-900 transform transition-transform duration-300 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-40 w-64 bg-charcoal transform transition-transform duration-300 lg:translate-x-0"
     :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
     <!-- Logo -->
     <div class="flex items-center gap-3 h-16 px-6 border-b border-white/10">
-      <div class="w-10 h-10 bg-gradient-to-br from-gold to-yellow-500 rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-gold/20">
-        <img 
-          src="/icon-192.png" 
-          alt="Admin Logo" 
-          class="w-8 h-8 object-cover" 
-        />
+      <div class="w-8 h-8 bg-white flex items-center justify-center">
+        <span class="text-charcoal text-xs font-serif font-bold tracking-widest">S'C</span>
       </div>
       <div>
-        <h1 class="text-white font-bold">Samiah</h1>
-        <p class="text-white/50 text-xs">Administration</p>
+        <h1 class="text-white font-serif tracking-widest uppercase text-xs">Samiah</h1>
+        <p class="text-white/50 text-[10px] uppercase tracking-[0.2em]">Admin</p>
       </div>
     </div>
 
@@ -24,65 +20,62 @@
         v-for="item in menuItems"
         :key="item.to"
         :to="item.to"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
+        class="flex items-center gap-3 px-4 py-3 rounded-none transition-all duration-200"
         :class="[
           isActive(item.to) 
-            ? 'bg-gold/20 text-gold shadow-lg shadow-gold/10' 
-            : 'text-white/70 hover:text-white hover:bg-white/10'
+            ? 'bg-white/10 text-white' 
+            : 'text-white/60 hover:text-white hover:bg-white/5'
         ]"
         @click="$emit('close')"
       >
-        <div 
-          class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-          :class="isActive(item.to) ? 'bg-gold/20' : 'bg-white/5'"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="item.iconPath" />
+        <div class="flex items-center justify-center">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" :d="item.iconPath" />
           </svg>
         </div>
         
-        <span class="font-medium">{{ item.label }}</span>
+        <span class="text-xs uppercase tracking-widest font-light">{{ item.label }}</span>
         <span
           v-if="item.badge && item.badge > 0"
-          class="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full animate-pulse"
+          class="ml-auto bg-white text-charcoal text-[9px] font-bold px-2 py-0.5 rounded-sm"
         >
           {{ item.badge > 99 ? '99+' : item.badge }}
         </span>
       </NuxtLink>
     </nav>
 
-    <div class="mx-4 my-4 border-t border-white/10" />
+    <div class="mx-6 my-4 border-t border-white/10" />
 
-    <div class="px-4 space-y-2">
-      <p class="text-white/40 text-xs uppercase tracking-wider px-4 mb-2">Actions rapides</p>
+    <div class="px-4 space-y-1">
+      <p class="text-white/30 text-[9px] uppercase tracking-[0.2em] px-4 mb-4">Actions rapides</p>
       
       <a
         :href="whatsappLink"
         target="_blank"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-[#25D366]/20 transition-colors"
+        class="flex items-center gap-3 px-4 py-3 text-white/60 hover:text-white hover:bg-white/5 transition-colors"
       >
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
         </svg>
-        <span>WhatsApp</span>
+        <span class="text-xs uppercase tracking-widest font-light">WhatsApp</span>
       </a>
 
       <NuxtLink
         to="/"
         target="_blank"
-        class="flex items-center gap-3 px-4 py-3 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+        class="flex items-center gap-3 px-4 py-3 text-white/60 hover:text-white hover:bg-white/5 transition-colors"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
         </svg>
-        <span>Voir le site</span>
+        <span class="text-xs uppercase tracking-widest font-light">Voir le site</span>
       </NuxtLink>
     </div>
 
-    <div class="absolute bottom-0 left-0 right-0 p-4">
-      <div class="bg-white/5 rounded-xl p-4">
-        <p class="text-white/40 text-xs">Samiah Cosmetics</p>
-        <p class="text-white/60 text-sm">Admin v2.0</p>
+    <div class="absolute bottom-0 left-0 right-0 p-6">
+      <div class="border-t border-white/10 pt-4">
+        <p class="text-white/40 text-[9px] uppercase tracking-widest">Samiah Cosmetics</p>
+        <p class="text-white/30 text-[9px] uppercase tracking-[0.2em] mt-1">Admin v2.0</p>
       </div>
     </div>
   </aside>
