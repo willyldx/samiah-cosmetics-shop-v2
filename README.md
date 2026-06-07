@@ -1,149 +1,36 @@
-# Samiah Cosmetics v2
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Site e-commerce moderne pour Samiah Cosmetics - Soins capillaires au Tchad.
+## Getting Started
 
-## 🛠 Stack Technique
-
-- **Framework**: Nuxt 3 (Vue 3 + Vite)
-- **Styling**: Tailwind CSS
-- **Base de données**: Supabase (PostgreSQL)
-- **Hébergement**: Vercel
-- **CDN**: Cloudflare (optionnel)
-
-## 🚀 Déploiement sur Vercel
-
-### Option 1 : Via GitHub (Recommandé)
-
-1. **Push le code sur GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit - Samiah Cosmetics v2"
-   git remote add origin https://github.com/VOTRE-USERNAME/samiah-cosmetics.git
-   git push -u origin main
-   ```
-
-2. **Connecter à Vercel**
-   - Aller sur [vercel.com](https://vercel.com)
-   - Cliquer "Add New Project"
-   - Importer depuis GitHub
-   - Sélectionner le repo `samiah-cosmetics`
-
-3. **Configurer les variables d'environnement**
-   - Dans Vercel > Settings > Environment Variables
-   - Ajouter :
-     ```
-     SUPABASE_URL=https://dzzblqlteirtzyegplgu.supabase.co
-     SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-     SUPABASE_SERVICE_ROLE_KEY=votre_service_role_key
-     ```
-
-4. **Déployer**
-   - Cliquer "Deploy"
-   - Attendre ~2 minutes
-
-### Option 2 : Via Vercel CLI
+First, run the development server:
 
 ```bash
-# Installer Vercel CLI
-npm i -g vercel
-
-# Se connecter
-vercel login
-
-# Déployer
-vercel
-
-# Suivre les instructions
-```
-
-## 📦 Développement Local
-
-```bash
-# Installer les dépendances
-npm install
-
-# Copier les variables d'environnement
-cp .env.example .env
-
-# Lancer le serveur de dev
 npm run dev
-
-# Ouvrir http://localhost:3000
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## 🗄 Structure Supabase
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Tables requises
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```sql
--- Produits
-CREATE TABLE products (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  price INTEGER NOT NULL,
-  currency TEXT DEFAULT 'XAF',
-  category TEXT,
-  short_description TEXT,
-  image TEXT,
-  images TEXT[],
-  cities TEXT[],
-  active BOOLEAN DEFAULT true,
-  expires_after_days INTEGER,
-  published_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
--- Commandes
-CREATE TABLE orders (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  order_number TEXT UNIQUE NOT NULL,
-  client_name TEXT NOT NULL,
-  client_phone TEXT NOT NULL,
-  client_city TEXT NOT NULL,
-  client_address TEXT NOT NULL,
-  items JSONB NOT NULL,
-  subtotal INTEGER NOT NULL,
-  shipping_fee INTEGER DEFAULT 0,
-  total INTEGER NOT NULL,
-  payment_method TEXT NOT NULL,
-  status TEXT DEFAULT 'pending',
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
+## Learn More
 
--- Témoignages
-CREATE TABLE testimonials (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  client_name TEXT NOT NULL,
-  city TEXT,
-  rating INTEGER,
-  message TEXT NOT NULL,
-  photos TEXT[],
-  photo_url TEXT,
-  active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
+To learn more about Next.js, take a look at the following resources:
 
-## 🎨 Personnalisation
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Couleurs (tailwind.config.ts)
-- `charcoal`: Noir principal (#0A0A0A)
-- `ivory`: Blanc/gris clair (#FAFAFA)
-- `gold`: Or luxe (#C6A961)
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-### Images à remplacer
-- `/public/images/hero-hair.jpg` - Image principale du héro
-- `/public/images/about-mission.jpg` - Image page À propos
-- `/public/favicon.svg` - Favicon du site
+## Deploy on Vercel
 
-## 📱 Contact
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-- **WhatsApp**: +235 62 75 21 05
-- **Facebook**: Samiah Cosmetics
-
----
-
-Développé avec ❤️ pour Samiah Cosmetics
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
