@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Search, ShoppingBag, Menu, X } from "lucide-react";
 import MobileMenu from "./MobileMenu";
@@ -32,11 +33,15 @@ export default function Header() {
           <div className="flex justify-between items-center">
             
             {/* Logo */}
-            <Link href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-serif text-charcoal tracking-wide">
-                Samiah<span className="text-gold-light">'</span>Cosmetics
-              </h1>
-            </Link>
+          <Link href="/" className="flex-shrink-0 relative w-32 h-10">
+            <Image 
+              src="/logo.png" 
+              alt="Samiah Cosmetics Logo" 
+              fill
+              className="object-contain"
+              priority
+            />
+          </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-10">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -8,10 +9,13 @@ export default function Footer() {
           
           {/* Marque */}
           <div className="md:col-span-1 space-y-8">
-            <Link href="/">
-              <h2 className="text-2xl font-serif text-charcoal">
-                Samiah<span className="text-gold-light">'</span>Cosmetics
-              </h2>
+            <Link href="/" className="inline-block relative w-32 h-10">
+              <Image 
+                src="/logo.png" 
+                alt="Samiah Cosmetics Logo" 
+                fill
+                className="object-contain"
+              />
             </Link>
             <p className="text-gray-400 font-light text-sm leading-relaxed max-w-sm">
               Révélez votre beauté naturelle grâce à notre gamme de soins artisanaux, conçus pour le corps, le visage et les cheveux.

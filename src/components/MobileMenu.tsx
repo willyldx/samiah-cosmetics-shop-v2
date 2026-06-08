@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { X } from "lucide-react";
 
 interface MobileMenuProps {
@@ -17,10 +18,13 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         className="fixed inset-0 bg-white z-[150] flex flex-col animate-in slide-in-from-top duration-300"
       >
         <div className="flex items-center justify-between px-4 py-5 border-b border-gray-100">
-          <Link href="/" onClick={onClose}>
-            <h1 className="text-2xl font-serif text-charcoal tracking-wide">
-              Samiah<span className="text-gold-light">'</span>Cosmetics
-            </h1>
+          <Link href="/" onClick={onClose} className="relative w-32 h-8">
+            <Image 
+              src="/logo.png" 
+              alt="Samiah Cosmetics Logo" 
+              fill
+              className="object-contain"
+            />
           </Link>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-charcoal transition-colors">
             <X className="w-6 h-6" strokeWidth={1.5} />
