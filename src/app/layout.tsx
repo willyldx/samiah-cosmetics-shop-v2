@@ -15,8 +15,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Samiah Cosmetics | Soins Naturels & Quiet Luxury",
-  description: "La beauté naturelle, révélée par des soins authentiques et un accompagnement personnalisé.",
+  title: "Samiah Cosmetics Tchad — Soins Capillaires & Consultation",
+  description: "Boutique de soins capillaires au Tchad. Diagnostic gratuit, produits naturels pour cheveux crépus et frisés. Livraison à N'Djamena, Moundou, Sarh.",
+  keywords: "samiah cosmetics, soins capillaires tchad, cheveux crépus n'djamena, produits cheveux afro, coiffeuse tchad, routine capillaire",
 };
 
 export default function RootLayout({
