@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Share2, ChevronDown, ChevronUp, Plus, Minus } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/lib/supabase";
 import { useCart } from "@/context/CartContext";
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>("description");
@@ -24,7 +25,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         const { data, error } = await supabase
           .from("products")
           .select("*")
-          .eq("id", params.id)
+          .eq("id", id)
           .single();
         
         if (error) throw error;
@@ -36,7 +37,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       }
     }
     loadProduct();
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     if (!product) return;
