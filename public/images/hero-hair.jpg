@@ -1,0 +1,10 @@
+<svg width="800" height="1000" viewBox="0 0 800 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="1000" fill="#F5F5F5"/>
+  <rect x="200" y="350" width="400" height="300" rx="20" fill="#E5E5E5"/>
+  <circle cx="400" cy="450" r="80" fill="#D4D4D4"/>
+  <path d="M360 430C360 430 380 470 400 470C420 470 440 430 440 430" stroke="#A3A3A3" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="370" cy="420" r="10" fill="#A3A3A3"/>
+  <circle cx="430" cy="420" r="10" fill="#A3A3A3"/>
+  <text x="400" y="580" text-anchor="middle" fill="#737373" font-family="Georgia, serif" font-size="24" font-weight="bold">Samiah Cosmetics</text>
+  <text x="400" y="620" text-anchor="middle" fill="#A3A3A3" font-family="system-ui" font-size="16">Soins capillaires</text>
+</svg>

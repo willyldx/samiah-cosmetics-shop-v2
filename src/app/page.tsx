@@ -98,7 +98,7 @@ export default async function Home() {
               <div className="absolute -inset-4 border border-charcoal/5 transform -rotate-2 rounded-sm group-hover:-rotate-4 transition-transform duration-1000 ease-out" />
               <div className="relative w-full h-full overflow-hidden rounded-sm shadow-2xl shadow-charcoal/5">
                 <Image
-                  src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80"
+                  src="/images/hero-hair.jpg"
                   alt="Soins capillaires Samiah Cosmetics"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
@@ -120,7 +120,7 @@ export default async function Home() {
             {/* Image Banner */}
             <div className="lg:col-span-5 relative h-[500px] w-full rounded-sm overflow-hidden shadow-xl">
               <Image 
-                src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80" 
+                src="/images/about-mission.jpg" 
                 alt="Botanique & Ingrédients naturels"
                 fill
                 className="object-cover"
