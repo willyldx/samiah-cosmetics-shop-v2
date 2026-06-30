@@ -75,7 +75,7 @@ export default async function Home() {
 
               <div className="flex flex-wrap gap-5 pt-2">
                 <a
-                  href="https://wa.me/23563462615?text=Bonjour%20Samiah%20Cosmetics%2C%20je%20souhaite%20r%C3%A9server%20une%20consultation%20capillaire%20(10.000F)."
+                  href="https://wa.me/23562752105?text=Bonjour%20Samiah%20Cosmetics%2C%20je%20souhaite%20r%C3%A9server%20une%20consultation%20capillaire%20(10.000F)."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center px-10 py-5 bg-charcoal text-white text-[10px] font-semibold tracking-[0.2em] uppercase hover:bg-gold transition-colors duration-500 shadow-lg shadow-charcoal/5"
@@ -292,7 +292,7 @@ export default async function Home() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
             <a
-              href="https://wa.me/23563462615?text=Bonjour%20Samiah%20Cosmetics%2C%20je%20souhaite%20r%C3%A9server%20une%20consultation%20capillaire%20(10.000F)."
+              href="https://wa.me/23562752105?text=Bonjour%20Samiah%20Cosmetics%2C%20je%20souhaite%20r%C3%A9server%20une%20consultation%20capillaire%20(10.000F)."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-10 py-5 bg-gold text-charcoal text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-white hover:text-charcoal transition-all duration-500 shadow-xl shadow-gold/10"

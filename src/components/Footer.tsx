@@ -49,8 +49,8 @@ export default function Footer() {
                 N'Djamena, Tchad
               </li>
               <li>
-                <a href="tel:+23566000000" className="inline-block text-[11px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-gold transition-colors duration-300">
-                  +235 66 00 00 00
+                <a href="tel:+23562752105" className="inline-block text-[11px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-gold transition-colors duration-300">
+                  +235 62 75 21 05
                 </a>
               </li>
               <li>

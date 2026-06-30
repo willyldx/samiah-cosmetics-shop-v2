@@ -123,7 +123,7 @@ export default function CheckoutPage() {
       setOrderPlaced(true);
 
       // 4. Redirect to WhatsApp
-      window.location.href = `https://wa.me/23563462615?text=${message}`;
+      window.location.href = `https://wa.me/23562752105?text=${message}`;
 
     } catch (err) {
       console.error("Erreur de création de commande:", err);

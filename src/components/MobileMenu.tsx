@@ -52,7 +52,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
         <div className="p-8 bg-sand/20 border-t border-sand/30">
           <div className="space-y-6">
             <a 
-              href="https://wa.me/23566000000" 
+              href="https://wa.me/23562752105" 
               target="_blank" 
               rel="noopener noreferrer"
               className="block w-full bg-charcoal text-white text-center py-4 text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-gold transition-colors duration-300"

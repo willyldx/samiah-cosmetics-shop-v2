@@ -120,7 +120,7 @@ export default function AProposPage() {
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
             <a
-              href="https://wa.me/23566000000"
+              href="https://wa.me/23562752105"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-10 py-5 bg-charcoal text-white text-[10px] tracking-[0.2em] uppercase font-semibold hover:bg-gold transition-colors duration-500 rounded-sm shadow-md"

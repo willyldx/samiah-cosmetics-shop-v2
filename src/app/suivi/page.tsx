@@ -214,7 +214,7 @@ export default function SuiviPage() {
             Besoin d'assistance ?
           </p>
           <a
-            href="https://wa.me/23566000000"
+            href="https://wa.me/23562752105"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block text-charcoal text-[10px] uppercase tracking-[0.2em] font-semibold border-b border-charcoal/20 pb-1 hover:text-gold hover:border-gold hover:border-gold/30 transition-all duration-300"
