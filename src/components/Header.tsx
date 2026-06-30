@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { Search, ShoppingBag, Menu } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import SearchModal from "./SearchModal";
 import CartDrawer from "./CartDrawer";
@@ -25,58 +25,70 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
-          isScrolled ? "bg-white/95 backdrop-blur-sm border-gray-100 py-3" : "bg-white border-transparent py-5"
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled 
+            ? "bg-cream/80 backdrop-blur-md border-b border-sand py-4 shadow-[0_4px_30px_rgba(26,26,26,0.02)]" 
+            : "bg-transparent border-b border-transparent py-7"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="flex justify-between items-center">
             
             {/* Logo */}
-          <Link href="/" className="flex-shrink-0 relative w-32 h-10">
-            <Image 
-              src="/logo.png" 
-              alt="Samiah Cosmetics Logo" 
-              fill
-              className="object-contain"
-              priority
-            />
-          </Link>
+            <Link href="/" className="flex-shrink-0 relative w-36 h-10 transition-transform duration-300 hover:scale-[1.02]">
+              <Image 
+                src="/logo.png" 
+                alt="Samiah Cosmetics Logo" 
+                fill
+                className="object-contain"
+                priority
+              />
+            </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-10">
-              <Link href="/" className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-500 hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all pb-1">
-                Accueil
-              </Link>
-              <Link href="/produits" className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-500 hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all pb-1">
-                Boutique
-              </Link>
-              <Link href="/a-propos" className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-500 hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all pb-1">
-                À Propos
-              </Link>
-              <Link href="/suivi" className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-500 hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all pb-1">
-                Suivi
-              </Link>
+              {["Accueil", "Boutique", "À Propos", "Suivi"].map((item, index) => {
+                const paths = ["/", "/produits", "/a-propos", "/suivi"];
+                return (
+                  <Link 
+                    key={item}
+                    href={paths[index]} 
+                    className="text-[10px] uppercase tracking-[0.25em] font-medium text-charcoal/60 hover:text-charcoal transition-all relative py-1.5 group"
+                  >
+                    {item}
+                    <span className="absolute bottom-0 left-1/2 w-0 h-[1px] bg-gold group-hover:w-full group-hover:left-0 transition-all duration-300 ease-out" />
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Actions */}
-            <div className="flex items-center gap-6">
-              <button onClick={() => setIsSearchOpen(true)} aria-label="Rechercher" className="text-gray-400 hover:text-charcoal transition-colors">
-                <Search className="w-5 h-5" strokeWidth={1.5} />
+            <div className="flex items-center gap-8">
+              <button 
+                onClick={() => setIsSearchOpen(true)} 
+                aria-label="Rechercher" 
+                className="text-charcoal/70 hover:text-gold transition-colors duration-300 p-1"
+              >
+                <Search className="w-[18px] h-[18px]" strokeWidth={1.5} />
               </button>
-              <button onClick={() => setIsCartOpen(true)} aria-label="Panier" className="relative text-gray-400 hover:text-charcoal transition-colors">
-                <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
-                <span className="absolute -top-1 -right-1.5 flex h-3.5 w-3.5 items-center justify-center bg-charcoal text-white text-[8px] font-bold">
+              
+              <button 
+                onClick={() => setIsCartOpen(true)} 
+                aria-label="Panier" 
+                className="relative text-charcoal/70 hover:text-gold transition-colors duration-300 p-1 group"
+              >
+                <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.5} />
+                <span className="absolute -top-1.5 -right-2 flex h-[15px] w-[15px] items-center justify-center rounded-full bg-gold text-white text-[8px] font-bold group-hover:scale-115 transition-transform duration-300">
                   0
                 </span>
               </button>
 
               {/* Mobile Menu Button */}
               <button 
-                className="md:hidden text-gray-400 hover:text-charcoal transition-colors"
+                className="md:hidden text-charcoal/70 hover:text-charcoal transition-colors duration-300 p-1"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
-                <Menu className="w-6 h-6" strokeWidth={1.5} />
+                <Menu className="w-5 h-5" strokeWidth={1.5} />
               </button>
             </div>
           </div>

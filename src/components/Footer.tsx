@@ -3,13 +3,13 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-100 pt-24 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-24">
+    <footer className="bg-cream border-t border-sand/40 pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-16">
           
           {/* Marque */}
-          <div className="md:col-span-1 space-y-8">
-            <Link href="/" className="inline-block relative w-32 h-10">
+          <div className="lg:col-span-4 space-y-6">
+            <Link href="/" className="inline-block relative w-36 h-10 transition-transform duration-300 hover:scale-[1.02]">
               <Image 
                 src="/logo.png" 
                 alt="Samiah Cosmetics Logo" 
@@ -17,86 +17,81 @@ export default function Footer() {
                 className="object-contain"
               />
             </Link>
-            <p className="text-gray-400 font-light text-sm leading-relaxed max-w-sm">
-              Révélez votre beauté naturelle grâce à notre gamme de soins artisanaux, conçus pour le corps, le visage et les cheveux.
+            <p className="text-charcoal/50 font-light text-sm leading-relaxed max-w-sm">
+              Révélez votre beauté naturelle grâce à notre gamme de soins artisanaux d'exception, conçus précieusement pour le corps, le visage et les cheveux.
             </p>
           </div>
 
           {/* Navigation */}
-          <div>
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-medium text-charcoal mb-6">Navigation</h3>
+          <div className="lg:col-span-2 lg:col-start-6">
+            <h3 className="text-[9px] uppercase tracking-[0.25em] font-semibold text-charcoal/80 mb-6">Navigation</h3>
             <ul className="space-y-4">
-              <li>
-                <Link href="/produits" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
-                  Boutique
-                </Link>
-              </li>
-              <li>
-                <Link href="/a-propos" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
-                  À propos
-                </Link>
-              </li>
-              <li>
-                <Link href="/suivi" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
-                  Suivi de commande
-                </Link>
-              </li>
+              {["Boutique", "À propos", "Suivi"].map((item, index) => {
+                const paths = ["/produits", "/a-propos", "/suivi"];
+                return (
+                  <li key={item}>
+                    <Link href={paths[index]} className="inline-block text-[11px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-gold transition-colors duration-300">
+                      {item}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-medium text-charcoal mb-6">Contact</h3>
+          <div className="lg:col-span-2">
+            <h3 className="text-[9px] uppercase tracking-[0.25em] font-semibold text-charcoal/80 mb-6">Contact</h3>
             <ul className="space-y-4">
-              <li className="text-[11px] uppercase tracking-widest text-gray-400">
+              <li className="text-[11px] uppercase tracking-[0.2em] text-charcoal/45">
                 N'Djamena, Tchad
               </li>
               <li>
-                <a href="tel:+23566000000" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
+                <a href="tel:+23566000000" className="inline-block text-[11px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-gold transition-colors duration-300">
                   +235 66 00 00 00
                 </a>
               </li>
               <li>
-                <a href="mailto:contact@samiahcosmetics.com" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
+                <a href="mailto:contact@samiahcosmetics.com" className="inline-block text-[11px] uppercase tracking-[0.2em] text-charcoal/40 hover:text-gold transition-colors duration-300">
                   contact@samiahcosmetics.com
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Réseaux */}
-          <div>
-            <h3 className="text-[10px] uppercase tracking-[0.2em] font-medium text-charcoal mb-6">Réseaux Sociaux</h3>
-            <ul className="space-y-4">
-              <li>
-                <a href="#" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
-                  Instagram
-                </a>
-              </li>
-              <li>
-                <a href="#" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
-                  Facebook
-                </a>
-              </li>
-              <li>
-                <a href="#" className="inline-block text-[11px] uppercase tracking-widest text-gray-400 hover:text-charcoal border-b border-transparent hover:border-gray-200 transition-colors pb-0.5">
-                  TikTok
-                </a>
-              </li>
-            </ul>
+          {/* Newsletter Club */}
+          <div className="lg:col-span-3">
+            <h3 className="text-[9px] uppercase tracking-[0.25em] font-semibold text-charcoal/80 mb-6">Le Club Samiah</h3>
+            <p className="text-[11px] text-charcoal/50 leading-relaxed font-light mb-4">
+              Inscrivez-vous pour recevoir nos rituels de soin exclusifs et avant-premières.
+            </p>
+            <form onSubmit={(e) => e.preventDefault()} className="flex items-center border-b border-charcoal/20 focus-within:border-gold transition-colors duration-300 py-1.5">
+              <input 
+                type="email" 
+                placeholder="Votre adresse email" 
+                className="bg-transparent flex-1 outline-none text-xs font-light text-charcoal placeholder:text-charcoal/30 w-full"
+                required
+              />
+              <button 
+                type="submit" 
+                className="text-[10px] uppercase tracking-widest text-charcoal hover:text-gold transition-colors duration-300 font-medium ml-2"
+              >
+                S'inscrire
+              </button>
+            </form>
           </div>
 
         </div>
 
-        <div className="mt-24 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[10px] uppercase tracking-widest text-gray-400">
-            © {new Date().getFullYear()} Samiah Cosmetics. Tous droits réservés.
+        <div className="mt-20 pt-8 border-t border-sand/40 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-[9px] uppercase tracking-widest text-charcoal/40 font-light">
+            © {new Date().getFullYear()} Samiah Cosmetics. Créé avec passion.
           </p>
           <div className="flex gap-6">
-            <Link href="/mentions-legales" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors">
+            <Link href="/mentions-legales" className="text-[9px] uppercase tracking-widest text-charcoal/40 hover:text-gold transition-colors duration-300">
               Mentions Légales
             </Link>
-            <Link href="/cgu" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors">
+            <Link href="/cgu" className="text-[9px] uppercase tracking-widest text-charcoal/40 hover:text-gold transition-colors duration-300">
               CGU
             </Link>
           </div>
