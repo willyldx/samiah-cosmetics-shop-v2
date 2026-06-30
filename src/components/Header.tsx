@@ -7,12 +7,13 @@ import { Search, ShoppingBag, Menu } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import SearchModal from "./SearchModal";
 import CartDrawer from "./CartDrawer";
+import { useCart } from "@/context/CartContext";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { itemCount, isCartOpen, setIsCartOpen } = useCart();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,7 +80,7 @@ export default function Header() {
               >
                 <ShoppingBag className="w-[18px] h-[18px]" strokeWidth={1.5} />
                 <span className="absolute -top-1.5 -right-2 flex h-[15px] w-[15px] items-center justify-center rounded-full bg-gold text-white text-[8px] font-bold group-hover:scale-115 transition-transform duration-300">
-                  0
+                  {itemCount}
                 </span>
               </button>
 

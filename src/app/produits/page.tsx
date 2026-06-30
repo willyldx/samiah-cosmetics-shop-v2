@@ -1,72 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/lib/supabase";
 
 export default function ProduitsPage() {
   const [selectedCategory, setSelectedCategory] = useState("tous");
   const [sortBy, setSortBy] = useState("default");
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    {
-      id: "1",
-      title: "Huile de Chebe Authentique",
-      price: 15000,
-      category: "Soins Capillaires",
-      image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-      isNew: true
-    },
-    {
-      id: "2",
-      title: "Sérum Visage Éclat",
-      price: 12500,
-      category: "Soins Visage",
-      image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80"
-    },
-    {
-      id: "3",
-      title: "Beurre de Karité Pur",
-      price: 8000,
-      category: "Soins Corps",
-      image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=80"
-    },
-    {
-      id: "4",
-      title: "Masque Capillaire Intense",
-      price: 18000,
-      category: "Soins Capillaires",
-      image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&q=80",
-      isNew: true
-    },
-    {
-      id: "5",
-      title: "Crème Visage Hydratante",
-      price: 14500,
-      category: "Soins Visage",
-      image: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=800&q=80"
-    },
-    {
-      id: "6",
-      title: "Shampoing Fortifiant Chebe",
-      price: 9500,
-      category: "Soins Capillaires",
-      image: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=800&q=80"
-    },
-    {
-      id: "7",
-      title: "Gommage Corps Éclat",
-      price: 11000,
-      category: "Soins Corps",
-      image: "https://images.unsplash.com/photo-1556229174-5e42a09e45af?w=800&q=80"
-    },
-    {
-      id: "8",
-      title: "Lait Hydratant Précieux",
-      price: 13500,
-      category: "Soins Corps",
-      image: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=800&q=80"
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("active", true)
+          .order("created_at", { ascending: false });
+        
+        if (error) throw error;
+        setProducts(data || []);
+      } catch (err) {
+        console.error("Erreur de chargement des produits:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadProducts();
+  }, []);
 
   const categories = [
     { id: "tous", label: "Toutes les catégories" },
@@ -88,6 +50,14 @@ export default function ProduitsPage() {
     if (sortBy === "alpha") return a.title.localeCompare(b.title);
     return 0; // Default
   });
+
+  // Helper to determine if a product is new (within 7 days)
+  const isNewProduct = (dateStr: string) => {
+    if (!dateStr) return false;
+    const created = Date.parse(dateStr);
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    return (Date.now() - created) <= sevenDays;
+  };
 
   return (
     <div className="min-h-screen bg-cream pt-32 pb-24">
@@ -136,19 +106,44 @@ export default function ProduitsPage() {
           ))}
         </div>
 
-        {/* Count */}
+        {/* Count & Status */}
         <div className="mb-8 flex justify-between items-center text-[10px] uppercase tracking-widest text-charcoal/45">
-          <span>{sortedProducts.length} produits trouvés</span>
+          <span>{loading ? "Chargement..." : `${sortedProducts.length} produits trouvés`}</span>
         </div>
 
-        {/* Grille Produits */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {sortedProducts.map(product => (
-            <div key={product.id} className="animate-fade-in">
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+        {/* Loading State Skeletons */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <div key={idx} className="animate-pulse flex flex-col space-y-4">
+                <div className="aspect-[4/5] bg-sand/30 rounded-sm w-full" />
+                <div className="h-4 bg-sand/30 rounded-sm w-2/3 mx-auto" />
+                <div className="h-3 bg-sand/30 rounded-sm w-1/2 mx-auto" />
+              </div>
+            ))}
+          </div>
+        ) : sortedProducts.length === 0 ? (
+          <div className="text-center py-24 border border-sand/40 rounded-sm">
+            <p className="text-lg font-serif font-light text-charcoal mb-2">Aucun produit trouvé</p>
+            <p className="text-xs text-charcoal/40 font-light">Essayez de sélectionner une autre catégorie.</p>
+          </div>
+        ) : (
+          /* Grille Produits */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {sortedProducts.map(product => (
+              <div key={product.id} className="animate-fade-in">
+                <ProductCard product={{
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                  image: product.image,
+                  category: product.category,
+                  isNew: isNewProduct(product.created_at)
+                }} />
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
     </div>

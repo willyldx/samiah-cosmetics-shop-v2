@@ -3,38 +3,21 @@ import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 import { ArrowRight, Sparkles, ShieldCheck, Heart } from "lucide-react";
 
-export default function Home() {
-  const featuredProducts = [
-    {
-      id: "1",
-      title: "Huile de Chebe Authentique",
-      price: 15000,
-      category: "Soins Capillaires",
-      image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-      isNew: true
-    },
-    {
-      id: "2",
-      title: "Sérum Visage Éclat",
-      price: 12500,
-      category: "Soins Visage",
-      image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80"
-    },
-    {
-      id: "3",
-      title: "Beurre de Karité Pur",
-      price: 8000,
-      category: "Soins Corps",
-      image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=80"
-    },
-    {
-      id: "4",
-      title: "Masque Capillaire Intense",
-      price: 18000,
-      category: "Soins Capillaires",
-      image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&q=80"
-    }
-  ];
+import { supabase } from "@/lib/supabase";
+
+export default async function Home() {
+  let featuredProducts: any[] = [];
+  try {
+    const { data } = await supabase
+      .from("products")
+      .select("*")
+      .eq("active", true)
+      .order("created_at", { ascending: false })
+      .limit(4);
+    featuredProducts = data || [];
+  } catch (e) {
+    console.error("Erreur de chargement des produits phares:", e);
+  }
 
   const reviews = [
     {
@@ -197,7 +180,17 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {featuredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard 
+                key={product.id} 
+                product={{
+                  id: product.id,
+                  title: product.title,
+                  price: product.price,
+                  image: product.image,
+                  category: product.category,
+                  isNew: product.created_at ? (Date.now() - Date.parse(product.created_at) <= 7 * 24 * 60 * 60 * 1000) : false
+                }} 
+              />
             ))}
           </div>
 

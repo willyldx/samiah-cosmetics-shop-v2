@@ -2,57 +2,61 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Share2, ChevronDown, ChevronUp, Plus, Minus } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/lib/supabase";
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>("description");
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
-  // Simulation d'un produit
-  const product = {
-    id: params.id,
-    title: "Huile de Chebe Authentique",
-    price: 15000,
-    category: "Soins Capillaires",
-    description: "Une huile précieuse formulée avec de la poudre de Chebe authentique du Tchad. Conçue pour fortifier, hydrater en profondeur et stimuler la croissance des cheveux secs, frisés et crépus. Sa formule riche en nutriments scelle l'hydratation et prévient la casse.",
-    images: [
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-      "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&q=80"
-    ],
-    cities: ["N'Djamena", "Moundou", "Sarh"],
-    isNew: true,
-    ingredients: "Poudre de Chebe authentique du Tchad, Huile d'Argan biologique, Huile de Ricin pressée à froid, Beurre de Karité brut, Vitamine E.",
-    application: "Appliquer quelques gouttes sur cheveux humides ou secs, en insistant sur les longueurs et les pointes. Masser délicatement le cuir chevelu. Utiliser 2 à 3 fois par semaine dans votre rituel de soin.",
-    shipping: "Expédition rapide sous 24/48h. Livraison à domicile disponible à N'Djamena, Moundou et Sarh. Paiement sécurisé en espèces à la livraison."
-  };
+  const { addItem } = useCart();
 
-  // Related products
-  const relatedProducts = [
-    {
-      id: "2",
-      title: "Sérum Visage Éclat",
-      price: 12500,
-      category: "Soins Visage",
-      image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=800&q=80"
-    },
-    {
-      id: "3",
-      title: "Beurre de Karité Pur",
-      price: 8000,
-      category: "Soins Corps",
-      image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800&q=80"
-    },
-    {
-      id: "4",
-      title: "Masque Capillaire Intense",
-      price: 18000,
-      category: "Soins Capillaires",
-      image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&q=80"
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("id", params.id)
+          .single();
+        
+        if (error) throw error;
+        setProduct(data);
+      } catch (err) {
+        console.error("Erreur de chargement du produit:", err);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadProduct();
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!product) return;
+    async function loadRelated() {
+      try {
+        const { data, error } = await supabase
+          .from("products")
+          .select("*")
+          .eq("active", true)
+          .eq("category", product.category)
+          .neq("id", product.id)
+          .limit(3);
+        
+        if (error) throw error;
+        setRelatedProducts(data || []);
+      } catch (err) {
+        console.error("Erreur de chargement des produits associés:", err);
+      }
+    }
+    loadRelated();
+  }, [product]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("fr-FR").format(price) + " FCFA";
@@ -60,6 +64,70 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cream pt-32 pb-24 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-10 h-10 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs uppercase tracking-widest text-charcoal/40 font-semibold">Préparation de vos rituels...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-cream pt-32 pb-24 flex items-center justify-center">
+        <div className="text-center space-y-6 max-w-sm px-6">
+          <h2 className="text-2xl font-serif text-charcoal">Soin Introuvable</h2>
+          <p className="text-charcoal/50 text-sm font-light leading-relaxed">Le produit demandé n'existe pas ou a été retiré de la collection.</p>
+          <Link
+            href="/produits"
+            className="inline-block bg-charcoal text-white px-8 py-4.5 text-[9px] uppercase tracking-[0.25em] font-semibold hover:bg-gold hover:text-charcoal transition-all duration-500 rounded-sm shadow-md"
+          >
+            Explorer la boutique
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Construct gallery
+  const gallery: string[] = [];
+  if (product.image) gallery.push(product.image);
+  if (product.images) {
+    if (Array.isArray(product.images)) {
+      gallery.push(...product.images);
+    } else {
+      try {
+        const parsed = typeof product.images === "string" ? JSON.parse(product.images) : product.images;
+        if (Array.isArray(parsed)) gallery.push(...parsed);
+      } catch (e) {}
+    }
+  }
+  const cleanGallery = [...new Set(gallery)];
+
+  // Parse cities
+  let deliveryCities: string[] = ["N'Djamena", "Moundou", "Sarh"];
+  if (product.cities) {
+    if (Array.isArray(product.cities)) {
+      deliveryCities = product.cities;
+    } else {
+      try {
+        const parsed = typeof product.cities === "string" ? JSON.parse(product.cities) : product.cities;
+        if (Array.isArray(parsed)) deliveryCities = parsed;
+      } catch (e) {}
+    }
+  }
+
+  // Check if new
+  const isNewProduct = (dateStr: string) => {
+    if (!dateStr) return false;
+    const created = Date.parse(dateStr);
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    return (Date.now() - created) <= sevenDays;
   };
 
   return (
@@ -77,17 +145,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-start">
           
-          {/* Gallery - 5 cols */}
+          {/* Gallery - 6 cols */}
           <div className="lg:col-span-6 space-y-6 lg:sticky lg:top-28">
             <div className="aspect-[4/5] bg-white relative group overflow-hidden border border-sand/40 rounded-sm">
-              <Image
-                src={product.images[currentImageIndex]}
-                alt={product.title}
-                fill
-                className="object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
-                priority
-              />
-              {product.isNew && (
+              {cleanGallery.length > 0 && (
+                <Image
+                  src={cleanGallery[currentImageIndex]}
+                  alt={product.title}
+                  fill
+                  className="object-cover transition-transform duration-1000 group-hover:scale-[1.03]"
+                  priority
+                />
+              )}
+              {isNewProduct(product.created_at) && (
                 <span className="absolute top-6 left-6 bg-charcoal text-white text-[9px] font-semibold uppercase tracking-[0.25em] px-3.5 py-1.5 rounded-xs">
                   Nouveau
                 </span>
@@ -95,24 +165,26 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {product.images.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`flex-shrink-0 w-20 h-24 relative overflow-hidden transition-all duration-300 border rounded-xs ${
-                    currentImageIndex === index 
-                      ? 'border-gold opacity-100' 
-                      : 'border-sand/40 opacity-55 hover:opacity-100'
-                  }`}
-                >
-                  <Image src={img} alt={`Thumbnail ${index}`} fill className="object-cover" />
-                </button>
-              ))}
-            </div>
+            {cleanGallery.length > 1 && (
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                {cleanGallery.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`flex-shrink-0 w-20 h-24 relative overflow-hidden transition-all duration-300 border rounded-xs ${
+                      currentImageIndex === index 
+                        ? 'border-gold opacity-100' 
+                        : 'border-sand/40 opacity-55 hover:opacity-100'
+                    }`}
+                  >
+                    <Image src={img} alt={`Thumbnail ${index}`} fill className="object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Product info - 7 cols */}
+          {/* Product info - 6 cols */}
           <div className="lg:col-span-6 space-y-10">
             
             <div className="space-y-4">
@@ -138,43 +210,48 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   {openSection === "description" ? <ChevronUp className="w-4 h-4 text-charcoal/50" /> : <ChevronDown className="w-4 h-4 text-charcoal/50" />}
                 </button>
                 {openSection === "description" && (
-                  <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in">
+                  <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in space-y-3">
                     <p>{product.description}</p>
+                    {product.short_description && <p className="italic">{product.short_description}</p>}
                   </div>
                 )}
               </div>
 
               {/* Ingrédients */}
-              <div className="py-5">
-                <button 
-                  onClick={() => toggleSection("ingredients")}
-                  className="w-full flex justify-between items-center text-left text-xs uppercase tracking-widest text-charcoal font-semibold py-1 focus:outline-none"
-                >
-                  <span>Ingrédients Naturels</span>
-                  {openSection === "ingredients" ? <ChevronUp className="w-4 h-4 text-charcoal/50" /> : <ChevronDown className="w-4 h-4 text-charcoal/50" />}
-                </button>
-                {openSection === "ingredients" && (
-                  <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in">
-                    <p>{product.ingredients}</p>
-                  </div>
-                )}
-              </div>
+              {product.ingredients && (
+                <div className="py-5">
+                  <button 
+                    onClick={() => toggleSection("ingredients")}
+                    className="w-full flex justify-between items-center text-left text-xs uppercase tracking-widest text-charcoal font-semibold py-1 focus:outline-none"
+                  >
+                    <span>Ingrédients Naturels</span>
+                    {openSection === "ingredients" ? <ChevronUp className="w-4 h-4 text-charcoal/50" /> : <ChevronDown className="w-4 h-4 text-charcoal/50" />}
+                  </button>
+                  {openSection === "ingredients" && (
+                    <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in">
+                      <p>{product.ingredients}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Application */}
-              <div className="py-5">
-                <button 
-                  onClick={() => toggleSection("application")}
-                  className="w-full flex justify-between items-center text-left text-xs uppercase tracking-widest text-charcoal font-semibold py-1 focus:outline-none"
-                >
-                  <span>Conseils d'Application</span>
-                  {openSection === "application" ? <ChevronUp className="w-4 h-4 text-charcoal/50" /> : <ChevronDown className="w-4 h-4 text-charcoal/50" />}
-                </button>
-                {openSection === "application" && (
-                  <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in">
-                    <p>{product.application}</p>
-                  </div>
-                )}
-              </div>
+              {product.application_tips && (
+                <div className="py-5">
+                  <button 
+                    onClick={() => toggleSection("application")}
+                    className="w-full flex justify-between items-center text-left text-xs uppercase tracking-widest text-charcoal font-semibold py-1 focus:outline-none"
+                  >
+                    <span>Conseils d'Application</span>
+                    {openSection === "application" ? <ChevronUp className="w-4 h-4 text-charcoal/50" /> : <ChevronDown className="w-4 h-4 text-charcoal/50" />}
+                  </button>
+                  {openSection === "application" && (
+                    <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in">
+                      <p>{product.application_tips}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Livraison */}
               <div className="py-5">
@@ -187,7 +264,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 </button>
                 {openSection === "shipping" && (
                   <div className="mt-4 text-sm text-charcoal/60 font-light leading-relaxed animate-fade-in">
-                    <p>{product.shipping}</p>
+                    <p>Expédition rapide sous 24/48h. Livraison à domicile disponible à N'Djamena, Moundou, Sarh et autres villes. Paiement sécurisé en espèces à la réception de votre colis.</p>
                   </div>
                 )}
               </div>
@@ -199,7 +276,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               <div className="space-y-4">
                 <h3 className="text-[9px] text-charcoal/40 uppercase tracking-[0.25em] font-medium">Disponibilité immédiate</h3>
                 <div className="flex flex-wrap gap-2.5">
-                  {product.cities.map(city => (
+                  {deliveryCities.map(city => (
                     <span key={city} className="border border-sand text-charcoal/70 text-[9px] uppercase tracking-[0.2em] px-4 py-2 font-medium bg-white">
                       {city}
                     </span>
@@ -227,7 +304,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 </div>
 
                 {/* Add Button */}
-                <button className="flex-1 bg-charcoal text-white text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-charcoal transition-colors duration-500 rounded-xs shadow-lg shadow-charcoal/5">
+                <button 
+                  onClick={() => addItem(product, quantity)}
+                  className="flex-1 bg-charcoal text-white text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-charcoal transition-colors duration-500 rounded-xs shadow-lg shadow-charcoal/5 cursor-pointer"
+                >
                   Ajouter au panier
                 </button>
               </div>
@@ -246,16 +326,25 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         </div>
 
         {/* Cross selling */}
-        <div className="mt-32 pt-20 border-t border-sand/40">
-          <h2 className="text-2xl font-serif font-light text-charcoal mb-12 text-center lg:text-left">
-            Vous aimerez aussi...
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {relatedProducts.map(prod => (
-              <ProductCard key={prod.id} product={prod} />
-            ))}
+        {relatedProducts.length > 0 && (
+          <div className="mt-32 pt-20 border-t border-sand/40">
+            <h2 className="text-2xl font-serif font-light text-charcoal mb-12 text-center lg:text-left">
+              Vous aimerez aussi...
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedProducts.map(prod => (
+                <ProductCard key={prod.id} product={{
+                  id: prod.id,
+                  title: prod.title,
+                  price: prod.price,
+                  image: prod.image,
+                  category: prod.category,
+                  isNew: isNewProduct(prod.created_at)
+                }} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </div>
