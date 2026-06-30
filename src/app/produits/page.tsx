@@ -9,6 +9,7 @@ export default function ProduitsPage() {
   const [sortBy, setSortBy] = useState("default");
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>(["tous"]);
 
   useEffect(() => {
     async function loadProducts() {
@@ -30,12 +31,15 @@ export default function ProduitsPage() {
     loadProducts();
   }, []);
 
-  const categories = [
-    { id: "tous", label: "Toutes les catégories" },
-    { id: "Soins Capillaires", label: "Soins Capillaires" },
-    { id: "Soins Visage", label: "Soins Visage" },
-    { id: "Soins Corps", label: "Soins Corps" }
-  ];
+  useEffect(() => {
+    if (products.length > 0) {
+      const cats = new Set<string>();
+      products.forEach(p => {
+        if (p.category) cats.add(p.category);
+      });
+      setCategories(["tous", ...Array.from(cats).sort()]);
+    }
+  }, [products]);
 
   // Filtering
   const filteredProducts = products.filter(product => {
@@ -89,19 +93,18 @@ export default function ProduitsPage() {
           </div>
         </div>
 
-        {/* Categories Tabs */}
         <div className="flex flex-wrap gap-3 mb-16 border-b border-sand/10 pb-6">
           {categories.map(cat => (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
               className={`px-6 py-2.5 text-[9px] uppercase tracking-[0.2em] font-semibold rounded-full border transition-all duration-300 ${
-                selectedCategory === cat.id
+                selectedCategory === cat
                   ? "bg-charcoal text-white border-charcoal"
                   : "bg-transparent text-charcoal/60 border-sand hover:text-charcoal hover:border-charcoal/40"
               }`}
             >
-              {cat.label}
+              {cat === "tous" ? "Toutes les catégories" : cat}
             </button>
           ))}
         </div>
