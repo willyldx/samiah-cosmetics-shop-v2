@@ -93,8 +93,8 @@ export default function Footer() {
             <Link href="/mentions-legales" className="text-[9px] uppercase tracking-widest text-charcoal/40 hover:text-gold transition-colors duration-300">
               Mentions Légales
             </Link>
-            <Link href="/cgu" className="text-[9px] uppercase tracking-widest text-charcoal/40 hover:text-gold transition-colors duration-300">
-              CGU
+            <Link href="/cgv" className="text-[9px] uppercase tracking-widest text-charcoal/40 hover:text-gold transition-colors duration-300">
+              CGV
             </Link>
           </div>
         </div>
