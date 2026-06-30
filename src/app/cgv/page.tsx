@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "react-native-web"; // Wait! No, use standard Next.js Link
-import NextLink from "next/link";
+import Link from "next/link";
 
 export default function CGVPage() {
   const sections = [
@@ -83,12 +82,12 @@ export default function CGVPage() {
 
         {/* Back Link */}
         <div className="mt-12 text-center">
-          <NextLink 
+          <Link 
             href="/" 
             className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-charcoal/50 hover:text-gold transition-colors duration-300 font-semibold"
           >
             ← Retour à l'accueil
-          </NextLink>
+          </Link>
         </div>
 
       </div>
