@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { Share2, ChevronDown, ChevronUp, Plus, Minus } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/lib/supabase";
+import { useCart } from "@/context/CartContext";
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const [quantity, setQuantity] = useState(1);
