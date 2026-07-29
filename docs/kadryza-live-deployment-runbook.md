@@ -112,3 +112,8 @@ Cette version reste couplée à Airtel. Le passage futur au checkout Kadryza
 multi-opérateurs doit suivre la liste de modifications de
 `docs/kadryza-live-integration-audit.md` : Samiah proposera Kadryza, puis le
 client choisira l'opérateur uniquement sur le checkout hébergé.
+
+Le chantier est mis en attente du contrat
+`Kadryza Hosted-Checkout-Dynamic-Operators-1A`. Tant que ce contrat backend
+n'est pas livré et documenté, ne pas ajouter de sélecteur Airtel/Moov côté
+Samiah et ne pas reproduire dans Samiah la readiness des opérateurs Kadryza.

@@ -108,20 +108,40 @@ modifie pas le statut métier de la commande et la page continue le polling.
 `paid` et `expired` sont terminaux ; un événement ultérieur ne peut pas les
 faire régresser.
 
-## Couplage Airtel provisoire
+## Décision produit — opérateurs dynamiques
 
-Cette PR reste volontairement mono-opérateur. `AIRTEL` est actuellement fixé
-dans :
+Le contrat produit final attendu de
+`Kadryza Hosted-Checkout-Dynamic-Operators-1A` est le suivant :
 
-- `src/lib/checkout/config.ts` (`KADRYZA_OPERATOR`) ;
-- la création et la reprise de Payment Session ;
-- la validation TypeScript et SQL des webhooks ;
-- le formulaire invité et les libellés de la page de statut ;
-- les tests et la checklist de déploiement.
+- Samiah proposera uniquement « Payer avec Kadryza » ;
+- le marchand Samiah ne choisira ni Airtel ni Moov ;
+- Kadryza déterminera et affichera automatiquement les opérateurs disponibles ;
+- le client choisira son opérateur sur le checkout hébergé Kadryza ;
+- un opérateur momentanément indisponible ne sera pas proposé au client ;
+- Samiah n'embarquera aucune logique propre de readiness Airtel/Moov.
 
-Quand Kadryza livrera un checkout hébergé avec sélection dynamique, Samiah devra
-uniquement proposer « Payer avec Kadryza ». Il faudra alors retirer le numéro
-et le libellé Airtel du formulaire, ne plus imposer `operator=AIRTEL` à la
-création si le nouveau contrat l'autorise, persister l'opérateur choisi renvoyé
-par Kadryza, valider le webhook contre cet opérateur persisté, puis adapter les
-textes et tests. Aucun choix Airtel/Moov n'est ajouté côté Samiah dans cette PR.
+La présente PR reste volontairement couplée à Airtel jusqu'à la disponibilité
+de ce contrat backend. Elle ne doit pas anticiper une API encore inexistante.
+
+### Éléments provisoires à remplacer
+
+Les adaptations suivantes devront être faites ensemble lorsque le nouveau
+contrat Kadryza sera disponible :
+
+1. retirer ou remplacer `KADRYZA_OPERATOR` dans
+   `src/lib/checkout/config.ts` ;
+2. ne plus initialiser `orders.kadryza_operator` à `AIRTEL` lors de la création
+   d'une commande ;
+3. remplacer dans `/commander` les libellés « Airtel Money avec Kadryza » et
+   les champs spécifiques à Airtel par le seul choix « Payer avec Kadryza » ;
+4. supprimer du formulaire Samiah le « numéro Airtel du payeur », selon le
+   futur contrat de collecte du checkout hébergé ;
+5. adapter le payload `POST /v1/payment-sessions` afin que Samiah ne transmette
+   plus `operator=AIRTEL`, si et seulement si le nouveau contrat le documente ;
+6. persister l'opérateur effectivement choisi et retourné par Kadryza, puis
+   valider les webhooks contre cette valeur sans liste de readiness locale ;
+7. adapter les validations TypeScript/SQL actuellement liées à `AIRTEL` ;
+8. mettre à jour les tests, les captures du checkout et le runbook Airtel.
+
+Aucun de ces changements n'est implémenté dans cette PR : le choix
+d'opérateur reste provisoirement imposé à `AIRTEL`.
