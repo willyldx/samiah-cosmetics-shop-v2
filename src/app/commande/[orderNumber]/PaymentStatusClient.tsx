@@ -1,22 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import { useCart } from "@/context/CartContext";
+import {
+  shouldClearCartForPaymentStatus,
+  shouldPollPaymentStatus,
+} from "@/lib/checkout/payment-status";
+import type { PaymentStatus } from "@/lib/checkout/types";
 
 interface PaymentView {
   orderNumber: string;
   total: number;
-  paymentStatus:
-    | "pending_payment"
-    | "session_creating"
-    | "awaiting_payment"
-    | "paid"
-    | "under_review"
-    | "expired"
-    | "session_failed"
-    | "reconciliation_required";
+  paymentStatus: PaymentStatus;
   ticket: string | null;
   operator: string | null;
   environment: "test" | "live" | null;
@@ -26,14 +23,6 @@ interface PaymentView {
   confirmedAt: string | null;
   retryAllowed: boolean;
 }
-
-const TERMINAL_STATUSES = new Set([
-  "paid",
-  "under_review",
-  "expired",
-  "session_failed",
-  "reconciliation_required",
-]);
 
 function formatPrice(amount: number) {
   return `${new Intl.NumberFormat("fr-FR").format(amount)} FCFA`;
@@ -50,6 +39,7 @@ export default function PaymentStatusClient({
   const [payment, setPayment] = useState<PaymentView | null>(null);
   const [error, setError] = useState("");
   const [retrying, setRetrying] = useState(false);
+  const clearedPaidOrder = useRef<string | null>(null);
 
   const refresh = useCallback(async () => {
     const response = await fetch(
@@ -71,7 +61,7 @@ export default function PaymentStatusClient({
   }, [refresh]);
 
   useEffect(() => {
-    if (!payment || TERMINAL_STATUSES.has(payment.paymentStatus)) return;
+    if (!payment || !shouldPollPaymentStatus(payment.paymentStatus)) return;
     const timer = window.setInterval(() => {
       refresh().catch(() => undefined);
     }, 5_000);
@@ -79,10 +69,15 @@ export default function PaymentStatusClient({
   }, [payment, refresh]);
 
   useEffect(() => {
-    if (payment?.paymentStatus === "paid") {
+    if (
+      payment &&
+      shouldClearCartForPaymentStatus(payment.paymentStatus) &&
+      clearedPaidOrder.current !== payment.orderNumber
+    ) {
+      clearedPaidOrder.current = payment.orderNumber;
       clearCart();
     }
-  }, [clearCart, payment?.paymentStatus]);
+  }, [clearCart, payment]);
 
   const retry = async () => {
     setRetrying(true);

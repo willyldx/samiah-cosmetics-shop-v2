@@ -235,18 +235,33 @@ begin
     or p_environment not in ('test', 'live')
     or (
       p_event_type = 'payment_session.succeeded'
-      and (p_data_status <> 'SUCCESS' or p_payment_status <> 'paid')
+      and (
+        p_data_status <> 'SUCCESS'
+        or p_payment_status <> 'paid'
+        or target_order.payment_status not in (
+          'awaiting_payment',
+          'under_review'
+        )
+      )
     )
     or (
       p_event_type = 'payment_session.under_review'
       and (
         p_data_status <> 'UNDER_REVIEW'
         or p_payment_status <> 'under_review'
+        or target_order.payment_status <> 'awaiting_payment'
       )
     )
     or (
       p_event_type = 'payment_session.expired'
-      and (p_data_status <> 'EXPIRED' or p_payment_status <> 'expired')
+      and (
+        p_data_status <> 'EXPIRED'
+        or p_payment_status <> 'expired'
+        or target_order.payment_status not in (
+          'awaiting_payment',
+          'under_review'
+        )
+      )
     )
   ) then
     final_decision := 'rejected';
@@ -292,7 +307,7 @@ begin
       payment_failure_reason = null,
       status = 'pending'
     where id = target_order.id
-      and payment_status = 'awaiting_payment';
+      and payment_status in ('awaiting_payment', 'under_review');
   elsif p_payment_status = 'under_review' then
     update public.orders
     set
@@ -306,7 +321,7 @@ begin
       payment_status = 'expired',
       payment_confirmed_at = null
     where id = target_order.id
-      and payment_status = 'awaiting_payment';
+      and payment_status in ('awaiting_payment', 'under_review');
   end if;
 
   if not found then

@@ -39,7 +39,7 @@ export interface PaymentOrderSnapshot {
   kadryza_reference: string | null;
   kadryza_operator: string | null;
   kadryza_environment: string | null;
-  payment_status?: string;
+  payment_status: string;
 }
 
 export type WebhookDecision =
@@ -164,11 +164,6 @@ export function evaluatePaymentSessionEvent(
       event.data.environment === order.kadryza_environment,
       "stored_environment_mismatch",
     ],
-    [
-      order.payment_status === undefined ||
-        order.payment_status === "awaiting_payment",
-      "order_payment_state_mismatch",
-    ],
   ];
 
   const failedCheck = checks.find(([valid]) => !valid);
@@ -177,18 +172,27 @@ export function evaluatePaymentSessionEvent(
   }
 
   if (event.event === "payment_session.succeeded") {
-    return event.data.status === "SUCCESS"
+    if (event.data.status !== "SUCCESS") {
+      return { kind: "rejected", reason: "success_status_mismatch" };
+    }
+    return ["awaiting_payment", "under_review"].includes(order.payment_status)
       ? { kind: "accepted", paymentStatus: "paid" }
-      : { kind: "rejected", reason: "success_status_mismatch" };
+      : { kind: "rejected", reason: "order_payment_state_mismatch" };
   }
 
   if (event.event === "payment_session.under_review") {
-    return event.data.status === "UNDER_REVIEW"
+    if (event.data.status !== "UNDER_REVIEW") {
+      return { kind: "rejected", reason: "review_status_mismatch" };
+    }
+    return order.payment_status === "awaiting_payment"
       ? { kind: "accepted", paymentStatus: "under_review" }
-      : { kind: "rejected", reason: "review_status_mismatch" };
+      : { kind: "rejected", reason: "order_payment_state_mismatch" };
   }
 
-  return event.data.status === "EXPIRED"
+  if (event.data.status !== "EXPIRED") {
+    return { kind: "rejected", reason: "expired_status_mismatch" };
+  }
+  return ["awaiting_payment", "under_review"].includes(order.payment_status)
     ? { kind: "accepted", paymentStatus: "expired" }
-    : { kind: "rejected", reason: "expired_status_mismatch" };
+    : { kind: "rejected", reason: "order_payment_state_mismatch" };
 }

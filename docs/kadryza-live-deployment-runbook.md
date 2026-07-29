@@ -102,3 +102,13 @@ Si le statut devient `UNDER_REVIEW`, `expired`,
 `reconciliation_required`, si un montant diverge ou si le webhook n'arrive
 pas : désactiver immédiatement le feature flag, ne pas repayer et escalader à
 Kadryza.
+
+`UNDER_REVIEW` n'est pas une confirmation et ne vide jamais le panier. La page
+continue à consulter le statut serveur. Un webhook signé `SUCCESS` ultérieur
+peut effectuer l'unique transition `under_review → paid`; les replays du même
+`event_id` restent sans effet.
+
+Cette version reste couplée à Airtel. Le passage futur au checkout Kadryza
+multi-opérateurs doit suivre la liste de modifications de
+`docs/kadryza-live-integration-audit.md` : Samiah proposera Kadryza, puis le
+client choisira l'opérateur uniquement sur le checkout hébergé.

@@ -100,3 +100,28 @@ dédié. Sa règle documentée est une clé dérivée de
 `event + data.id + data.status`. L'intégration accepte un futur `event_id`
 top-level s'il apparaît ; sinon elle calcule cette clé, la hache et la stocke
 durablement dans `kadryza_webhook_events.event_id`.
+
+La machine d'état autorise `awaiting_payment → under_review → paid`. La seconde
+transition exige un nouveau webhook signé `payment_session.succeeded` avec
+`data.status=SUCCESS` et tous les invariants concordants. `under_review` ne
+modifie pas le statut métier de la commande et la page continue le polling.
+`paid` et `expired` sont terminaux ; un événement ultérieur ne peut pas les
+faire régresser.
+
+## Couplage Airtel provisoire
+
+Cette PR reste volontairement mono-opérateur. `AIRTEL` est actuellement fixé
+dans :
+
+- `src/lib/checkout/config.ts` (`KADRYZA_OPERATOR`) ;
+- la création et la reprise de Payment Session ;
+- la validation TypeScript et SQL des webhooks ;
+- le formulaire invité et les libellés de la page de statut ;
+- les tests et la checklist de déploiement.
+
+Quand Kadryza livrera un checkout hébergé avec sélection dynamique, Samiah devra
+uniquement proposer « Payer avec Kadryza ». Il faudra alors retirer le numéro
+et le libellé Airtel du formulaire, ne plus imposer `operator=AIRTEL` à la
+création si le nouveau contrat l'autorise, persister l'opérateur choisi renvoyé
+par Kadryza, valider le webhook contre cet opérateur persisté, puis adapter les
+textes et tests. Aucun choix Airtel/Moov n'est ajouté côté Samiah dans cette PR.
