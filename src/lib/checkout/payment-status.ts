@@ -3,7 +3,7 @@ import type { PaymentStatus } from "./types.ts";
 const POLLING_TERMINAL_STATUSES = new Set<PaymentStatus>([
   "paid",
   "expired",
-  "session_failed",
+  "checkout_failed",
   "reconciliation_required",
 ]);
 
@@ -16,4 +16,23 @@ export function shouldClearCartForPaymentStatus(
   status: PaymentStatus,
 ): boolean {
   return status === "paid";
+}
+
+export function shouldCheckHostedCheckoutExpiration(
+  paymentMethod: string,
+  status: PaymentStatus,
+  paymentSessionId: string | null,
+): boolean {
+  return (
+    paymentMethod === "kadryza" &&
+    status === "awaiting_payment" &&
+    paymentSessionId === null
+  );
+}
+
+export function shouldRecoverHostedCheckoutCreation(
+  paymentMethod: string,
+  status: PaymentStatus,
+): boolean {
+  return paymentMethod === "kadryza" && status === "checkout_creating";
 }

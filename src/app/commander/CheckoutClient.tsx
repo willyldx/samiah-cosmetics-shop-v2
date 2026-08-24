@@ -34,7 +34,6 @@ export default function CheckoutClient({
   const { cartItems, subtotal, clearCart } = useCart();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [airtelPhone, setAirtelPhone] = useState("");
   const [city, setCity] = useState<ShippingCity>("N'Djamena");
   const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
@@ -65,7 +64,6 @@ export default function CheckoutClient({
           customer: {
             name,
             phone,
-            paymentPhone: paymentMethod === "kadryza" ? airtelPhone : null,
             city,
             address,
           },
@@ -278,14 +276,11 @@ export default function CheckoutClient({
                         name="paymentMethod"
                         value="kadryza"
                         checked={paymentMethod === "kadryza"}
-                        onChange={() => {
-                          setPaymentMethod("kadryza");
-                          setAirtelPhone((current) => current || phone);
-                        }}
+                        onChange={() => setPaymentMethod("kadryza")}
                         className="sr-only"
                       />
                       <span className="block text-charcoal font-semibold text-xs uppercase tracking-widest mb-1.5">
-                        Mobile Money
+                        Payer avec Kadryza
                       </span>
                       <span className="block text-charcoal/50 font-light text-xs leading-relaxed">
                         Paiement sécurisé via le checkout officiel Kadryza.
@@ -294,27 +289,12 @@ export default function CheckoutClient({
                   )}
                 </div>
                 {paymentMethod === "kadryza" && (
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-widest text-charcoal font-semibold mb-2">
-                        Numéro Airtel Money du payeur *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        value={airtelPhone}
-                        onChange={(event) =>
-                          setAirtelPhone(event.target.value)
-                        }
-                        className="w-full border border-sand px-4 py-3.5 bg-cream/30 focus:bg-white focus:border-gold outline-none transition-all font-light text-sm rounded-sm text-charcoal"
-                        placeholder="Ex: 66 00 00 00"
-                      />
-                      <p className="mt-2 text-[10px] text-charcoal/45">
-                        Ce numéro peut être différent de votre contact
-                        WhatsApp. Il sera transmis à Kadryza comme numéro du
-                        payeur.
-                      </p>
-                    </div>
+                  <div className="mt-4 space-y-3">
+                    <p className="text-[10px] leading-relaxed text-charcoal/55 bg-cream/50 border border-sand/40 px-4 py-3">
+                      Kadryza affichera uniquement les opérateurs disponibles.
+                      Vous choisirez votre opérateur et saisirez le numéro du
+                      payeur sur son checkout sécurisé.
+                    </p>
                     <p className="text-[10px] leading-relaxed text-amber-700 bg-amber-50 border border-amber-200 px-4 py-3">
                       Votre panier restera conservé jusqu&apos;à la confirmation
                       vérifiée du webhook Kadryza. Le retour navigateur ne
@@ -377,7 +357,7 @@ export default function CheckoutClient({
                   {loading
                     ? "Traitement..."
                     : paymentMethod === "kadryza"
-                      ? "Continuer avec Airtel Money"
+                      ? "Continuer avec Kadryza"
                       : "Confirmer la commande"}
                 </button>
 

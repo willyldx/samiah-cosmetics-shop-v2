@@ -12,7 +12,7 @@ import {
   parseCheckoutInput,
 } from "@/lib/checkout/validation";
 import {
-  createKadryzaPaymentSession,
+  createKadryzaHostedCheckout,
   KadryzaUnavailableError,
 } from "@/lib/kadryza/client";
 import {
@@ -123,7 +123,6 @@ export async function POST(request: Request) {
         order_number: orderNumber,
         client_name: input.customer.name,
         client_phone: input.customer.phone,
-        payment_customer_phone: input.customer.paymentPhone,
         client_city: input.customer.city,
         client_address: input.customer.address,
         items: totals.items,
@@ -135,7 +134,7 @@ export async function POST(request: Request) {
         payment_status: isKadryza ? "pending_payment" : "not_applicable",
         expected_payment_amount: isKadryza ? totals.total : null,
         status_access_token_hash: statusTokenHash,
-        kadryza_operator: isKadryza ? "AIRTEL" : null,
+        kadryza_operator: null,
         kadryza_environment: kadryzaEnvironment,
         kadryza_reference: isKadryza ? orderNumber : null,
       })
@@ -181,8 +180,9 @@ export async function POST(request: Request) {
       const { data: claimedOrder, error: claimError } = await supabase
         .from("orders")
         .update({
-          payment_status: "session_creating",
-          payment_session_attempt_count: 1,
+          payment_status: "checkout_creating",
+          kadryza_checkout_attempt_count: 1,
+          kadryza_checkout_attempted_at: new Date().toISOString(),
         })
         .eq("id", order.id)
         .eq("payment_status", "pending_payment")
@@ -195,31 +195,29 @@ export async function POST(request: Request) {
         );
       }
 
-      const session = await createKadryzaPaymentSession({
+      const checkout = await createKadryzaHostedCheckout({
         reference: orderNumber,
         amount: totals.total,
-        customerPhone: input.customer.paymentPhone!,
         description: `Commande Samiah ${orderNumber}`,
       });
 
-      const { data: persistedSession, error: updateError } = await supabase
+      const { data: persistedCheckout, error: updateError } = await supabase
         .from("orders")
         .update({
-          kadryza_session_id: session.id,
-          kadryza_ticket: session.ticket,
-          kadryza_collection_number: session.assigned_collection_number,
-          kadryza_checkout_url: session.checkout_url ?? null,
-          payment_status: "awaiting_payment",
-          payment_expires_at: session.expires_at,
+          kadryza_checkout_intent_id: checkout.id,
+          kadryza_checkout_url: checkout.checkout_url,
+          payment_status:
+            checkout.status === "EXPIRED" ? "expired" : "awaiting_payment",
+          payment_expires_at: checkout.expires_at,
         })
         .eq("id", order.id)
         .eq("status", "pending_payment")
-        .eq("payment_status", "session_creating")
+        .eq("payment_status", "checkout_creating")
         .select("id")
         .maybeSingle();
 
-      if (updateError || !persistedSession) {
-        console.error("kadryza_session_persist_failed", {
+      if (updateError || !persistedCheckout) {
+        console.error("kadryza_checkout_persist_failed", {
           code: updateError?.code ?? "no_row_updated",
           orderNumber,
         });
@@ -227,7 +225,7 @@ export async function POST(request: Request) {
           .from("orders")
           .update({
             payment_status: "reconciliation_required",
-            payment_failure_reason: "session_persist_failed",
+            payment_failure_reason: "checkout_persist_failed",
           })
           .eq("id", order.id);
         return NextResponse.json(
@@ -236,7 +234,7 @@ export async function POST(request: Request) {
             payment: {
               status: "reconciliation_required",
               message:
-                "La session créée doit être rapprochée manuellement. Ne relancez pas le paiement.",
+                "Le Hosted Checkout créé doit être rapproché manuellement. Ne relancez pas le paiement.",
               statusUrl: `/commande/${encodeURIComponent(orderNumber)}?token=${encodeURIComponent(statusToken)}`,
             },
           },
@@ -248,13 +246,11 @@ export async function POST(request: Request) {
         {
           order: baseOrder,
           payment: {
-            status: "awaiting_payment",
-            operator: session.operator,
-            environment: session.environment,
-            collectionNumber: session.assigned_collection_number,
-            ticket: session.ticket,
-            expiresAt: session.expires_at,
-            checkoutUrl: session.checkout_url ?? null,
+            status:
+              checkout.status === "EXPIRED" ? "expired" : "awaiting_payment",
+            environment: checkout.environment,
+            expiresAt: checkout.expires_at,
+            checkoutUrl: checkout.checkout_url,
             statusUrl: `/commande/${encodeURIComponent(orderNumber)}?token=${encodeURIComponent(statusToken)}`,
           },
         },
@@ -270,13 +266,13 @@ export async function POST(request: Request) {
         error instanceof KadryzaUnavailableError &&
         error.retrySafety === "reconciliation_required"
           ? "reconciliation_required"
-          : "session_failed";
+          : "checkout_failed";
       const { error: updateError } = await supabase
         .from("orders")
         .update({
           payment_status: paymentStatus,
           payment_failure_reason:
-            paymentStatus === "session_failed"
+            paymentStatus === "checkout_failed"
               ? "provider_unavailable"
               : "ambiguous_provider_result",
         })

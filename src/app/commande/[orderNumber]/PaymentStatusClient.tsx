@@ -188,7 +188,7 @@ export default function PaymentStatusClient({
   }
 
   if (
-    payment.paymentStatus === "session_failed" ||
+    payment.paymentStatus === "checkout_failed" ||
     payment.paymentStatus === "reconciliation_required"
   ) {
     const reconciliation =
@@ -204,7 +204,7 @@ export default function PaymentStatusClient({
         message={
           reconciliation
             ? "Le résultat de la création est incertain. Ne relancez pas le paiement ; contactez l’assistance."
-            : "Aucune session active n'a été créée. Vous pouvez lancer une nouvelle tentative contrôlée."
+            : "Aucun checkout actif n'a été créé. Vous pouvez lancer une nouvelle tentative contrôlée."
         }
       >
         {commonDetails}
@@ -293,7 +293,7 @@ function StatusShell({
         className={`w-full max-w-xl mx-auto bg-white border ${toneClass} p-8 sm:p-12 text-center shadow-sm`}
       >
         <span className="text-[9px] uppercase tracking-[0.25em] text-gold font-semibold">
-          Airtel Money avec Kadryza
+          Paiement sécurisé par Kadryza
         </span>
         <h1 className="mt-4 text-3xl font-serif text-charcoal">{title}</h1>
         <p className="mt-4 text-sm leading-relaxed text-charcoal/55">

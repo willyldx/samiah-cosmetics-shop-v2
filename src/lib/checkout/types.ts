@@ -12,7 +12,6 @@ export interface CheckoutInput {
   customer: {
     name: string;
     phone: string;
-    paymentPhone: string | null;
     city: ShippingCity;
     address: string;
   };
@@ -44,10 +43,10 @@ export interface TrustedOrderTotals {
 
 export type PaymentStatus =
   | "pending_payment"
-  | "session_creating"
+  | "checkout_creating"
   | "awaiting_payment"
   | "paid"
   | "under_review"
   | "expired"
-  | "session_failed"
+  | "checkout_failed"
   | "reconciliation_required";

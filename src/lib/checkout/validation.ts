@@ -123,10 +123,6 @@ export function parseCheckoutInput(value: unknown): CheckoutInput {
     customer: {
       name: requireText(customer.name, "Le nom", 120),
       phone: normalizeCustomerPhone(customer.phone),
-      paymentPhone:
-        body.paymentMethod === "kadryza"
-          ? normalizeCustomerPhone(customer.paymentPhone)
-          : null,
       city: city as ShippingCity,
       address: requireText(customer.address, "L'adresse", 240),
     },

@@ -25,6 +25,41 @@ test("la migration autorise exactement under_review vers paid ou expired", () =>
   );
 });
 
+test("la migration lie dynamiquement intent, session et opérateur", () => {
+  assert.match(migration, /kadryza_checkout_intent_id text/);
+  assert.match(
+    migration,
+    /target_order\.kadryza_checkout_intent_id <> p_checkout_intent_id/,
+  );
+  assert.match(migration, /kadryza_session_id = p_session_id/);
+  assert.match(migration, /kadryza_operator = p_operator/);
+  assert.doesNotMatch(migration, /p_operator not in \('AIRTEL', 'MOOV'\)/);
+});
+
+test("seule l'horloge serveur expire un intent sans Payment Session", () => {
+  assert.match(migration, /function public\.expire_kadryza_hosted_checkout/);
+  assert.match(
+    migration,
+    /kadryza_session_id is null[\s\S]*?payment_expires_at <= now\(\)/,
+  );
+  assert.match(
+    migration,
+    /grant execute on function public\.expire_kadryza_hosted_checkout\(uuid\)[\s\S]*?to service_role/,
+  );
+});
+
+test("une création interrompue devient retryable après un lease serveur", () => {
+  assert.match(
+    migration,
+    /function public\.recover_stale_kadryza_checkout_creation/,
+  );
+  assert.match(
+    migration,
+    /kadryza_checkout_attempted_at <= now\(\) - interval '2 minutes'/,
+  );
+  assert.match(migration, /payment_failure_reason = 'stale_checkout_creation'/);
+});
+
 test("le replay est dédupliqué durablement avant toute transition", () => {
   const deduplication = migration.indexOf("on conflict (event_id) do nothing");
   const duplicateReturn = migration.indexOf("return 'duplicate'");

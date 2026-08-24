@@ -6,6 +6,7 @@ import {
   evaluatePaymentSessionEvent,
   getKadryzaEventId,
   parseKadryzaWebhook,
+  resolveHostedCheckoutSession,
   verifyKadryzaSignature,
   type KadryzaWebhookEvent,
 } from "../src/lib/kadryza/webhook.ts";
@@ -14,9 +15,11 @@ const order = {
   order_number: "SC260728-ABCDEF12",
   total: 5_000,
   kadryza_session_id: "session-1",
+  kadryza_checkout_intent_id: "intent-1",
   kadryza_reference: "SC260728-ABCDEF12",
   kadryza_operator: "AIRTEL",
   kadryza_environment: "live",
+  payment_expires_at: "2026-08-24T12:40:00Z",
   payment_status: "awaiting_payment",
 };
 
@@ -34,6 +37,8 @@ function event(
       operator: "AIRTEL",
       environment: "live",
       status,
+      ticket: "KDRZ-8F3K2",
+      expires_at: "2026-08-24T12:40:00Z",
       completed_at: "2026-07-28T12:30:00Z",
     },
   };
@@ -61,6 +66,93 @@ test("parse le payload et produit un event_id stable pour les doublons", () => {
 
   assert.match(first, /^derived_[a-f0-9]{64}$/);
   assert.equal(duplicate, first);
+  assert.equal(
+    getKadryzaEventId({ ...parsed, event_id: "event-1" }, "event-header"),
+    "event-1",
+  );
+  assert.equal(getKadryzaEventId(parsed, "event-header"), "event-header");
+});
+
+test("lie la session et l'opérateur choisis uniquement depuis le Hosted Checkout", () => {
+  const moovEvent = event();
+  moovEvent.data.operator = "MOOV";
+  const resolution = resolveHostedCheckoutSession(
+    moovEvent,
+    {
+      ...order,
+      kadryza_session_id: null,
+      kadryza_operator: null,
+    },
+    {
+      id: "intent-1",
+      reference: order.order_number,
+      amount: order.total,
+      currency: "XAF",
+      environment: "live",
+      status: "SELECTED",
+      operator_availability: "NOT_APPLICABLE",
+      expires_at: "2026-08-24T12:40:00Z",
+      eligible_operators: [],
+      payment_session: {
+        id: moovEvent.data.id,
+        reference: moovEvent.data.reference,
+        ticket: "KDRZ-MOOV",
+        amount: moovEvent.data.amount,
+        currency: "XAF",
+        operator: "MOOV",
+        status: "SUCCESS",
+        environment: "live",
+        assigned_collection_number: "099000001",
+        expires_at: "2026-08-24T12:40:00Z",
+        instructions: "Instructions Kadryza",
+      },
+    },
+  );
+
+  assert.equal(resolution.kind, "resolved");
+  if (resolution.kind === "resolved") {
+    assert.equal(resolution.order.kadryza_operator, "MOOV");
+    assert.deepEqual(
+      evaluatePaymentSessionEvent(moovEvent, resolution.order, "live"),
+      { kind: "accepted", paymentStatus: "paid" },
+    );
+  }
+});
+
+test("refuse de lier un webhook à une autre session Hosted Checkout", () => {
+  const resolution = resolveHostedCheckoutSession(
+    event(),
+    { ...order, kadryza_session_id: null, kadryza_operator: null },
+    {
+      id: "intent-1",
+      reference: order.order_number,
+      amount: order.total,
+      currency: "XAF",
+      environment: "live",
+      status: "SELECTED",
+      operator_availability: "NOT_APPLICABLE",
+      expires_at: "2026-08-24T12:40:00Z",
+      eligible_operators: [],
+      payment_session: {
+        id: "other-session",
+        reference: order.order_number,
+        ticket: "KDRZ-OTHER",
+        amount: order.total,
+        currency: "XAF",
+        operator: "AIRTEL",
+        status: "SUCCESS",
+        environment: "live",
+        assigned_collection_number: "066000001",
+        expires_at: "2026-08-24T12:40:00Z",
+        instructions: "Instructions Kadryza",
+      },
+    },
+  );
+
+  assert.deepEqual(resolution, {
+    kind: "rejected",
+    reason: "checkout_session_mismatch",
+  });
 });
 
 test("awaiting_payment accepte UNDER_REVIEW sans devenir paid", () => {

@@ -1,9 +1,7 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 
-import {
-  KADRYZA_CURRENCY,
-  KADRYZA_OPERATOR,
-} from "../checkout/config.ts";
+import { KADRYZA_CURRENCY } from "../checkout/config.ts";
+import type { KadryzaHostedCheckoutView } from "./client.ts";
 import type { KadryzaEnvironment } from "./environment.ts";
 
 const PAYMENT_SESSION_EVENTS = new Set([
@@ -36,9 +34,11 @@ export interface PaymentOrderSnapshot {
   order_number: string;
   total: number;
   kadryza_session_id: string | null;
+  kadryza_checkout_intent_id: string | null;
   kadryza_reference: string | null;
   kadryza_operator: string | null;
   kadryza_environment: string | null;
+  payment_expires_at: string | null;
   payment_status: string;
 }
 
@@ -49,6 +49,10 @@ export type WebhookDecision =
       kind: "accepted";
       paymentStatus: "paid" | "under_review" | "expired";
     };
+
+export type HostedCheckoutResolution =
+  | { kind: "resolved"; order: PaymentOrderSnapshot }
+  | { kind: "rejected"; reason: string };
 
 export function verifyKadryzaSignature(
   rawBody: string,
@@ -117,19 +121,65 @@ export function parseKadryzaWebhook(rawBody: string): KadryzaWebhookEvent {
   return parsed;
 }
 
-export function getKadryzaEventId(event: KadryzaWebhookEvent): string {
+export function getKadryzaEventId(
+  event: KadryzaWebhookEvent,
+  eventIdHeader?: string | null,
+): string {
   if (event.event_id) {
     return event.event_id;
   }
+  if (eventIdHeader) {
+    return eventIdHeader;
+  }
 
-  // Le contrat Kadryza actif ne fournit pas encore d'event_id. Sa clé
-  // d'idempotence documentée est event + data.id + data.status.
+  // Compatibilité avec d'anciennes livraisons sans event_id.
   const source = `${event.event}:${event.data.id}:${event.data.status}`;
   return `derived_${createHash("sha256").update(source).digest("hex")}`;
 }
 
 export function getPayloadSha256(rawBody: string): string {
   return createHash("sha256").update(rawBody).digest("hex");
+}
+
+export function resolveHostedCheckoutSession(
+  event: KadryzaWebhookEvent,
+  order: PaymentOrderSnapshot,
+  checkout: KadryzaHostedCheckoutView,
+): HostedCheckoutResolution {
+  const session = checkout.payment_session;
+  const checks: Array<[boolean, string]> = [
+    [checkout.status === "SELECTED", "checkout_not_selected"],
+    [checkout.id === order.kadryza_checkout_intent_id, "checkout_intent_mismatch"],
+    [checkout.reference === order.order_number, "checkout_reference_mismatch"],
+    [checkout.reference === order.kadryza_reference, "checkout_stored_reference_mismatch"],
+    [checkout.amount === order.total, "checkout_amount_mismatch"],
+    [checkout.currency === KADRYZA_CURRENCY, "checkout_currency_mismatch"],
+    [checkout.environment === order.kadryza_environment, "checkout_environment_mismatch"],
+    [Boolean(session), "checkout_session_missing"],
+    [session?.id === event.data.id, "checkout_session_mismatch"],
+    [session?.reference === event.data.reference, "checkout_session_reference_mismatch"],
+    [session?.amount === event.data.amount, "checkout_session_amount_mismatch"],
+    [session?.currency === event.data.currency, "checkout_session_currency_mismatch"],
+    [session?.operator === event.data.operator, "checkout_session_operator_mismatch"],
+    [session?.status === event.data.status, "checkout_session_status_mismatch"],
+    [session?.environment === event.data.environment, "checkout_session_environment_mismatch"],
+  ];
+  const failedCheck = checks.find(([valid]) => !valid);
+  if (failedCheck || !session) {
+    return {
+      kind: "rejected",
+      reason: failedCheck?.[1] ?? "checkout_session_missing",
+    };
+  }
+
+  return {
+    kind: "resolved",
+    order: {
+      ...order,
+      kadryza_session_id: session.id,
+      kadryza_operator: session.operator,
+    },
+  };
 }
 
 export function evaluatePaymentSessionEvent(
@@ -153,8 +203,22 @@ export function evaluatePaymentSessionEvent(
     ],
     [event.data.id === order.kadryza_session_id, "session_mismatch"],
     [event.data.amount === order.total, "amount_mismatch"],
+    [Boolean(event.data.ticket), "ticket_missing"],
+    [Boolean(event.data.expires_at), "expiration_missing"],
+    [
+      Boolean(
+        event.data.expires_at &&
+          order.payment_expires_at &&
+          Date.parse(event.data.expires_at) ===
+            Date.parse(order.payment_expires_at),
+      ),
+      "expiration_mismatch",
+    ],
     [event.data.currency === KADRYZA_CURRENCY, "currency_mismatch"],
-    [event.data.operator === KADRYZA_OPERATOR, "operator_mismatch"],
+    [
+      /^[A-Z][A-Z0-9_]{1,31}$/.test(event.data.operator),
+      "operator_invalid",
+    ],
     [
       event.data.operator === order.kadryza_operator,
       "stored_operator_mismatch",

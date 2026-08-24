@@ -12,7 +12,6 @@ const baseInput = {
   customer: {
     name: "Amina Mahamat",
     phone: "66 00 00 00",
-    paymentPhone: "99 00 00 00",
     city: "N'Djamena",
     address: "Quartier Moursal",
   },
@@ -76,22 +75,15 @@ test("refuse les quantités falsifiées et les doublons", () => {
   );
 });
 
-test("exige le numéro du payeur pour Kadryza mais pas pour le cash", () => {
-  assert.throws(
-    () =>
-      parseCheckoutInput({
-        ...baseInput,
-        customer: { ...baseInput.customer, paymentPhone: "" },
-      }),
-    /téléphone/,
-  );
-  assert.doesNotThrow(() =>
-    parseCheckoutInput({
-      ...baseInput,
-      paymentMethod: "cash",
-      customer: { ...baseInput.customer, paymentPhone: "" },
-    }),
-  );
+test("ne collecte aucun opérateur ni numéro Mobile Money côté Samiah", () => {
+  const parsed = parseCheckoutInput({
+    ...baseInput,
+    customer: { ...baseInput.customer, paymentPhone: "donnée ignorée" },
+    operator: "AIRTEL",
+  });
+
+  assert.equal("paymentPhone" in parsed.customer, false);
+  assert.equal("operator" in parsed, false);
 });
 
 test("refuse un produit absent ou inactif", () => {

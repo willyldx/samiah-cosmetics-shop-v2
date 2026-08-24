@@ -1,33 +1,54 @@
-import {
-  KADRYZA_CURRENCY,
-  KADRYZA_OPERATOR,
-} from "../checkout/config.ts";
+import { KADRYZA_CURRENCY } from "../checkout/config.ts";
 import {
   getKadryzaEnvironmentFromApiKey,
   type KadryzaEnvironment,
 } from "./environment.ts";
 
-export interface CreatePaymentSessionInput {
+export interface CreateHostedCheckoutInput {
   reference: string;
   amount: number;
-  customerPhone: string;
   description: string;
 }
 
-export interface KadryzaPaymentSession {
+export interface KadryzaHostedCheckoutIntent {
+  id: string;
+  reference: string;
+  amount: number;
+  currency: "XAF";
+  environment: KadryzaEnvironment;
+  status: "OPEN" | "SELECTED" | "EXPIRED";
+  selected_operator?: string;
+  payment_session_id?: string;
+  expires_at: string;
+  created_at: string;
+  checkout_url: string;
+}
+
+export interface KadryzaCheckoutPaymentSession {
   id: string;
   reference: string;
   ticket: string;
   amount: number;
   currency: "XAF";
-  operator: "AIRTEL";
+  operator: string;
   status: string;
   environment: KadryzaEnvironment;
   assigned_collection_number: string;
   expires_at: string;
-  created_at: string;
-  instructions?: string;
-  checkout_url?: string;
+  instructions: string;
+}
+
+export interface KadryzaHostedCheckoutView {
+  id: string;
+  reference: string;
+  amount: number;
+  currency: "XAF";
+  environment: KadryzaEnvironment;
+  status: "OPEN" | "SELECTED" | "EXPIRED";
+  operator_availability: string;
+  expires_at: string;
+  eligible_operators: Array<{ operator: string; label: string }>;
+  payment_session?: KadryzaCheckoutPaymentSession;
 }
 
 export class KadryzaUnavailableError extends Error {
@@ -55,10 +76,19 @@ function requireConfiguration(): {
 } {
   const apiUrl = process.env.KADRYZA_API_URL?.replace(/\/+$/, "");
   const apiKey = process.env.KADRYZA_API_KEY;
-
   if (!apiUrl || !apiKey) {
     throw new KadryzaUnavailableError(
-      "Le paiement Mobile Money est temporairement indisponible.",
+      "Le paiement Kadryza est temporairement indisponible.",
+    );
+  }
+  try {
+    const parsedApiUrl = new URL(apiUrl);
+    if (parsedApiUrl.origin !== "https://api.kadryza.app") {
+      throw new Error("unexpected_api_origin");
+    }
+  } catch {
+    throw new KadryzaUnavailableError(
+      "L'URL API Kadryza est invalide.",
     );
   }
 
@@ -66,61 +96,116 @@ function requireConfiguration(): {
   try {
     environment = getKadryzaEnvironmentFromApiKey(apiKey);
   } catch {
-    throw new KadryzaUnavailableError(
-      "La configuration Kadryza est invalide.",
-    );
+    throw new KadryzaUnavailableError("La configuration Kadryza est invalide.");
   }
-
   return { apiUrl, apiKey, environment };
 }
 
-function isValidSessionResponse(
+function isKadryzaCheckoutUrl(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      (url.hostname === "kadryza.app" || url.hostname.endsWith(".kadryza.app"))
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isEnvironment(
+  value: unknown,
+  expected: KadryzaEnvironment,
+): value is KadryzaEnvironment {
+  return value === expected;
+}
+
+function isValidIntentResponse(
   value: unknown,
   expectedEnvironment: KadryzaEnvironment,
-): value is KadryzaPaymentSession {
+): value is KadryzaHostedCheckoutIntent {
+  if (!value || typeof value !== "object") return false;
+  const intent = value as Record<string, unknown>;
+  return (
+    typeof intent.id === "string" &&
+    typeof intent.reference === "string" &&
+    typeof intent.amount === "number" &&
+    intent.currency === KADRYZA_CURRENCY &&
+    isEnvironment(intent.environment, expectedEnvironment) &&
+    ["OPEN", "SELECTED", "EXPIRED"].includes(String(intent.status)) &&
+    typeof intent.expires_at === "string" &&
+    typeof intent.created_at === "string" &&
+    isKadryzaCheckoutUrl(intent.checkout_url)
+  );
+}
+
+function isCheckoutPaymentSession(
+  value: unknown,
+  expectedEnvironment: KadryzaEnvironment,
+): value is KadryzaCheckoutPaymentSession {
   if (!value || typeof value !== "object") return false;
   const session = value as Record<string, unknown>;
-
-  const checkoutUrlIsValid = (() => {
-    if (session.checkout_url === undefined) return true;
-    if (typeof session.checkout_url !== "string") return false;
-    try {
-      const url = new URL(session.checkout_url);
-      return (
-        url.protocol === "https:" &&
-        (url.hostname === "kadryza.app" ||
-          url.hostname.endsWith(".kadryza.app"))
-      );
-    } catch {
-      return false;
-    }
-  })();
-
   return (
     typeof session.id === "string" &&
     typeof session.reference === "string" &&
     typeof session.ticket === "string" &&
     typeof session.amount === "number" &&
     session.currency === KADRYZA_CURRENCY &&
-    session.operator === KADRYZA_OPERATOR &&
+    typeof session.operator === "string" &&
+    session.operator.length > 0 &&
     typeof session.status === "string" &&
-    session.environment === expectedEnvironment &&
+    isEnvironment(session.environment, expectedEnvironment) &&
     typeof session.assigned_collection_number === "string" &&
     typeof session.expires_at === "string" &&
-    typeof session.created_at === "string" &&
-    checkoutUrlIsValid
+    typeof session.instructions === "string"
   );
 }
 
-export async function createKadryzaPaymentSession(
-  input: CreatePaymentSessionInput,
-  fetchImplementation: Fetch = fetch,
-): Promise<KadryzaPaymentSession> {
-  const { apiUrl, apiKey, environment } = requireConfiguration();
+function isValidHostedCheckoutView(
+  value: unknown,
+  expectedEnvironment: KadryzaEnvironment,
+): value is KadryzaHostedCheckoutView {
+  if (!value || typeof value !== "object") return false;
+  const view = value as Record<string, unknown>;
+  if (
+    typeof view.id !== "string" ||
+    typeof view.reference !== "string" ||
+    typeof view.amount !== "number" ||
+    view.currency !== KADRYZA_CURRENCY ||
+    !isEnvironment(view.environment, expectedEnvironment) ||
+    !["OPEN", "SELECTED", "EXPIRED"].includes(String(view.status)) ||
+    typeof view.operator_availability !== "string" ||
+    typeof view.expires_at !== "string" ||
+    !Array.isArray(view.eligible_operators)
+  ) {
+    return false;
+  }
+  if (
+    !view.eligible_operators.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        typeof (item as Record<string, unknown>).operator === "string" &&
+        typeof (item as Record<string, unknown>).label === "string",
+    )
+  ) {
+    return false;
+  }
+  return (
+    view.payment_session === undefined ||
+    isCheckoutPaymentSession(view.payment_session, expectedEnvironment)
+  );
+}
 
+export async function createKadryzaHostedCheckout(
+  input: CreateHostedCheckoutInput,
+  fetchImplementation: Fetch = fetch,
+): Promise<KadryzaHostedCheckoutIntent> {
+  const { apiUrl, apiKey, environment } = requireConfiguration();
   let response: Response;
   try {
-    response = await fetchImplementation(`${apiUrl}/v1/payment-sessions`, {
+    response = await fetchImplementation(`${apiUrl}/v1/hosted-checkouts`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -130,12 +215,10 @@ export async function createKadryzaPaymentSession(
         reference: input.reference,
         amount: input.amount,
         currency: KADRYZA_CURRENCY,
-        operator: KADRYZA_OPERATOR,
-        customer_phone: input.customerPhone,
         description: input.description,
         metadata: {
           integration: "samiah-cosmetics",
-          phase: "1A",
+          phase: "live-1a",
         },
         ttl_minutes: 15,
       }),
@@ -143,48 +226,80 @@ export async function createKadryzaPaymentSession(
       signal: AbortSignal.timeout(10_000),
     });
   } catch {
+    // Le contrat Hosted Checkout est idempotent par référence et empreinte.
     throw new KadryzaUnavailableError(
-      "Réponse Kadryza incertaine. Une vérification manuelle est requise avant toute nouvelle tentative.",
-      undefined,
-      "reconciliation_required",
-    );
-  }
-
-  if (response.status === 409) {
-    throw new KadryzaUnavailableError(
-      "Une session existe déjà pour cette commande. Une vérification manuelle est requise.",
-      response.status,
-      "reconciliation_required",
+      "Kadryza n'a pas répondu. Vous pouvez réessayer cette même commande.",
     );
   }
 
   if (!response.ok) {
     throw new KadryzaUnavailableError(
-      "Kadryza est temporairement indisponible.",
+      response.status === 409
+        ? "La référence Kadryza existe avec des paramètres différents. Une vérification est requise."
+        : "Kadryza est temporairement indisponible.",
+      response.status,
+      response.status === 409 ? "reconciliation_required" : "safe",
+    );
+  }
+
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    throw new KadryzaUnavailableError(
+      "La réponse du Hosted Checkout est illisible.",
+      undefined,
+      "reconciliation_required",
+    );
+  }
+  if (!isValidIntentResponse(body, environment)) {
+    throw new KadryzaUnavailableError(
+      "La réponse du Hosted Checkout est invalide ou utilise un environnement inattendu.",
+      undefined,
+      "reconciliation_required",
+    );
+  }
+  if (body.reference !== input.reference || body.amount !== input.amount) {
+    throw new KadryzaUnavailableError(
+      "Le Hosted Checkout ne correspond pas à la commande.",
+      undefined,
+      "reconciliation_required",
+    );
+  }
+  return body;
+}
+
+export async function getKadryzaHostedCheckout(
+  intentId: string,
+  fetchImplementation: Fetch = fetch,
+): Promise<KadryzaHostedCheckoutView> {
+  const { apiUrl, environment } = requireConfiguration();
+  let response: Response;
+  try {
+    response = await fetchImplementation(
+      `${apiUrl}/v1/checkout/intents/${encodeURIComponent(intentId)}`,
+      { cache: "no-store", signal: AbortSignal.timeout(5_000) },
+    );
+  } catch {
+    throw new KadryzaUnavailableError(
+      "Impossible de vérifier le Hosted Checkout.",
+    );
+  }
+  if (!response.ok) {
+    throw new KadryzaUnavailableError(
+      "Le Hosted Checkout est temporairement indisponible.",
       response.status,
     );
   }
 
-  const body: unknown = await response.json();
-  if (!isValidSessionResponse(body, environment)) {
-    throw new KadryzaUnavailableError(
-      "La réponse de Kadryza est invalide ou utilise un environnement inattendu.",
-      undefined,
-      "reconciliation_required",
-    );
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    throw new KadryzaUnavailableError("La réponse du Hosted Checkout est illisible.");
   }
-
-  if (
-    body.reference !== input.reference ||
-    body.amount !== input.amount ||
-    body.status !== "AWAITING_PAYMENT"
-  ) {
-    throw new KadryzaUnavailableError(
-      "La session Kadryza ne correspond pas à la commande.",
-      undefined,
-      "reconciliation_required",
-    );
+  if (!isValidHostedCheckoutView(body, environment) || body.id !== intentId) {
+    throw new KadryzaUnavailableError("La réponse du Hosted Checkout est invalide.");
   }
-
   return body;
 }

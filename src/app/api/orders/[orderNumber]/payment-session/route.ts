@@ -6,7 +6,7 @@ import {
   statusAccessTokenMatches,
 } from "@/lib/checkout/security";
 import {
-  createKadryzaPaymentSession,
+  createKadryzaHostedCheckout,
   KadryzaUnavailableError,
 } from "@/lib/kadryza/client";
 import { getKadryzaEnvironmentFromApiKey } from "@/lib/kadryza/environment";
@@ -46,7 +46,7 @@ export async function POST(request: Request, context: RouteContext) {
   const { data: order, error: readError } = await supabase
     .from("orders")
     .select(
-      "id,order_number,total,payment_customer_phone,payment_method,payment_status,status_access_token_hash,kadryza_session_id,kadryza_environment",
+      "id,order_number,total,payment_method,payment_status,status_access_token_hash,kadryza_checkout_intent_id,kadryza_environment",
     )
     .eq("order_number", orderNumber)
     .maybeSingle();
@@ -63,9 +63,12 @@ export async function POST(request: Request, context: RouteContext) {
     );
   }
 
-  if (order.payment_method !== "kadryza" || order.kadryza_session_id) {
+  if (
+    order.payment_method !== "kadryza" ||
+    order.kadryza_checkout_intent_id
+  ) {
     return NextResponse.json(
-      { error: "Cette commande ne peut pas recréer de session." },
+      { error: "Cette commande ne peut pas recréer de Hosted Checkout." },
       { status: 409 },
     );
   }
@@ -92,7 +95,7 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   const { data: claimed, error: claimError } = await supabase.rpc(
-    "claim_kadryza_payment_retry",
+    "claim_kadryza_checkout_retry",
     { p_order_id: order.id },
   );
   if (claimError) {
@@ -110,48 +113,47 @@ export async function POST(request: Request, context: RouteContext) {
   }
 
   try {
-    const session = await createKadryzaPaymentSession({
+    const checkout = await createKadryzaHostedCheckout({
       reference: order.order_number,
       amount: order.total,
-      customerPhone: order.payment_customer_phone,
       description: `Commande Samiah ${order.order_number}`,
     });
-    const { data: persistedSession, error: updateError } = await supabase
+    const { data: persistedCheckout, error: updateError } = await supabase
       .from("orders")
       .update({
-        kadryza_session_id: session.id,
-        kadryza_ticket: session.ticket,
-        kadryza_collection_number: session.assigned_collection_number,
-        kadryza_checkout_url: session.checkout_url ?? null,
-        payment_status: "awaiting_payment",
-        payment_expires_at: session.expires_at,
+        kadryza_checkout_intent_id: checkout.id,
+        kadryza_checkout_url: checkout.checkout_url,
+        payment_status:
+          checkout.status === "EXPIRED" ? "expired" : "awaiting_payment",
+        payment_expires_at: checkout.expires_at,
         payment_failure_reason: null,
       })
       .eq("id", order.id)
-      .eq("payment_status", "session_creating")
+      .eq("payment_status", "checkout_creating")
       .select("id")
       .maybeSingle();
 
-    if (updateError || !persistedSession) {
-      console.error("kadryza_retry_persist_failed", {
+    if (updateError || !persistedCheckout) {
+      console.error("kadryza_checkout_retry_persist_failed", {
         code: updateError?.code ?? "no_row_updated",
       });
       await supabase
         .from("orders")
         .update({
           payment_status: "reconciliation_required",
-          payment_failure_reason: "session_persist_failed",
+          payment_failure_reason: "checkout_persist_failed",
         })
         .eq("id", order.id);
       return NextResponse.json(
-        { error: "La session créée doit être rapprochée manuellement." },
+        { error: "Le Hosted Checkout créé doit être rapproché manuellement." },
         { status: 503 },
       );
     }
 
     return NextResponse.json({
-      status: "awaiting_payment",
-      checkoutUrl: session.checkout_url ?? null,
+      status:
+        checkout.status === "EXPIRED" ? "expired" : "awaiting_payment",
+      checkoutUrl: checkout.checkout_url,
     });
   } catch (error) {
     const retrySafety =
@@ -160,7 +162,7 @@ export async function POST(request: Request, context: RouteContext) {
         : "reconciliation_required";
     const paymentStatus =
       retrySafety === "safe"
-        ? "session_failed"
+        ? "checkout_failed"
         : "reconciliation_required";
 
     await supabase
@@ -168,12 +170,12 @@ export async function POST(request: Request, context: RouteContext) {
       .update({
         payment_status: paymentStatus,
         payment_failure_reason:
-          paymentStatus === "session_failed"
+          paymentStatus === "checkout_failed"
             ? "provider_unavailable"
             : "ambiguous_provider_result",
       })
       .eq("id", order.id)
-      .eq("payment_status", "session_creating");
+      .eq("payment_status", "checkout_creating");
 
     return NextResponse.json(
       {

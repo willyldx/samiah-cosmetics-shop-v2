@@ -6,8 +6,8 @@ begin;
 
 alter table public.orders
   add column if not exists payment_status text not null default 'not_applicable',
-  add column if not exists payment_customer_phone text,
   add column if not exists expected_payment_amount bigint,
+  add column if not exists kadryza_checkout_intent_id text,
   add column if not exists kadryza_session_id text,
   add column if not exists kadryza_reference text,
   add column if not exists kadryza_ticket text,
@@ -18,7 +18,8 @@ alter table public.orders
   add column if not exists payment_expires_at timestamptz,
   add column if not exists payment_confirmed_at timestamptz,
   add column if not exists payment_failure_reason text,
-  add column if not exists payment_session_attempt_count integer not null default 0,
+  add column if not exists kadryza_checkout_attempt_count integer not null default 0,
+  add column if not exists kadryza_checkout_attempted_at timestamptz,
   add column if not exists status_access_token_hash text;
 
 -- Remplace uniquement les CHECK directement attachés aux colonnes concernées.
@@ -74,12 +75,12 @@ alter table public.orders
       payment_status in (
         'not_applicable',
         'pending_payment',
-        'session_creating',
+        'checkout_creating',
         'awaiting_payment',
         'paid',
         'under_review',
         'expired',
-        'session_failed',
+        'checkout_failed',
         'reconciliation_required'
       )
     ),
@@ -91,7 +92,7 @@ alter table public.orders
   add constraint orders_kadryza_operator_check
     check (
       kadryza_operator is null
-      or kadryza_operator in ('AIRTEL', 'MOOV')
+      or kadryza_operator ~ '^[A-Z][A-Z0-9_]{1,31}$'
     ),
   add constraint orders_expected_payment_amount_check
     check (
@@ -102,10 +103,8 @@ alter table public.orders
     check (
       payment_method <> 'kadryza'
       or (
-        payment_customer_phone is not null
-        and expected_payment_amount is not null
+        expected_payment_amount is not null
         and kadryza_reference is not null
-        and kadryza_operator is not null
         and kadryza_environment is not null
         and status_access_token_hash is not null
       )
@@ -114,6 +113,30 @@ alter table public.orders
     check (
       payment_status = 'paid'
       or payment_confirmed_at is null
+    ),
+  add constraint orders_kadryza_checkout_lifecycle_check
+    check (
+      payment_method <> 'kadryza'
+      or payment_status not in (
+        'awaiting_payment',
+        'under_review',
+        'paid',
+        'expired'
+      )
+      or (
+        kadryza_checkout_intent_id is not null
+        and kadryza_checkout_url is not null
+        and payment_expires_at is not null
+      )
+    ),
+  add constraint orders_kadryza_session_binding_check
+    check (
+      payment_method <> 'kadryza'
+      or payment_status not in ('under_review', 'paid')
+      or (
+        kadryza_session_id is not null
+        and kadryza_operator is not null
+      )
     );
 
 create unique index if not exists orders_order_number_unique_idx
@@ -130,6 +153,10 @@ create unique index if not exists orders_kadryza_reference_unique_idx
 create unique index if not exists orders_kadryza_session_unique_idx
   on public.orders (kadryza_environment, kadryza_session_id)
   where kadryza_session_id is not null;
+
+create unique index if not exists orders_kadryza_checkout_intent_unique_idx
+  on public.orders (kadryza_environment, kadryza_checkout_intent_id)
+  where kadryza_checkout_intent_id is not null;
 
 create table if not exists public.kadryza_webhook_events (
   event_id text primary key,
@@ -148,7 +175,7 @@ create table if not exists public.kadryza_webhook_events (
 alter table public.kadryza_webhook_events enable row level security;
 revoke all on table public.kadryza_webhook_events from anon, authenticated;
 
-create or replace function public.claim_kadryza_payment_retry(p_order_id uuid)
+create or replace function public.claim_kadryza_checkout_retry(p_order_id uuid)
 returns boolean
 language plpgsql
 security definer
@@ -159,13 +186,15 @@ declare
 begin
   update public.orders
   set
-    payment_status = 'session_creating',
+    payment_status = 'checkout_creating',
     payment_failure_reason = null,
-    payment_session_attempt_count = payment_session_attempt_count + 1
+    kadryza_checkout_attempt_count = kadryza_checkout_attempt_count + 1,
+    kadryza_checkout_attempted_at = now()
   where id = p_order_id
     and payment_method = 'kadryza'
     and status = 'pending_payment'
-    and payment_status = 'session_failed'
+    and payment_status = 'checkout_failed'
+    and kadryza_checkout_intent_id is null
     and kadryza_session_id is null;
 
   get diagnostics updated_count = row_count;
@@ -173,21 +202,93 @@ begin
 end;
 $$;
 
-revoke all on function public.claim_kadryza_payment_retry(uuid)
+revoke all on function public.claim_kadryza_checkout_retry(uuid)
   from public, anon, authenticated;
-grant execute on function public.claim_kadryza_payment_retry(uuid)
+grant execute on function public.claim_kadryza_checkout_retry(uuid)
+  to service_role;
+
+-- Récupère un worker interrompu. Le retry reste sûr grâce à l'idempotence du
+-- Hosted Checkout par référence et empreinte de requête.
+create or replace function public.recover_stale_kadryza_checkout_creation(
+  p_order_id uuid
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  updated_count integer;
+begin
+  update public.orders
+  set
+    payment_status = 'checkout_failed',
+    payment_failure_reason = 'stale_checkout_creation'
+  where id = p_order_id
+    and payment_method = 'kadryza'
+    and status = 'pending_payment'
+    and payment_status = 'checkout_creating'
+    and kadryza_checkout_intent_id is null
+    and kadryza_session_id is null
+    and kadryza_checkout_attempted_at <= now() - interval '2 minutes';
+
+  get diagnostics updated_count = row_count;
+  return updated_count = 1;
+end;
+$$;
+
+revoke all on function public.recover_stale_kadryza_checkout_creation(uuid)
+  from public, anon, authenticated;
+grant execute on function public.recover_stale_kadryza_checkout_creation(uuid)
+  to service_role;
+
+-- Un intent expiré avant tout choix d'opérateur ne produit pas de webhook de
+-- Payment Session. Seule l'horloge PostgreSQL peut fermer cet état, et jamais
+-- lorsqu'une session existe déjà.
+create or replace function public.expire_kadryza_hosted_checkout(p_order_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  updated_count integer;
+begin
+  update public.orders
+  set
+    payment_status = 'expired',
+    payment_confirmed_at = null
+  where id = p_order_id
+    and payment_method = 'kadryza'
+    and status = 'pending_payment'
+    and payment_status = 'awaiting_payment'
+    and kadryza_checkout_intent_id is not null
+    and kadryza_session_id is null
+    and payment_expires_at <= now();
+
+  get diagnostics updated_count = row_count;
+  return updated_count = 1;
+end;
+$$;
+
+revoke all on function public.expire_kadryza_hosted_checkout(uuid)
+  from public, anon, authenticated;
+grant execute on function public.expire_kadryza_hosted_checkout(uuid)
   to service_role;
 
 create or replace function public.process_kadryza_webhook_event(
   p_event_id text,
   p_event_type text,
   p_session_id text,
+  p_checkout_intent_id text,
   p_reference text,
   p_amount bigint,
   p_currency text,
   p_operator text,
   p_environment text,
   p_data_status text,
+  p_ticket text,
+  p_expires_at timestamptz,
   p_completed_at timestamptz,
   p_payload_sha256 text,
   p_decision text,
@@ -224,14 +325,27 @@ begin
   if p_decision = 'accepted' and (
     target_order.id is null
     or target_order.payment_method <> 'kadryza'
+    or target_order.kadryza_checkout_intent_id is null
+    or target_order.kadryza_checkout_intent_id <> p_checkout_intent_id
     or target_order.kadryza_reference <> p_reference
-    or target_order.kadryza_session_id <> p_session_id
+    or (
+      target_order.kadryza_session_id is not null
+      and target_order.kadryza_session_id <> p_session_id
+    )
     or target_order.expected_payment_amount <> p_amount
     or target_order.total <> p_amount
+    or p_ticket is null
+    or btrim(p_ticket) = ''
+    or p_expires_at is null
+    or target_order.payment_expires_at is null
+    or target_order.payment_expires_at <> p_expires_at
     or p_currency <> 'XAF'
-    or target_order.kadryza_operator <> p_operator
+    or (
+      target_order.kadryza_operator is not null
+      and target_order.kadryza_operator <> p_operator
+    )
     or target_order.kadryza_environment <> p_environment
-    or p_operator not in ('AIRTEL', 'MOOV')
+    or p_operator !~ '^[A-Z][A-Z0-9_]{1,31}$'
     or p_environment not in ('test', 'live')
     or (
       p_event_type = 'payment_session.succeeded'
@@ -303,6 +417,10 @@ begin
     update public.orders
     set
       payment_status = 'paid',
+      kadryza_session_id = p_session_id,
+      kadryza_operator = p_operator,
+      kadryza_ticket = coalesce(p_ticket, kadryza_ticket),
+      payment_expires_at = coalesce(p_expires_at, payment_expires_at),
       payment_confirmed_at = coalesce(p_completed_at, now()),
       payment_failure_reason = null,
       status = 'pending'
@@ -312,6 +430,10 @@ begin
     update public.orders
     set
       payment_status = 'under_review',
+      kadryza_session_id = p_session_id,
+      kadryza_operator = p_operator,
+      kadryza_ticket = coalesce(p_ticket, kadryza_ticket),
+      payment_expires_at = coalesce(p_expires_at, payment_expires_at),
       payment_confirmed_at = null
     where id = target_order.id
       and payment_status = 'awaiting_payment';
@@ -319,6 +441,10 @@ begin
     update public.orders
     set
       payment_status = 'expired',
+      kadryza_session_id = p_session_id,
+      kadryza_operator = p_operator,
+      kadryza_ticket = coalesce(p_ticket, kadryza_ticket),
+      payment_expires_at = coalesce(p_expires_at, payment_expires_at),
       payment_confirmed_at = null
     where id = target_order.id
       and payment_status in ('awaiting_payment', 'under_review');
@@ -333,13 +459,13 @@ end;
 $$;
 
 revoke all on function public.process_kadryza_webhook_event(
-  text, text, text, text, bigint, text, text, text, text,
-  timestamptz, text, text, text, text
+  text, text, text, text, text, bigint, text, text, text, text,
+  text, timestamptz, timestamptz, text, text, text, text
 ) from public, anon, authenticated;
 
 grant execute on function public.process_kadryza_webhook_event(
-  text, text, text, text, bigint, text, text, text, text,
-  timestamptz, text, text, text, text
+  text, text, text, text, text, bigint, text, text, text, text,
+  text, timestamptz, timestamptz, text, text, text, text
 ) to service_role;
 
 commit;

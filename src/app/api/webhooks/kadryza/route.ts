@@ -5,9 +5,14 @@ import {
   getKadryzaEventId,
   getPayloadSha256,
   parseKadryzaWebhook,
+  resolveHostedCheckoutSession,
   verifyKadryzaSignature,
   type PaymentOrderSnapshot,
 } from "@/lib/kadryza/webhook";
+import {
+  getKadryzaHostedCheckout,
+  KadryzaUnavailableError,
+} from "@/lib/kadryza/client";
 import { getKadryzaEnvironmentFromApiKey } from "@/lib/kadryza/environment";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
@@ -35,6 +40,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
   }
 
+  const eventIdHeader = request.headers.get("x-kadryza-event-id");
+  if (eventIdHeader && event.event_id && eventIdHeader !== event.event_id) {
+    return NextResponse.json({ error: "event_id_mismatch" }, { status: 400 });
+  }
+
   let expectedEnvironment;
   try {
     expectedEnvironment = getKadryzaEnvironmentFromApiKey(
@@ -52,7 +62,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "order_number,total,kadryza_session_id,kadryza_reference,kadryza_operator,kadryza_environment,payment_status",
+        "order_number,total,kadryza_session_id,kadryza_checkout_intent_id,kadryza_reference,kadryza_operator,kadryza_environment,payment_expires_at,payment_status",
       )
       .eq("order_number", event.data.reference)
       .maybeSingle();
@@ -64,11 +74,47 @@ export async function POST(request: Request) {
     order = data;
   }
 
-  let decision = evaluatePaymentSessionEvent(
-    event,
-    order,
-    expectedEnvironment,
-  );
+  let decision;
+  if (
+    order &&
+    event.event.startsWith("payment_session.") &&
+    (!order.kadryza_session_id || !order.kadryza_operator)
+  ) {
+    if (!order.kadryza_checkout_intent_id) {
+      decision = { kind: "rejected" as const, reason: "checkout_intent_missing" };
+    } else {
+      try {
+        const checkout = await getKadryzaHostedCheckout(
+          order.kadryza_checkout_intent_id,
+        );
+        const resolution = resolveHostedCheckoutSession(event, order, checkout);
+        if (resolution.kind === "resolved") {
+          order = resolution.order;
+          decision = evaluatePaymentSessionEvent(
+            event,
+            order,
+            expectedEnvironment,
+          );
+        } else {
+          decision = resolution;
+        }
+      } catch (error) {
+        console.error("kadryza_webhook_checkout_resolution_failed", {
+          statusCode:
+            error instanceof KadryzaUnavailableError
+              ? error.statusCode
+              : undefined,
+        });
+        return NextResponse.json({ error: "temporary_failure" }, { status: 503 });
+      }
+    }
+  } else {
+    decision = evaluatePaymentSessionEvent(
+      event,
+      order,
+      expectedEnvironment,
+    );
+  }
   if (
     decision.kind === "accepted" &&
     expectedEnvironment === "test" &&
@@ -77,19 +123,22 @@ export async function POST(request: Request) {
     decision = { kind: "rejected", reason: "missing_test_header" };
   }
 
-  const eventId = getKadryzaEventId(event);
+  const eventId = getKadryzaEventId(event, eventIdHeader);
   const { data: result, error: rpcError } = await supabase.rpc(
     "process_kadryza_webhook_event",
     {
       p_event_id: eventId,
       p_event_type: event.event,
       p_session_id: event.data.id || null,
+      p_checkout_intent_id: order?.kadryza_checkout_intent_id ?? null,
       p_reference: event.data.reference || null,
       p_amount: Number.isFinite(event.data.amount) ? event.data.amount : null,
       p_currency: event.data.currency || null,
       p_operator: event.data.operator || null,
       p_environment: event.data.environment || null,
       p_data_status: event.data.status || null,
+      p_ticket: event.data.ticket ?? null,
+      p_expires_at: event.data.expires_at ?? null,
       p_completed_at: event.data.completed_at ?? null,
       p_payload_sha256: getPayloadSha256(rawBody),
       p_decision: decision.kind,

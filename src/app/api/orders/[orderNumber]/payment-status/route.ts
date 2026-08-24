@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { statusAccessTokenMatches } from "@/lib/checkout/security";
+import {
+  shouldCheckHostedCheckoutExpiration,
+  shouldRecoverHostedCheckoutCreation,
+} from "@/lib/checkout/payment-status";
 import { getSupabaseServerClient } from "@/lib/supabase-server";
 
 export const runtime = "nodejs";
@@ -22,7 +26,7 @@ export async function GET(request: Request, context: RouteContext) {
   const { data: order, error } = await supabase
     .from("orders")
     .select(
-      "order_number,total,payment_method,payment_status,kadryza_ticket,kadryza_operator,kadryza_environment,kadryza_collection_number,kadryza_checkout_url,payment_expires_at,payment_confirmed_at,payment_failure_reason,status_access_token_hash",
+      "id,order_number,total,payment_method,payment_status,kadryza_session_id,kadryza_ticket,kadryza_operator,kadryza_environment,kadryza_collection_number,kadryza_checkout_url,payment_expires_at,payment_confirmed_at,payment_failure_reason,status_access_token_hash",
     )
     .eq("order_number", orderNumber)
     .maybeSingle();
@@ -46,12 +50,51 @@ export async function GET(request: Request, context: RouteContext) {
     );
   }
 
+  let paymentStatus = order.payment_status;
+  if (
+    shouldRecoverHostedCheckoutCreation(
+      order.payment_method,
+      order.payment_status,
+    )
+  ) {
+    const { data: recovered, error: recoveryError } = await supabase.rpc(
+      "recover_stale_kadryza_checkout_creation",
+      { p_order_id: order.id },
+    );
+    if (recoveryError) {
+      console.error("kadryza_checkout_recovery_failed", {
+        code: recoveryError.code,
+      });
+    } else if (recovered) {
+      paymentStatus = "checkout_failed";
+    }
+  }
+  if (
+    shouldCheckHostedCheckoutExpiration(
+      order.payment_method,
+      order.payment_status,
+      order.kadryza_session_id,
+    )
+  ) {
+    const { data: expired, error: expirationError } = await supabase.rpc(
+      "expire_kadryza_hosted_checkout",
+      { p_order_id: order.id },
+    );
+    if (expirationError) {
+      console.error("kadryza_checkout_expiration_failed", {
+        code: expirationError.code,
+      });
+    } else if (expired) {
+      paymentStatus = "expired";
+    }
+  }
+
   return NextResponse.json(
     {
       orderNumber: order.order_number,
       total: order.total,
       paymentMethod: order.payment_method,
-      paymentStatus: order.payment_status,
+      paymentStatus,
       ticket: order.kadryza_ticket,
       operator: order.kadryza_operator,
       environment: order.kadryza_environment,
@@ -59,7 +102,7 @@ export async function GET(request: Request, context: RouteContext) {
       checkoutUrl: order.kadryza_checkout_url,
       expiresAt: order.payment_expires_at,
       confirmedAt: order.payment_confirmed_at,
-      retryAllowed: order.payment_status === "session_failed",
+      retryAllowed: paymentStatus === "checkout_failed",
     },
     {
       headers: {

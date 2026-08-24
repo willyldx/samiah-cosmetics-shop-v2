@@ -1,28 +1,19 @@
 # Déploiement contrôlé Kadryza — Samiah Cosmetics
 
-Ce runbook ne déclenche aucun déploiement, aucune migration et aucun paiement.
+Ce runbook prépare le premier paiement LIVE. Il ne déclenche aucun déploiement,
+aucune migration, aucun onboarding et aucun paiement.
 
-## URL webhook
-
-Route applicative exacte :
-
-```text
-/api/webhooks/kadryza
-```
-
-URL correspondant au déploiement Production audité :
+## Webhook HTTPS
 
 ```text
-https://samiah-cosmetics-shop-v2-ntienpb4p-willys-projects-7d6d3eba.vercel.app/api/webhooks/kadryza
+https://samiah-cosmetics-shop-v2.vercel.app/api/webhooks/kadryza
 ```
 
-Avant enregistrement dans Kadryza, remplacer cette URL de déploiement immuable
-par le domaine canonique stable du projet Vercel s'il existe. L'URL finale doit
-être HTTPS, publique, sans redirection et pointer exactement vers cette route.
+L'URL est canonique, publique et HTTPS. Au moment de l'onboarding Kadryza,
+créer le webhook marchand sur cette URL puis copier immédiatement le secret
+affiché une seule fois vers `KADRYZA_WEBHOOK_SECRET` côté Vercel.
 
-## Variables Vercel
-
-À configurer uniquement dans l'environnement visé :
+## Variables Vercel nécessaires
 
 | Variable | Secret | Valeur/contrainte |
 | --- | --- | --- |
@@ -31,89 +22,78 @@ par le domaine canonique stable du projet Vercel s'il existe. L'URL finale doit
 | `SUPABASE_URL` | non | URL Supabase côté serveur |
 | `SUPABASE_SERVICE_ROLE_KEY` | oui | service-role, serveur uniquement |
 | `KADRYZA_API_URL` | non | `https://api.kadryza.app` |
-| `KADRYZA_API_KEY` | oui | clé fournie par Kadryza |
-| `KADRYZA_WEBHOOK_SECRET` | oui | secret du webhook créé |
-| `KADRYZA_PAYMENT_ENABLED` | non | `false` pendant le déploiement |
+| `KADRYZA_API_KEY` | oui | future clé LIVE du marchand Samiah |
+| `KADRYZA_WEBHOOK_SECRET` | oui | secret affiché à la création du webhook |
+| `KADRYZA_PAYMENT_ENABLED` | non | `false` jusqu'au go/no-go final |
 
-La clé API détermine seule `test` ou `live`. Ne pas créer de variables `_TEST`
-ou `_LIVE`. Une clé au préfixe inconnu est refusée par l'application.
+La clé API détermine seule l'environnement. Ne pas ajouter de variables
+`_TEST`, `_LIVE`, d'opérateur ou de readiness dans Samiah.
 
-## Procédure de déploiement
+## Avant fermeture du MFA
 
-1. Créer un clone ou projet Supabase de staging depuis le schéma réel.
-2. Exécuter les trois requêtes d'audit listées dans
-   `docs/kadryza-live-integration-audit.md`.
-3. Comparer les types et contraintes avec la migration. En particulier,
-   confirmer que `orders.id` est `uuid`, `total` est compatible `bigint`, et que
-   les valeurs historiques de `status` sont toutes couvertes.
-4. Appliquer la migration en staging et exécuter les tests API/webhook.
-5. Sauvegarder la base de production et planifier une fenêtre de rollback.
-6. Appliquer manuellement la migration versionnée en production.
-7. Configurer les variables Vercel avec
-   `KADRYZA_PAYMENT_ENABLED=false`.
-8. Déployer la PR validée. Vérifier le cash, le build et la route de statut sans
-   appeler Kadryza.
-9. Enregistrer l'URL webhook canonique chez Kadryza et stocker immédiatement le
-   secret dans Vercel.
-10. Faire livrer un webhook de test signé si Kadryza le permet, puis contrôler
-    la ligne d'audit et l'absence de changement `paid`.
-11. Obtenir le feu vert explicite de la readiness Kadryza pour Airtel live.
-12. Avant de remplacer une clé test par une clé live, confirmer qu'aucune
-    commande test n'est encore `awaiting_payment` ou en reprise.
-13. Passer `KADRYZA_PAYMENT_ENABLED=true`, puis redéployer la configuration.
+Ce qui peut être préparé sans AAL2 :
 
-## Premier petit paiement Airtel réel
+1. relire le schéma réel et les RLS Supabase ;
+2. appliquer la migration uniquement en staging ;
+3. tester le cash et les webhooks signés simulés ;
+4. configurer les variables non sensibles dans un Preview Vercel ;
+5. confirmer que le Preview compile et que la route webhook répond en HTTPS ;
+6. conserver `KADRYZA_PAYMENT_ENABLED=false` ;
+7. conserver Financial E2E à OFF.
 
-Toutes les cases doivent être cochées avant d'envoyer de l'argent :
+## Après fermeture du MFA/AAL2
 
-- [ ] readiness Airtel live Kadryza officiellement verte ;
-- [ ] clé `kadryza_live_...` confirmée et limitée au marchand Samiah ;
-- [ ] webhook HTTPS canonique actif, secret vérifié et test signé reçu ;
-- [ ] migration production appliquée et fonctions accordées au seul
-      `service_role` ;
-- [ ] service-role absente de tout bundle navigateur et des logs ;
-- [ ] feature flag toujours `false` pendant les contrôles techniques ;
-- [ ] commande cash testée sans régression ;
-- [ ] opérateur affiché `AIRTEL`, devise `XAF`, environnement retourné `live` ;
-- [ ] équipe Kadryza et équipe Samiah disponibles pendant la fenêtre ;
-- [ ] montant de test commercial minimal décidé et produit correspondant actif ;
-- [ ] numéro Airtel payeur et numéro de collecte vérifiés par deux personnes ;
-- [ ] observabilité ouverte : logs Vercel, ligne `orders`, événements webhook ;
-- [ ] procédure de stop immédiat connue : remettre le feature flag à `false`.
+1. Finaliser le marchand LIVE Samiah.
+2. Émettre une clé LIVE limitée au marchand et aux scopes nécessaires.
+3. Créer le webhook marchand vers l'URL canonique.
+4. Stocker le secret webhook et la clé LIVE dans Vercel Production.
+5. Envoyer un webhook de connectivité signé si Kadryza le permet ; vérifier
+   qu'il est audité sans produire `paid`.
+6. Confirmer que Kadryza retourne au moins un opérateur éligible sur le Hosted
+   Checkout. Samiah ne décide pas lequel.
+7. Vérifier que Financial E2E est toujours OFF.
+8. Faire le go/no-go technique et métier.
+9. Activer `KADRYZA_PAYMENT_ENABLED=true` uniquement pendant la fenêtre
+   contrôlée.
 
-Exécution contrôlée :
+## Déploiement Supabase/Vercel
 
-1. Activer le feature flag et ouvrir `/commander` dans une session dédiée.
-2. Ajouter un seul produit de faible montant et choisir Airtel Money.
-3. Vérifier avant paiement que le total serveur, la commande
-   `pending_payment`, la référence et l'environnement `live` concordent.
-4. Ouvrir le `checkout_url` Kadryza officiel depuis la page d'attente.
-5. Vérifier visuellement montant, ticket, opérateur et numéro de collecte.
-6. Envoyer exactement le montant affiché depuis le numéro Airtel prévu.
-7. Ne cliquer sur aucun mécanisme local de confirmation : il n'en existe pas.
-8. Attendre `payment_session.succeeded` signé avec `data.status=SUCCESS`.
-9. Vérifier atomiquement : événement `accepted`, `payment_status=paid`,
-   `payment_confirmed_at` renseigné, puis seulement le panier vidé.
-10. Vérifier le bouton WhatsApp et le passage de la commande à la préparation.
-11. Rapprocher le paiement côté Kadryza et documenter ticket, ordre, timestamps
-    et résultat, sans copier de secrets.
+1. Auditer types, contraintes et RLS avec les requêtes de l'audit.
+2. Appliquer la migration sur un clone ou staging Supabase.
+3. Tester les RPC avec service-role et confirmer leur refus pour
+   `anon`/`authenticated`.
+4. Sauvegarder la production et documenter le rollback.
+5. Appliquer manuellement la migration production pendant la fenêtre validée.
+6. Déployer avec le feature flag à `false`.
+7. Vérifier `/commander`, le cash et la page de statut.
+8. Vérifier le webhook HTTPS avec un événement non financier signé.
+9. Lever le feature flag après validation conjointe Samiah/Kadryza.
 
-Si le statut devient `UNDER_REVIEW`, `expired`,
-`reconciliation_required`, si un montant diverge ou si le webhook n'arrive
-pas : désactiver immédiatement le feature flag, ne pas repayer et escalader à
-Kadryza.
+## Premier paiement LIVE contrôlé
 
-`UNDER_REVIEW` n'est pas une confirmation et ne vide jamais le panier. La page
-continue à consulter le statut serveur. Un webhook signé `SUCCESS` ultérieur
-peut effectuer l'unique transition `under_review → paid`; les replays du même
-`event_id` restent sans effet.
+- [ ] MFA/AAL2 fermé ;
+- [ ] marchand LIVE actif et vérifié ;
+- [ ] clé LIVE et secret webhook installés sans exposition client ;
+- [ ] migration appliquée et sauvegarde restaurable ;
+- [ ] Preview et build Vercel verts ;
+- [ ] webhook de connectivité signé reçu ;
+- [ ] Hosted Checkout affiche uniquement les opérateurs prêts selon Kadryza ;
+- [ ] Financial E2E explicitement autorisé pour la fenêtre, sinon paiement OFF ;
+- [ ] montant minimal et observabilité décidés ;
+- [ ] procédure de stop : `KADRYZA_PAYMENT_ENABLED=false`.
 
-Cette version reste couplée à Airtel. Le passage futur au checkout Kadryza
-multi-opérateurs doit suivre la liste de modifications de
-`docs/kadryza-live-integration-audit.md` : Samiah proposera Kadryza, puis le
-client choisira l'opérateur uniquement sur le checkout hébergé.
+Exécution :
 
-Le chantier est mis en attente du contrat
-`Kadryza Hosted-Checkout-Dynamic-Operators-1A`. Tant que ce contrat backend
-n'est pas livré et documenté, ne pas ajouter de sélecteur Airtel/Moov côté
-Samiah et ne pas reproduire dans Samiah la readiness des opérateurs Kadryza.
+1. Créer une commande de faible montant via « Payer avec Kadryza ».
+2. Vérifier le total serveur, la référence, l'intent et l'environnement LIVE.
+3. Ouvrir le `checkout_url` officiel.
+4. Laisser Kadryza afficher les opérateurs disponibles.
+5. Choisir l'opérateur et saisir le numéro uniquement chez Kadryza.
+6. Ne confirmer par aucun bouton ou retour Samiah.
+7. Attendre le webhook signé `payment_session.succeeded` / `SUCCESS`.
+8. Vérifier l'unique événement durable, `payment_status=paid`, la date de
+   confirmation et le vidage du panier après lecture serveur.
+
+En cas de `UNDER_REVIEW`, expiration, divergence ou absence de webhook : couper
+le feature flag, ne pas repayer et rapprocher avec Kadryza. `UNDER_REVIEW` peut
+ensuite devenir `paid` uniquement via un nouveau webhook signé `SUCCESS`.

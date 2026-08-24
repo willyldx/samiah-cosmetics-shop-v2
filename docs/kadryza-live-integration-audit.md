@@ -1,24 +1,31 @@
 # Audit — Samiah Kadryza Live Integration 1A
 
-Date de l'audit : 2026-07-28
+Dernière mise à jour : 2026-08-24
 
 ## Base et périmètre
 
-- dépôt : `willyldx/samiah-cosmetics-shop-v2`
-- base : `main` à `357b378807c4a2a10bbca9ce301f0a7c74cf0ca2`
-- contrat Kadryza lu en lecture seule sur `willyldx/Kadryza-Pay` à
-  `2c13fb340442c3c1aedebb44e27fc701895fc499`
-- aucun fichier du dépôt Kadryza-Pay, du Gateway Android ou du provisioning n'a
-  été modifié
+- dépôt modifié : `willyldx/samiah-cosmetics-shop-v2` uniquement ;
+- base historique : `main` à
+  `357b378807c4a2a10bbca9ce301f0a7c74cf0ca2` ;
+- contrat Kadryza relu en lecture seule sur `willyldx/Kadryza-Pay` à
+  `0e0d4825999b5f488a48368ba4c2b31467820991` ;
+- contrat dynamique fusionné par Kadryza PR #228,
+  `Hosted Checkout — Dynamic Operators 1A` ;
+- aucun fichier Kadryza, Gateway Android ou provisioning n'a été modifié ;
+- aucun appel financier, paiement ou onboarding LIVE n'a été effectué.
 
-## Checkout avant intégration
+## Existant conservé
 
-`/commander` calculait dans le navigateur le sous-total, les frais et le total,
-puis insérait directement la commande avec la clé anon Supabase. Les lignes
-envoyaient le titre, le prix et le sous-total fournis par le panier local. Le
-flux cash vidait ensuite le panier et ouvrait WhatsApp.
+Le checkout invité collecte le nom, le contact WhatsApp, la ville et l'adresse
+de livraison. Le serveur relit les produits actifs dans Supabase et recalcule
+les prix, quantités, sous-total, livraison et total. Le montant navigateur
+n'est jamais une autorité.
 
-Frais observés :
+Le paiement à la livraison conserve son flux : création de commande, vidage du
+panier, puis WhatsApp. Le flux Kadryza conserve le panier jusqu'au statut
+serveur `paid` et utilise un jeton de lecture de statut haché.
+
+Frais serveur observés :
 
 | Ville | Frais XAF |
 | --- | ---: |
@@ -30,20 +37,78 @@ Frais observés :
 
 La livraison devient gratuite à partir de 20 000 XAF de sous-total.
 
+## Contrat Hosted Checkout dynamique
+
+Samiah crée désormais un intent avec `POST /v1/hosted-checkouts` :
+
+- authentification serveur par `X-API-Key` ;
+- `reference`, `amount`, `currency=XAF`, description et metadata minimales ;
+- aucun `operator`, `customer_phone`, `merchant_id`, `environment` ou
+  `is_test` transmis ;
+- marchand et environnement déduits exclusivement de la clé API ;
+- réponse `201` avec l'identifiant d'intent, son environnement, son expiration
+  et le `checkout_url` officiel HTTPS.
+
+Le navigateur ouvre ce Hosted Checkout. Kadryza recalcule sa propre readiness,
+n'affiche que les opérateurs disponibles, collecte le numéro Mobile Money et
+crée une unique Payment Session après le choix du client. Samiah n'appelle pas
+les endpoints publics de sélection et n'embarque aucune logique de readiness.
+
+Le contrat ne documente toujours pas de `return_url`. La page de statut Samiah
+reste donc ouverte et le checkout est lancé dans un nouvel onglet. Le retour,
+le polling et le bouton client ne confirment jamais le paiement.
+
+La création est idempotente chez Kadryza par marchand, environnement,
+référence et empreinte de requête. Un timeout peut donc être retenté avec la
+même commande. Une création serveur interrompue est libérée après un lease
+PostgreSQL de deux minutes ; elle ne crée pas une nouvelle commande.
+
+## Liaison dynamique et webhook
+
+À la création de commande, l'opérateur et la Payment Session sont inconnus.
+Samiah stocke l'identifiant du Hosted Checkout, la référence, le montant,
+l'environnement, l'URL et l'expiration.
+
+Au premier événement de Payment Session, le serveur Samiah relit en HTTPS la
+vue publique de l'intent chez Kadryza. Il vérifie intent, référence, montant,
+devise, environnement, session et opérateur, puis lie atomiquement la session
+et l'opérateur choisis à la commande. Aucune liste Airtel/Moov n'est maintenue
+par Samiah.
+
+Le webhook :
+
+- lit le body brut avec `request.text()` ;
+- vérifie `X-Kadryza-Signature` en HMAC-SHA256 timing-safe ;
+- vérifie la cohérence entre le `event_id` du body et
+  `X-Kadryza-Event-ID` lorsqu'ils sont tous deux présents ;
+- utilise le `event_id` durable Kadryza, avec fallback dérivé uniquement pour
+  les anciennes livraisons ;
+- répète les invariants critiques dans la fonction SQL transactionnelle ;
+- accepte `SUCCESS` depuis `awaiting_payment` ou `under_review` ;
+- conserve `UNDER_REVIEW` comme état non payé ;
+- empêche toute régression de `paid` ou `expired` ;
+- déduplique avant toute transition métier.
+
+Si l'intent expire avant tout choix d'opérateur, aucune Payment Session
+n'existe encore. Une RPC réservée au `service_role` utilise alors uniquement
+l'horloge PostgreSQL pour passer cet intent à `expired`. Cette route ne peut ni
+créer une session ni produire `paid`.
+
+Seul `payment_session.succeeded` avec `data.status=SUCCESS`, reçu par ce
+webhook signé, peut produire `paid`. Le panier n'est vidé qu'après lecture de
+ce statut serveur.
+
 ## Supabase
 
-Les colonnes utilisées par le code de production sont : `order_number`,
-`client_name`, `client_phone`, `client_city`, `client_address`, `items`,
-`subtotal`, `shipping_fee`, `total`, `payment_method`, `status`, `created_at` et
-`id`. Les produits actifs sont lus depuis `products` avec au moins `id`,
-`title`, `price` et `active`.
+La migration versionnée ajoute notamment l'intent Hosted Checkout, la session,
+la référence, le ticket, l'opérateur choisi chez Kadryza, l'environnement, le
+montant attendu, les dates et la table d'événements webhook. RLS est activée
+sur cette table sans politique `anon`/`authenticated`; les RPC sensibles sont
+accordées au seul `service_role`.
 
-Limite de l'audit : les deux clés anon présentes dans le checkout/local
-répondaient `401` à PostgREST le 2026-07-28, et aucune session Supabase CLI
-authentifiée n'était disponible. Les types SQL exacts, noms de contraintes et
-politiques RLS de production n'ont donc pas pu être exportés sans accès
-administrateur. La migration est défensive, ne modifie aucune politique
-existante sur `orders`, et doit être validée dans un clone/staging par :
+Limite inchangée : le schéma SQL, les contraintes et les politiques RLS de la
+base distante n'ont pas pu être exportés avec les identifiants disponibles.
+Avant application, vérifier en staging :
 
 ```sql
 select column_name, data_type, is_nullable, column_default
@@ -59,89 +124,28 @@ select * from pg_policies
 where schemaname = 'public' and tablename in ('orders', 'products');
 ```
 
-La table d'audit webhook créée par la migration active RLS sans politique pour
-`anon`/`authenticated`; seul `service_role` exécute les fonctions sensibles.
+La migration n'a pas été appliquée.
 
-## Vercel
+## Vercel et HTTPS
 
-Le déploiement GitHub Production au SHA de base est réussi et pointe vers
-`https://samiah-cosmetics-shop-v2-ntienpb4p-willys-projects-7d6d3eba.vercel.app`.
-Le dépôt contient `vercel.json`, mais pas de lien `.vercel` versionné. Aucun CLI
-Vercel authentifié n'était disponible ; les variables distantes existantes
-n'ont donc pas pu être lues. Le fichier local ne contenait que les noms
-`NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+Le domaine canonique public répond en HTTPS :
+`https://samiah-cosmetics-shop-v2.vercel.app`.
 
-## Contrat Payment Sessions actif
+La route webhook finale à enregistrer est :
+`https://samiah-cosmetics-shop-v2.vercel.app/api/webhooks/kadryza`.
 
-- authentification : `X-API-Key`
-- création : `POST /v1/payment-sessions`
-- la clé `kadryza_test_...` ou `kadryza_live_...` détermine l'environnement
-- ne pas envoyer `merchant_id`, `is_test` ou `environment`
-- `currency=XAF`, opérateurs documentés `AIRTEL` et `MOOV`
-- réponse `201` avec `id`, `reference`, `ticket`, `amount`, `operator`,
-  `environment`, `assigned_collection_number`, `expires_at` et
-  `checkout_url`
-- `409` si la référence existe déjà dans l'environnement
-- aucun paramètre `return_url` n'est documenté
+Les anciens déploiements Preview de la PR ont échoué. Le build local de
+production réussit, mais les logs Vercel ne sont pas consultables sans session
+Vercel authentifiée. Ce point doit être fermé avant déploiement.
 
-Le checkout officiel est utilisé dans un nouvel onglet depuis la page d'attente
-Samiah. Cela conserve la page de statut, car aucun retour marchand documenté ne
-peut être supposé.
+## Dépendances restantes
 
-Le site reste sans compte client : `/commander` est un checkout invité. Il
-collecte avant tout appel Kadryza le nom, le contact WhatsApp, la ville,
-l'adresse de livraison et, pour Airtel Money uniquement, le numéro du payeur.
-Le contact de livraison et le numéro Mobile Money sont volontairement séparés.
-
-## Idempotence webhook
-
-Le contrat actif ne fournit actuellement ni header de livraison ni `event_id`
-dédié. Sa règle documentée est une clé dérivée de
-`event + data.id + data.status`. L'intégration accepte un futur `event_id`
-top-level s'il apparaît ; sinon elle calcule cette clé, la hache et la stocke
-durablement dans `kadryza_webhook_events.event_id`.
-
-La machine d'état autorise `awaiting_payment → under_review → paid`. La seconde
-transition exige un nouveau webhook signé `payment_session.succeeded` avec
-`data.status=SUCCESS` et tous les invariants concordants. `under_review` ne
-modifie pas le statut métier de la commande et la page continue le polling.
-`paid` et `expired` sont terminaux ; un événement ultérieur ne peut pas les
-faire régresser.
-
-## Décision produit — opérateurs dynamiques
-
-Le contrat produit final attendu de
-`Kadryza Hosted-Checkout-Dynamic-Operators-1A` est le suivant :
-
-- Samiah proposera uniquement « Payer avec Kadryza » ;
-- le marchand Samiah ne choisira ni Airtel ni Moov ;
-- Kadryza déterminera et affichera automatiquement les opérateurs disponibles ;
-- le client choisira son opérateur sur le checkout hébergé Kadryza ;
-- un opérateur momentanément indisponible ne sera pas proposé au client ;
-- Samiah n'embarquera aucune logique propre de readiness Airtel/Moov.
-
-La présente PR reste volontairement couplée à Airtel jusqu'à la disponibilité
-de ce contrat backend. Elle ne doit pas anticiper une API encore inexistante.
-
-### Éléments provisoires à remplacer
-
-Les adaptations suivantes devront être faites ensemble lorsque le nouveau
-contrat Kadryza sera disponible :
-
-1. retirer ou remplacer `KADRYZA_OPERATOR` dans
-   `src/lib/checkout/config.ts` ;
-2. ne plus initialiser `orders.kadryza_operator` à `AIRTEL` lors de la création
-   d'une commande ;
-3. remplacer dans `/commander` les libellés « Airtel Money avec Kadryza » et
-   les champs spécifiques à Airtel par le seul choix « Payer avec Kadryza » ;
-4. supprimer du formulaire Samiah le « numéro Airtel du payeur », selon le
-   futur contrat de collecte du checkout hébergé ;
-5. adapter le payload `POST /v1/payment-sessions` afin que Samiah ne transmette
-   plus `operator=AIRTEL`, si et seulement si le nouveau contrat le documente ;
-6. persister l'opérateur effectivement choisi et retourné par Kadryza, puis
-   valider les webhooks contre cette valeur sans liste de readiness locale ;
-7. adapter les validations TypeScript/SQL actuellement liées à `AIRTEL` ;
-8. mettre à jour les tests, les captures du checkout et le runbook Airtel.
-
-Aucun de ces changements n'est implémenté dans cette PR : le choix
-d'opérateur reste provisoirement imposé à `AIRTEL`.
+- fermeture du MFA/AAL2 Kadryza ;
+- création ou finalisation du marchand LIVE Samiah ;
+- émission de la clé `kadryza_live_...` ;
+- création du webhook marchand et récupération unique de son secret ;
+- readiness réelle d'au moins un opérateur calculée par Kadryza ;
+- audit et application contrôlée de la migration Supabase ;
+- configuration Vercel et validation du Preview ;
+- autorisation explicite d'activer `KADRYZA_PAYMENT_ENABLED` ;
+- maintien de Financial E2E à OFF jusqu'à la fenêtre de paiement contrôlée.
