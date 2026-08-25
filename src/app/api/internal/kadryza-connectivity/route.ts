@@ -102,7 +102,9 @@ export async function POST(request: Request) {
   if (action === "cleanup") {
     let staleEndpointsRemaining = 0;
     const staleEndpoints =
-      body.endpoints?.filter((item) => item.id !== endpoint.id) ?? [];
+      body.endpoints?.filter(
+        (item) => item.id !== endpoint.id && item.is_active,
+      ) ?? [];
     for (const staleEndpoint of staleEndpoints) {
       const deleteResponse = await fetch(
         `${apiUrl}/v1/webhooks/${encodeURIComponent(staleEndpoint.id)}`,
@@ -143,7 +145,9 @@ export async function POST(request: Request) {
   let staleEndpointsRemaining = 0;
   if (testResponse.ok) {
     const staleEndpoints =
-      body.endpoints?.filter((item) => item.id !== endpoint.id) ?? [];
+      body.endpoints?.filter(
+        (item) => item.id !== endpoint.id && item.is_active,
+      ) ?? [];
     for (const staleEndpoint of staleEndpoints) {
       const deleteResponse = await fetch(
         `${apiUrl}/v1/webhooks/${encodeURIComponent(staleEndpoint.id)}`,
