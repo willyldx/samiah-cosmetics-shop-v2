@@ -32,7 +32,11 @@ export async function POST(request: Request) {
   let action = "audit";
   try {
     const body = (await request.json()) as { action?: unknown };
-    if (body.action === "create" || body.action === "test") {
+    if (
+      body.action === "create" ||
+      body.action === "test" ||
+      body.action === "cleanup"
+    ) {
       action = body.action;
     }
   } catch {
@@ -93,6 +97,29 @@ export async function POST(request: Request) {
       { registered: false, exactUrl: false },
       { status: 409 },
     );
+  }
+
+  if (action === "cleanup") {
+    let staleEndpointsRemaining = 0;
+    const staleEndpoints =
+      body.endpoints?.filter((item) => item.id !== endpoint.id) ?? [];
+    for (const staleEndpoint of staleEndpoints) {
+      const deleteResponse = await fetch(
+        `${apiUrl}/v1/webhooks/${encodeURIComponent(staleEndpoint.id)}`,
+        {
+          method: "DELETE",
+          headers,
+          cache: "no-store",
+          signal: AbortSignal.timeout(10_000),
+        },
+      );
+      if (!deleteResponse.ok) staleEndpointsRemaining += 1;
+    }
+    return NextResponse.json({
+      registered: true,
+      exactUrl: true,
+      staleEndpointsRemaining,
+    });
   }
 
   if (action !== "test") {
