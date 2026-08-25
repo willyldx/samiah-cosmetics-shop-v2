@@ -124,7 +124,10 @@ select * from pg_policies
 where schemaname = 'public' and tablename in ('orders', 'products');
 ```
 
-La migration n'a pas été appliquée.
+La migration `202607280001_samiah_kadryza_live_integration_1a` a été appliquée
+sur le projet Supabase Production `dzzblqlteirtzyegplgu` le 2026-08-25 via
+`supabase db push`. Son historique, ses colonnes, ses politiques RLS et les
+droits des quatre RPC ont été relus après application.
 
 Audit LIVE du 2026-08-25 : la base contient une commande historique cash au
 statut `annulee`, sans doublon de `order_number`, sans montant fractionnaire et
@@ -141,9 +144,10 @@ Le domaine canonique public répond en HTTPS :
 La route webhook finale à enregistrer est :
 `https://samiah-cosmetics-shop-v2.vercel.app/api/webhooks/kadryza`.
 
-Les anciens déploiements Preview de la PR ont échoué. Le build local de
-production réussit, mais les logs Vercel ne sont pas consultables sans session
-Vercel authentifiée. Ce point doit être fermé avant déploiement.
+Le Preview Vercel du SHA `3492bb72f545858c4ad5919851a7e19f31e9a2a3`
+est `Ready`. Le build distant, `/commander`, la validation du suivi et le refus
+d'une signature webhook invalide ont été vérifiés avec le bypass de protection
+Vercel. Le feature flag reste `false` sur ce Preview.
 
 ## Dépendances restantes
 
