@@ -55,3 +55,14 @@ test("accepte le domaine public transmis par le proxy Vercel", () => {
 
   assert.equal(isSameOriginRequest(request), true);
 });
+
+test("accepte le Host public exact quand Vercel omet les forwarded headers", () => {
+  const request = new Request("https://internal.vercel.app/api/orders", {
+    headers: {
+      host: "samiahcosmetics.shop",
+      origin: "https://samiahcosmetics.shop",
+    },
+  });
+
+  assert.equal(isSameOriginRequest(request), true);
+});

@@ -35,23 +35,22 @@ export function isSameOriginRequest(request: Request): boolean {
     const requestUrl = new URL(request.url);
     if (originUrl.origin === requestUrl.origin) return true;
 
-    const forwardedHost = request.headers
-      .get("x-forwarded-host")
-      ?.split(",", 1)[0]
-      .trim();
-    const forwardedProto = request.headers
-      .get("x-forwarded-proto")
-      ?.split(",", 1)[0]
-      .trim();
+    const forwardedValue = (name: string) =>
+      request.headers.get(name)?.split(",", 1)[0].trim();
+    const forwardedHost = forwardedValue("x-forwarded-host");
+    const forwardedProto = forwardedValue("x-forwarded-proto");
     if (
-      !forwardedHost ||
-      !/^[a-z0-9.-]+(?::\d{1,5})?$/i.test(forwardedHost) ||
-      (forwardedProto !== "https" && forwardedProto !== "http")
+      forwardedHost &&
+      /^[a-z0-9.-]+(?::\d{1,5})?$/i.test(forwardedHost) &&
+      (forwardedProto === "https" || forwardedProto === "http") &&
+      originUrl.origin === `${forwardedProto}://${forwardedHost}`
     ) {
-      return false;
+      return true;
     }
 
-    return originUrl.origin === `${forwardedProto}://${forwardedHost}`;
+    const host = forwardedValue("host");
+    if (!host || !/^[a-z0-9.-]+(?::\d{1,5})?$/i.test(host)) return false;
+    return originUrl.host === host && originUrl.protocol === requestUrl.protocol;
   } catch {
     return false;
   }
