@@ -67,7 +67,8 @@ alter table public.orders
         'processing',
         'shipped',
         'delivered',
-        'cancelled'
+        'cancelled',
+        'annulee'
       )
     ),
   add constraint orders_payment_status_check
@@ -174,6 +175,17 @@ create table if not exists public.kadryza_webhook_events (
 
 alter table public.kadryza_webhook_events enable row level security;
 revoke all on table public.kadryza_webhook_events from anon, authenticated;
+
+-- Toutes les créations et lectures de commandes passent désormais par les
+-- routes serveur. Les anciennes politiques anon exposaient chaque commande.
+drop policy if exists allow_all_insert on public.orders;
+drop policy if exists allow_all_select on public.orders;
+drop policy if exists "Authenticated can select orders" on public.orders;
+create policy "Authenticated can select orders"
+  on public.orders
+  for select
+  to authenticated
+  using (true);
 
 create or replace function public.claim_kadryza_checkout_retry(p_order_id uuid)
 returns boolean

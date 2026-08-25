@@ -2,36 +2,55 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import { ChevronDown, ChevronUp } from "lucide-react";
+
+interface TrackingItem {
+  product_title: string;
+  quantity: number;
+  subtotal: number;
+}
+
+interface TrackingOrder {
+  id: string;
+  order_number: string;
+  created_at: string;
+  client_name: string;
+  client_city: string;
+  client_address: string;
+  items: TrackingItem[];
+  subtotal: number;
+  shipping_fee: number;
+  total: number;
+  status: string;
+}
 
 export default function SuiviPage() {
   const [phone, setPhone] = useState("");
+  const [orderNumber, setOrderNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<TrackingOrder[]>([]);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone.trim()) return;
+    if (!phone.trim() || !orderNumber.trim()) return;
     setLoading(true);
     setSearched(false);
     setOrders([]);
     setExpandedOrder(null);
 
-    const cleanPhone = phone.replace(/\s+/g, "");
-
     try {
-      // Find orders matching phone
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*")
-        .or(`client_phone.eq.${phone},client_phone.eq.${cleanPhone},client_phone.ilike.%${cleanPhone}%`)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setOrders(data || []);
+      const response = await fetch("/api/orders/tracking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber, phone }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Le suivi est indisponible.");
+      }
+      setOrders(result.orders ?? []);
       setSearched(true);
     } catch (err) {
       console.error("Erreur de recherche:", err);
@@ -61,6 +80,7 @@ export default function SuiviPage() {
       shipped: { text: "En cours de livraison", classes: "bg-indigo-50 text-indigo-700 border-indigo-200" },
       delivered: { text: "Livrée", classes: "bg-emerald-50 text-emerald-700 border-emerald-200" },
       cancelled: { text: "Annulée", classes: "bg-rose-50 text-rose-700 border-rose-200" },
+      annulee: { text: "Annulée", classes: "bg-rose-50 text-rose-700 border-rose-200" },
     };
     return labels[status] || { text: status, classes: "bg-gray-50 text-gray-700 border-gray-200" };
   };
@@ -79,7 +99,7 @@ export default function SuiviPage() {
             Suivre ma commande
           </h1>
           <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-medium">
-            Entrez votre numéro WhatsApp pour consulter vos suivis de livraison
+            Entrez votre numéro de commande et votre WhatsApp
           </p>
         </div>
       </div>
@@ -87,8 +107,19 @@ export default function SuiviPage() {
       <div className="max-w-2xl mx-auto px-6 py-16">
         {/* Formulaire de recherche */}
         <div className="mb-12">
-          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 relative">
+          <form onSubmit={handleSearch} className="grid gap-4 sm:grid-cols-2">
+            <div className="relative">
+              <input
+                type="text"
+                value={orderNumber}
+                onChange={(event) => setOrderNumber(event.target.value)}
+                placeholder="Commande (ex: SC260825-AB12CD34)"
+                required
+                autoComplete="off"
+                className="w-full px-6 py-5 border border-sand focus:border-gold outline-none bg-white transition-colors text-charcoal font-light placeholder-charcoal/30 text-sm rounded-sm uppercase"
+              />
+            </div>
+            <div className="relative">
               <input
                 type="tel"
                 value={phone}
@@ -101,8 +132,8 @@ export default function SuiviPage() {
 
             <button
               type="submit"
-              disabled={loading || !phone.trim()}
-              className="bg-charcoal text-white px-10 py-5 text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-charcoal transition-colors duration-300 disabled:opacity-50 min-w-[160px] rounded-sm"
+              disabled={loading || !phone.trim() || !orderNumber.trim()}
+              className="sm:col-span-2 bg-charcoal text-white px-10 py-5 text-[10px] uppercase tracking-[0.2em] font-semibold hover:bg-gold hover:text-charcoal transition-colors duration-300 disabled:opacity-50 rounded-sm"
             >
               {loading ? "Recherche..." : "Rechercher"}
             </button>
@@ -116,7 +147,7 @@ export default function SuiviPage() {
               <div className="text-center py-20 bg-white border border-sand/40 rounded-sm p-6 shadow-sm">
                 <h3 className="text-xl font-serif font-light text-charcoal mb-4">Aucune commande active</h3>
                 <p className="text-charcoal/50 font-light text-sm mb-8 max-w-sm mx-auto leading-relaxed">
-                  Nous n'avons trouvé aucune commande récente liée à ce numéro WhatsApp. Vérifiez la saisie ou contactez-nous.
+                  Nous n&apos;avons trouvé aucune commande récente liée à ce numéro WhatsApp. Vérifiez la saisie ou contactez-nous.
                 </p>
                 <Link
                   href="/produits"
@@ -168,14 +199,14 @@ export default function SuiviPage() {
                             <p className="text-xs text-charcoal/70 leading-relaxed font-light">
                               <strong>Client:</strong> {order.client_name} <br />
                               <strong>Adresse:</strong> {order.client_address}, {order.client_city} <br />
-                              <strong>WhatsApp:</strong> {order.client_phone}
+                              <strong>WhatsApp:</strong> {phone}
                             </p>
                           </div>
                           
                           <div>
                             <h4 className="text-[9px] uppercase tracking-[0.2em] font-semibold text-gold mb-3">Articles Commandés</h4>
                             <div className="space-y-3">
-                              {order.items && Array.isArray(order.items) && order.items.map((item: any, idx: number) => (
+                              {order.items && Array.isArray(order.items) && order.items.map((item, idx) => (
                                 <div key={idx} className="flex justify-between items-center text-xs">
                                   <span className="text-charcoal/70 font-light">{item.product_title} <span className="text-charcoal/40 font-medium">x{item.quantity}</span></span>
                                   <span className="text-charcoal/90 font-medium">{formatPrice(item.subtotal)}</span>
@@ -211,7 +242,7 @@ export default function SuiviPage() {
         {/* Info supplémentaire */}
         <div className="mt-24 text-center space-y-4">
           <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/40 font-semibold">
-            Besoin d'assistance ?
+            Besoin d&apos;assistance ?
           </p>
           <a
             href="https://wa.me/23562752105"

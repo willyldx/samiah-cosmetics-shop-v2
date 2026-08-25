@@ -126,6 +126,13 @@ where schemaname = 'public' and tablename in ('orders', 'products');
 
 La migration n'a pas été appliquée.
 
+Audit LIVE du 2026-08-25 : la base contient une commande historique cash au
+statut `annulee`, sans doublon de `order_number`, sans montant fractionnaire et
+sans valeur critique nulle. La contrainte versionnée conserve explicitement ce
+statut. Les anciennes politiques `allow_all_select` et `allow_all_insert` sur
+`orders` sont supprimées ; le suivi client passe désormais par une route
+serveur exigeant numéro de commande et WhatsApp exacts.
+
 ## Vercel et HTTPS
 
 Le domaine canonique public répond en HTTPS :

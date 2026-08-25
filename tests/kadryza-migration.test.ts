@@ -60,6 +60,19 @@ test("une création interrompue devient retryable après un lease serveur", () =
   assert.match(migration, /payment_failure_reason = 'stale_checkout_creation'/);
 });
 
+test("les commandes ne restent pas lisibles ou insérables par anon", () => {
+  assert.match(migration, /drop policy if exists allow_all_insert/);
+  assert.match(migration, /drop policy if exists allow_all_select/);
+  assert.match(
+    migration,
+    /create policy "Authenticated can select orders"[\s\S]*?to authenticated/,
+  );
+});
+
+test("la migration préserve le statut historique annulee", () => {
+  assert.match(migration, /'cancelled',\s*'annulee'/);
+});
+
 test("le replay est dédupliqué durablement avant toute transition", () => {
   const deduplication = migration.indexOf("on conflict (event_id) do nothing");
   const duplicateReturn = migration.indexOf("return 'duplicate'");
