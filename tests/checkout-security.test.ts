@@ -43,3 +43,15 @@ test("refuse une création de commande cross-origin", () => {
     false,
   );
 });
+
+test("accepte le domaine public transmis par le proxy Vercel", () => {
+  const request = new Request("https://internal.vercel.app/api/orders", {
+    headers: {
+      origin: "https://samiahcosmetics.shop",
+      "x-forwarded-host": "samiahcosmetics.shop",
+      "x-forwarded-proto": "https",
+    },
+  });
+
+  assert.equal(isSameOriginRequest(request), true);
+});
