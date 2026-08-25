@@ -1,17 +1,18 @@
 # Déploiement contrôlé Kadryza — Samiah Cosmetics
 
-Ce runbook prépare le premier paiement LIVE. Il ne déclenche aucun déploiement,
-aucune migration, aucun onboarding et aucun paiement.
+Ce runbook documente le déploiement Samiah et prépare le premier paiement LIVE.
+Le déploiement et la migration sont réalisés ; aucun paiement n'a été effectué.
 
 ## Webhook HTTPS
 
 ```text
-https://samiah-cosmetics-shop-v2.vercel.app/api/webhooks/kadryza
+https://www.samiahcosmetics.shop/api/webhooks/kadryza
 ```
 
-L'URL est canonique, publique et HTTPS. Au moment de l'onboarding Kadryza,
-créer le webhook marchand sur cette URL puis copier immédiatement le secret
-affiché une seule fois vers `KADRYZA_WEBHOOK_SECRET` côté Vercel.
+L'URL est canonique, publique, HTTPS et ne redirige pas. Le domaine sans `www`
+répond par une redirection `307` et ne doit pas être utilisé comme endpoint
+signé. Créer le webhook marchand sur l'URL ci-dessus puis copier immédiatement
+le secret affiché une seule fois vers `KADRYZA_WEBHOOK_SECRET` côté Vercel.
 
 ## Variables Vercel nécessaires
 
@@ -24,12 +25,12 @@ affiché une seule fois vers `KADRYZA_WEBHOOK_SECRET` côté Vercel.
 | `KADRYZA_API_URL` | non | `https://api.kadryza.app` |
 | `KADRYZA_API_KEY` | oui | future clé LIVE du marchand Samiah |
 | `KADRYZA_WEBHOOK_SECRET` | oui | secret affiché à la création du webhook |
-| `KADRYZA_PAYMENT_ENABLED` | non | `false` jusqu'au go/no-go final |
+| `KADRYZA_PAYMENT_ENABLED` | non | `true` en Production, `false` en Preview ; arrêt d'urgence à `false` |
 
 La clé API détermine seule l'environnement. Ne pas ajouter de variables
 `_TEST`, `_LIVE`, d'opérateur ou de readiness dans Samiah.
 
-## Avant fermeture du MFA
+## Étapes réalisées avant fermeture du MFA
 
 Ce qui peut être préparé sans AAL2 :
 
@@ -41,7 +42,7 @@ Ce qui peut être préparé sans AAL2 :
 6. conserver `KADRYZA_PAYMENT_ENABLED=false` ;
 7. conserver Financial E2E à OFF.
 
-## Après fermeture du MFA/AAL2
+## Étapes après fermeture du MFA/AAL2
 
 1. Finaliser le marchand LIVE Samiah.
 2. Émettre une clé LIVE limitée au marchand et aux scopes nécessaires.
