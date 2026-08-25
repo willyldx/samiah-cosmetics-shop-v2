@@ -19,7 +19,7 @@ export default function CGVPage() {
     {
       title: "4. Commande et Paiement",
       content: "La validation de la commande entraîne l'acceptation des présentes CGV.<br><strong>Moyens de paiement acceptés :</strong>",
-      list: ["Paiement à la livraison (Cash)", "Airtel Money", "Moov Money"]
+      list: ["Paiement à la livraison (Cash)", "Paiement Mobile Money sécurisé via Kadryza"]
     },
     {
       title: "5. Livraison",
@@ -86,7 +86,7 @@ export default function CGVPage() {
             href="/" 
             className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-charcoal/50 hover:text-gold transition-colors duration-300 font-semibold"
           >
-            ← Retour à l'accueil
+            ← Retour à l&apos;accueil
           </Link>
         </div>
 

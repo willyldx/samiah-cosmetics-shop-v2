@@ -117,3 +117,40 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+@layer components {
+  .primary-action {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-charcoal);
+    color: white;
+    padding: 1rem 1.5rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+  .primary-action:hover {
+    background: var(--color-gold);
+    color: var(--color-charcoal);
+  }
+  .primary-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  .secondary-action {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-sand);
+    color: var(--color-charcoal);
+    padding: 1rem 1.5rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+}
