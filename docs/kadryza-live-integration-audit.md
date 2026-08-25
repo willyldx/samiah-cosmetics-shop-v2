@@ -139,24 +139,30 @@ serveur exigeant numéro de commande et WhatsApp exacts.
 ## Vercel et HTTPS
 
 Le domaine canonique public répond en HTTPS :
-`https://samiah-cosmetics-shop-v2.vercel.app`.
+`https://www.samiahcosmetics.shop`.
 
 La route webhook finale à enregistrer est :
-`https://samiah-cosmetics-shop-v2.vercel.app/api/webhooks/kadryza`.
+`https://www.samiahcosmetics.shop/api/webhooks/kadryza`.
+
+Le domaine sans `www` répond par une redirection `307`; il ne doit pas être
+utilisé pour le webhook signé.
 
 Le Preview Vercel du SHA `3492bb72f545858c4ad5919851a7e19f31e9a2a3`
 est `Ready`. Le build distant, `/commander`, la validation du suivi et le refus
 d'une signature webhook invalide ont été vérifiés avec le bypass de protection
 Vercel. Le feature flag reste `false` sur ce Preview.
 
+Validation Production du 2026-08-25 : le checkout cash a créé une commande
+technique ensuite annulée, le suivi protégé l'a retrouvée et la clé anon n'a
+retourné aucune commande. Le flux Kadryza a créé un intent LIVE `OPEN`, ouvert
+le Hosted Checkout officiel en HTTP 200 et observé la disponibilité `AIRTEL`
+calculée par Kadryza. Aucune sélection d'opérateur, Payment Session ou opération
+financière n'a été effectuée.
+
 ## Dépendances restantes
 
-- fermeture du MFA/AAL2 Kadryza ;
-- création ou finalisation du marchand LIVE Samiah ;
-- émission de la clé `kadryza_live_...` ;
-- création du webhook marchand et récupération unique de son secret ;
-- readiness réelle d'au moins un opérateur calculée par Kadryza ;
-- audit et application contrôlée de la migration Supabase ;
-- configuration Vercel et validation du Preview ;
-- autorisation explicite d'activer `KADRYZA_PAYMENT_ENABLED` ;
-- maintien de Financial E2E à OFF jusqu'à la fenêtre de paiement contrôlée.
+- confirmer que le webhook marchand enregistré utilise exactement le domaine
+  `www` et réussir une livraison signée non financière ;
+- conserver Financial E2E à OFF jusqu'au GO explicite du premier paiement ;
+- rapprocher puis laisser expirer l'intent technique sans sélectionner
+  d'opérateur.
