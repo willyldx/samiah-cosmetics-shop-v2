@@ -101,6 +101,7 @@ export async function POST(request: Request) {
 
   if (action === "cleanup") {
     let staleEndpointsRemaining = 0;
+    const deleteStatuses: number[] = [];
     const staleEndpoints =
       body.endpoints?.filter(
         (item) => item.id !== endpoint.id && item.is_active,
@@ -115,12 +116,14 @@ export async function POST(request: Request) {
           signal: AbortSignal.timeout(10_000),
         },
       );
+      deleteStatuses.push(deleteResponse.status);
       if (!deleteResponse.ok) staleEndpointsRemaining += 1;
     }
     return NextResponse.json({
       registered: true,
       exactUrl: true,
       staleEndpointsRemaining,
+      deleteStatuses,
     });
   }
 
