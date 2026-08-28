@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Banknote, Check, ShieldCheck, Smartphone } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import {
   FREE_SHIPPING_THRESHOLD,
@@ -241,10 +242,10 @@ export default function CheckoutClient({
                 </h2>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label
-                    className={`cursor-pointer border p-6 rounded-sm transition-colors ${
+                    className={`group relative flex min-h-40 cursor-pointer flex-col overflow-hidden border p-5 sm:p-6 rounded-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-gold/35 focus-within:ring-offset-2 active:translate-y-px ${
                       paymentMethod === "cash"
-                        ? "border-gold bg-sand/10"
-                        : "border-sand hover:border-gold/50"
+                        ? "border-gold bg-sand/20 shadow-[0_10px_30px_rgba(164,134,94,0.10)]"
+                        : "border-sand bg-white hover:-translate-y-0.5 hover:border-gold/60 hover:bg-cream/35 hover:shadow-[0_10px_28px_rgba(26,26,26,0.06)]"
                     }`}
                   >
                     <input
@@ -255,20 +256,35 @@ export default function CheckoutClient({
                       onChange={() => setPaymentMethod("cash")}
                       className="sr-only"
                     />
-                    <span className="block text-charcoal font-semibold text-xs uppercase tracking-widest mb-1.5">
+                    <span className="mb-5 flex items-center justify-between gap-4">
+                      <span className="flex size-10 items-center justify-center border border-sand bg-cream text-charcoal/65 transition-colors group-hover:border-gold/40 group-hover:text-gold-dark">
+                        <Banknote className="size-4.5" strokeWidth={1.6} />
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={`flex size-5 items-center justify-center rounded-full border transition-all ${
+                          paymentMethod === "cash"
+                            ? "border-gold bg-gold text-white"
+                            : "border-sand bg-white text-transparent group-hover:border-gold/50"
+                        }`}
+                      >
+                        <Check className="size-3" strokeWidth={2.4} />
+                      </span>
+                    </span>
+                    <span className="block text-[15px] font-serif font-medium leading-snug text-charcoal">
                       Paiement à la livraison
                     </span>
-                    <span className="block text-charcoal/50 font-light text-xs leading-relaxed">
-                      Vous paierez en espèces lors de la réception.
+                    <span className="mt-2 block max-w-[34ch] text-xs font-light leading-relaxed text-charcoal/50">
+                      Réglez en espèces lorsque votre commande vous est remise.
                     </span>
                   </label>
 
                   {kadryzaEnabled && (
                     <label
-                      className={`cursor-pointer border p-6 rounded-sm transition-colors ${
+                      className={`group relative flex min-h-40 cursor-pointer flex-col overflow-hidden border p-5 sm:p-6 rounded-sm transition-all duration-300 focus-within:ring-2 focus-within:ring-gold/35 focus-within:ring-offset-2 active:translate-y-px ${
                         paymentMethod === "kadryza"
-                          ? "border-gold bg-sand/10"
-                          : "border-sand hover:border-gold/50"
+                          ? "border-gold bg-[radial-gradient(circle_at_top_right,rgba(197,168,128,0.18),transparent_48%),linear-gradient(145deg,#fff_20%,#faf8f5_100%)] shadow-[0_14px_36px_rgba(164,134,94,0.14)]"
+                          : "border-sand bg-white hover:-translate-y-0.5 hover:border-gold/70 hover:bg-cream/25 hover:shadow-[0_12px_32px_rgba(164,134,94,0.10)]"
                       }`}
                     >
                       <input
@@ -278,27 +294,58 @@ export default function CheckoutClient({
                         checked={paymentMethod === "kadryza"}
                         onChange={() => setPaymentMethod("kadryza")}
                         className="sr-only"
+                        aria-describedby="kadryza-payment-description"
                       />
-                      <span className="block text-charcoal font-semibold text-xs uppercase tracking-widest mb-1.5">
-                        Payer avec Kadryza
+                      <span className="mb-5 flex items-center justify-between gap-4">
+                        <span className="flex items-center gap-2.5">
+                          <span className="flex size-10 items-center justify-center bg-charcoal text-white shadow-[0_6px_16px_rgba(26,26,26,0.14)] transition-transform duration-300 group-hover:scale-[1.04]">
+                            <Smartphone className="size-4.5" strokeWidth={1.6} />
+                          </span>
+                          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-gold-dark">
+                            Mobile Money
+                          </span>
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className={`flex size-5 items-center justify-center rounded-full border transition-all ${
+                            paymentMethod === "kadryza"
+                              ? "border-gold bg-gold text-white"
+                              : "border-sand bg-white text-transparent group-hover:border-gold/60"
+                          }`}
+                        >
+                          <Check className="size-3" strokeWidth={2.4} />
+                        </span>
                       </span>
-                      <span className="block text-charcoal/50 font-light text-xs leading-relaxed">
-                        Paiement sécurisé via le checkout officiel Kadryza.
+                      <span className="block text-[17px] font-serif font-medium leading-snug text-charcoal text-balance">
+                        Payer par Mobile Money
+                      </span>
+                      <span
+                        id="kadryza-payment-description"
+                        className="mt-2 flex items-center gap-1.5 text-xs font-medium text-charcoal/55"
+                      >
+                        <ShieldCheck
+                          className="size-3.5 shrink-0 text-gold-dark"
+                          strokeWidth={1.8}
+                        />
+                        Paiement sécurisé via Kadryza
+                      </span>
+                      <span className="mt-2 block max-w-[36ch] text-[11px] font-light leading-relaxed text-charcoal/45">
+                        Choisissez votre opérateur sur le checkout sécurisé.
                       </span>
                     </label>
                   )}
                 </div>
                 {paymentMethod === "kadryza" && (
-                  <div className="mt-4 space-y-3">
-                    <p className="text-[10px] leading-relaxed text-charcoal/55 bg-cream/50 border border-sand/40 px-4 py-3">
-                      Kadryza affichera uniquement les opérateurs disponibles.
-                      Vous choisirez votre opérateur et saisirez le numéro du
-                      payeur sur son checkout sécurisé.
-                    </p>
-                    <p className="text-[10px] leading-relaxed text-amber-700 bg-amber-50 border border-amber-200 px-4 py-3">
-                      Votre panier restera conservé jusqu&apos;à la confirmation
-                      vérifiée du webhook Kadryza. Le retour navigateur ne
-                      confirme jamais le paiement.
+                  <div className="mt-4 flex gap-3 border border-gold/25 bg-sand/20 px-4 py-3.5 text-charcoal/55 sm:px-5">
+                    <ShieldCheck
+                      className="mt-0.5 size-4 shrink-0 text-gold-dark"
+                      strokeWidth={1.7}
+                    />
+                    <p className="text-[11px] font-light leading-relaxed text-pretty">
+                      Kadryza vous présente uniquement les opérateurs disponibles
+                      et collecte votre numéro sur son espace sécurisé. Votre
+                      panier reste conservé jusqu&apos;à la confirmation du
+                      paiement.
                     </p>
                   </div>
                 )}
@@ -357,7 +404,7 @@ export default function CheckoutClient({
                   {loading
                     ? "Traitement..."
                     : paymentMethod === "kadryza"
-                      ? "Continuer avec Kadryza"
+                      ? "Continuer vers le paiement"
                       : "Confirmer la commande"}
                 </button>
 
