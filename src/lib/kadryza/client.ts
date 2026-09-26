@@ -101,13 +101,22 @@ function requireConfiguration(): {
   return { apiUrl, apiKey, environment };
 }
 
+// Domaines officiels de la page de paiement Kadryza. Le 14 septembre 2026, le
+// checkout est passé de checkout.kadryza.app à checkout.kadryza.com : n'accepter
+// que .app faisait juger « invalide » chaque réponse de Kadryza, et aucun client
+// n'était plus redirigé vers le paiement. L'API, elle, reste sur api.kadryza.app.
+const KADRYZA_CHECKOUT_DOMAINS = ["kadryza.app", "kadryza.com"] as const;
+
 function isKadryzaCheckoutUrl(value: unknown): value is string {
   if (typeof value !== "string") return false;
   try {
     const url = new URL(value);
     return (
       url.protocol === "https:" &&
-      (url.hostname === "kadryza.app" || url.hostname.endsWith(".kadryza.app"))
+      KADRYZA_CHECKOUT_DOMAINS.some(
+        (domain) =>
+          url.hostname === domain || url.hostname.endsWith(`.${domain}`),
+      )
     );
   } catch {
     return false;

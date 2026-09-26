@@ -75,6 +75,55 @@ test("crée un Hosted Checkout sans choisir opérateur ni numéro payeur", async
   assert.equal("is_test" in (sentBody ?? {}), false);
 });
 
+test("accepte la page de paiement sur checkout.kadryza.com (domaine actuel)", async () => {
+  process.env.KADRYZA_API_URL = "https://api.kadryza.app";
+  process.env.KADRYZA_API_KEY = "kadryza_live_example";
+  const checkoutUrl = `https://checkout.kadryza.com/pay/checkout/${intentResponse.id}`;
+
+  const intent = await createKadryzaHostedCheckout(
+    {
+      reference: intentResponse.reference,
+      amount: 5_000,
+      description: "Commande Samiah",
+    },
+    async () =>
+      new Response(JSON.stringify({ ...intentResponse, checkout_url: checkoutUrl }), {
+        status: 201,
+      }),
+  );
+
+  assert.equal(intent.checkout_url, checkoutUrl);
+});
+
+test("refuse une page de paiement hors des domaines Kadryza", async () => {
+  process.env.KADRYZA_API_URL = "https://api.kadryza.app";
+  process.env.KADRYZA_API_KEY = "kadryza_live_example";
+  const input = {
+    reference: intentResponse.reference,
+    amount: 5_000,
+    description: "Commande",
+  };
+
+  for (const checkoutUrl of [
+    "https://checkout.kadryza.com.example.net/pay/checkout/x",
+    "https://evilkadryza.com/pay/checkout/x",
+    "https://kadryza.app.example.net/pay/checkout/x",
+    "http://checkout.kadryza.com/pay/checkout/x",
+  ]) {
+    await assert.rejects(
+      createKadryzaHostedCheckout(
+        input,
+        async () =>
+          new Response(JSON.stringify({ ...intentResponse, checkout_url: checkoutUrl }), {
+            status: 201,
+          }),
+      ),
+      KadryzaUnavailableError,
+      checkoutUrl,
+    );
+  }
+});
+
 test("lit la sélection dynamique sans calculer la readiness dans Samiah", async () => {
   process.env.KADRYZA_API_URL = "https://api.kadryza.app";
   process.env.KADRYZA_API_KEY = "kadryza_live_example";
