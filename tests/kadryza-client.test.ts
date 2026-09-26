@@ -135,6 +135,23 @@ test("lit la sélection dynamique sans calculer la readiness dans Samiah", async
   assert.equal(view.payment_session?.id, "session-1");
 });
 
+test("lit une page de paiement annulée par le client", async () => {
+  process.env.KADRYZA_API_URL = "https://api.kadryza.app";
+  process.env.KADRYZA_API_KEY = "kadryza_live_example";
+  const cancelledView = {
+    ...selectedView,
+    status: "CANCELLED",
+    operator_availability: "NOT_APPLICABLE",
+    payment_session: undefined,
+  };
+  const view = await getKadryzaHostedCheckout(intentResponse.id, async () =>
+    new Response(JSON.stringify(cancelledView), { status: 200 }),
+  );
+
+  assert.equal(view.status, "CANCELLED");
+  assert.equal(view.payment_session, undefined);
+});
+
 test("refuse une réponse d'un environnement différent", async () => {
   process.env.KADRYZA_API_URL = "https://api.kadryza.app";
   process.env.KADRYZA_API_KEY = "kadryza_live_example";

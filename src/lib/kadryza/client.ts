@@ -10,13 +10,20 @@ export interface CreateHostedCheckoutInput {
   description: string;
 }
 
+// États d'une page de paiement hébergée Kadryza. CANCELLED : le client a
+// renoncé avant de choisir son opérateur (aucune session, aucun transfert).
+// Un état inconnu rend la réponse invalide : toute nouvelle valeur doit être
+// ajoutée ici avant que Kadryza ne la renvoie.
+const KADRYZA_HOSTED_CHECKOUT_STATUSES = ["OPEN", "SELECTED", "EXPIRED", "CANCELLED"];
+export type KadryzaHostedCheckoutStatus = "OPEN" | "SELECTED" | "EXPIRED" | "CANCELLED";
+
 export interface KadryzaHostedCheckoutIntent {
   id: string;
   reference: string;
   amount: number;
   currency: "XAF";
   environment: KadryzaEnvironment;
-  status: "OPEN" | "SELECTED" | "EXPIRED";
+  status: KadryzaHostedCheckoutStatus;
   selected_operator?: string;
   payment_session_id?: string;
   expires_at: string;
@@ -44,7 +51,7 @@ export interface KadryzaHostedCheckoutView {
   amount: number;
   currency: "XAF";
   environment: KadryzaEnvironment;
-  status: "OPEN" | "SELECTED" | "EXPIRED";
+  status: KadryzaHostedCheckoutStatus;
   operator_availability: string;
   expires_at: string;
   eligible_operators: Array<{ operator: string; label: string }>;
@@ -142,7 +149,7 @@ function isValidIntentResponse(
     typeof intent.amount === "number" &&
     intent.currency === KADRYZA_CURRENCY &&
     isEnvironment(intent.environment, expectedEnvironment) &&
-    ["OPEN", "SELECTED", "EXPIRED"].includes(String(intent.status)) &&
+    KADRYZA_HOSTED_CHECKOUT_STATUSES.includes(String(intent.status)) &&
     typeof intent.expires_at === "string" &&
     typeof intent.created_at === "string" &&
     isKadryzaCheckoutUrl(intent.checkout_url)
@@ -183,7 +190,7 @@ function isValidHostedCheckoutView(
     typeof view.amount !== "number" ||
     view.currency !== KADRYZA_CURRENCY ||
     !isEnvironment(view.environment, expectedEnvironment) ||
-    !["OPEN", "SELECTED", "EXPIRED"].includes(String(view.status)) ||
+    !KADRYZA_HOSTED_CHECKOUT_STATUSES.includes(String(view.status)) ||
     typeof view.operator_availability !== "string" ||
     typeof view.expires_at !== "string" ||
     !Array.isArray(view.eligible_operators)
