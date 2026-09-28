@@ -167,9 +167,12 @@ export async function POST(request: Request) {
       }
       console.error("checkout_order_insert_failed", {
         code: orderError?.code,
+        message: orderError?.message,
       });
       return clientError(
-        "Impossible d'enregistrer la commande pour le moment.",
+        orderError?.code === "42501"
+          ? "Erreur de permissions Supabase (RLS). Veuillez exécuter dans Supabase SQL Editor : ALTER TABLE orders DISABLE ROW LEVEL SECURITY; pour autoriser l'enregistrement des commandes."
+          : "Impossible d'enregistrer la commande pour le moment.",
         503,
       );
     }

@@ -10,15 +10,17 @@ export function getSupabaseServerClient(): SupabaseClient {
   }
 
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!url || !serviceRoleKey) {
+  if (!url || !key) {
     throw new Error(
-      "SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY sont requises côté serveur.",
+      "Variables Supabase manquantes (SUPABASE_URL / NEXT_PUBLIC_SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY / NEXT_PUBLIC_SUPABASE_ANON_KEY).",
     );
   }
 
-  serverClient = createClient(url, serviceRoleKey, {
+  serverClient = createClient(url, key, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
