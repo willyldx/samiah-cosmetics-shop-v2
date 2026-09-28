@@ -5,6 +5,8 @@ import { ArrowRight, Sparkles, ShieldCheck, Heart } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   let featuredProducts: any[] = [];
   try {

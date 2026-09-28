@@ -286,36 +286,88 @@ export async function fetchAdminData(): Promise<{
   };
 }
 
+export async function createAdminProduct(
+  newProd: Partial<AdminProduct>
+): Promise<{ success: boolean; error?: string; isRlsError?: boolean; product?: AdminProduct }> {
+  try {
+    const res = await fetch("/api/admin/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProd),
+    });
+
+    const json = await res.json();
+    if (!res.ok || json.error) {
+      return {
+        success: false,
+        error: json.error || "Impossible de créer le produit",
+        isRlsError: Boolean(json.isRlsError),
+      };
+    }
+
+    if (json.product) {
+      FALLBACK_PRODUCTS.unshift(json.product);
+    }
+    return { success: true, product: json.product };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "Erreur réseau" };
+  }
+}
+
 export async function updateAdminProduct(
   updated: Partial<AdminProduct> & { id: string }
-): Promise<boolean> {
+): Promise<{ success: boolean; error?: string; isRlsError?: boolean }> {
   try {
-    const { error } = await supabase
-      .from("products")
-      .update({
-        title: updated.title,
-        price: updated.price,
-        category: updated.category,
-        active: updated.active,
-        image: updated.image || updated.image_url,
-        image_url: updated.image || updated.image_url,
-        description: updated.description,
-        short_description: updated.short_description,
-      })
-      .eq("id", updated.id);
+    const res = await fetch("/api/admin/products", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updated),
+    });
 
-    if (error) {
-      console.warn("Supabase update error (operating in resilient fallback):", error.message);
+    const json = await res.json();
+    if (!res.ok || json.error) {
+      return {
+        success: false,
+        error: json.error || "Impossible de mettre à jour le produit",
+        isRlsError: Boolean(json.isRlsError),
+      };
     }
-  } catch (err) {
-    console.warn("Supabase update error:", err);
-  }
 
-  const index = FALLBACK_PRODUCTS.findIndex((p) => p.id === updated.id);
-  if (index !== -1) {
-    FALLBACK_PRODUCTS[index] = { ...FALLBACK_PRODUCTS[index], ...updated };
+    const index = FALLBACK_PRODUCTS.findIndex((p) => p.id === updated.id);
+    if (index !== -1) {
+      FALLBACK_PRODUCTS[index] = { ...FALLBACK_PRODUCTS[index], ...updated };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "Erreur réseau" };
   }
-  return true;
+}
+
+export async function deleteAdminProduct(
+  productId: string
+): Promise<{ success: boolean; error?: string; isRlsError?: boolean }> {
+  try {
+    const res = await fetch(`/api/admin/products?id=${encodeURIComponent(productId)}`, {
+      method: "DELETE",
+    });
+
+    const json = await res.json();
+    if (!res.ok || json.error) {
+      return {
+        success: false,
+        error: json.error || "Impossible de supprimer le produit",
+        isRlsError: Boolean(json.isRlsError),
+      };
+    }
+
+    const index = FALLBACK_PRODUCTS.findIndex((p) => p.id === productId);
+    if (index !== -1) {
+      FALLBACK_PRODUCTS.splice(index, 1);
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || "Erreur réseau" };
+  }
 }
 
 export async function updateAdminOrder(

@@ -16,9 +16,16 @@ import {
   CheckCircle2,
   Upload,
   Image as ImageIcon,
-  Trash2
+  Trash2,
+  AlertTriangle
 } from "lucide-react";
-import { fetchAdminData, updateAdminProduct, AdminProduct } from "@/lib/admin-data";
+import { 
+  fetchAdminData, 
+  createAdminProduct,
+  updateAdminProduct, 
+  deleteAdminProduct,
+  AdminProduct 
+} from "@/lib/admin-data";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
@@ -29,6 +36,9 @@ export default function AdminProductsPage() {
   const [isNew, setIsNew] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [productToDelete, setProductToDelete] = useState<AdminProduct | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadProducts = async () => {
@@ -51,21 +61,29 @@ export default function AdminProductsPage() {
     const prod = products.find((p) => p.id === productId);
     if (!prod) return;
     const newActive = !prod.active;
+    
+    // Optimistic update
     setProducts((prev) =>
       prev.map((p) => (p.id === productId ? { ...p, active: newActive } : p))
     );
-    await updateAdminProduct({ id: productId, active: newActive });
+
+    const res = await updateAdminProduct({ id: productId, active: newActive });
+    if (!res.success) {
+      alert(`Erreur : ${res.error}`);
+      loadProducts();
+    }
   };
 
   const handleEditClick = (product: AdminProduct) => {
     setEditingProduct({ ...product });
     setIsNew(false);
     setSaveSuccess(false);
+    setErrorMessage(null);
   };
 
   const handleAddNewClick = () => {
     setEditingProduct({
-      id: `prod-${Date.now()}`,
+      id: "",
       title: "",
       price: 0,
       category: "Cheveux",
@@ -77,13 +95,13 @@ export default function AdminProductsPage() {
     });
     setIsNew(true);
     setSaveSuccess(false);
+    setErrorMessage(null);
   };
 
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !editingProduct) return;
 
-    // Preview and convert to base64 data URL
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
@@ -120,24 +138,66 @@ export default function AdminProductsPage() {
     e.preventDefault();
     if (!editingProduct) return;
     setSaving(true);
+    setErrorMessage(null);
+
     try {
-      await updateAdminProduct(editingProduct);
       if (isNew) {
-        setProducts((prev) => [editingProduct, ...prev]);
+        const res = await createAdminProduct(editingProduct);
+        if (!res.success) {
+          setErrorMessage(
+            res.isRlsError
+              ? "Supabase RLS bloque l'insertion directe. Consultez les instructions dans l'onglet Paramètres pour autoriser l'écriture."
+              : res.error || "Erreur lors de la création."
+          );
+          return;
+        }
       } else {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === editingProduct.id ? editingProduct : p))
-        );
+        const res = await updateAdminProduct(editingProduct);
+        if (!res.success) {
+          setErrorMessage(
+            res.isRlsError
+              ? "Supabase RLS bloque la mise à jour directe. Consultez les instructions dans l'onglet Paramètres pour autoriser l'écriture."
+              : res.error || "Erreur lors de la mise à jour."
+          );
+          return;
+        }
       }
+
       setSaveSuccess(true);
+      await loadProducts();
       setTimeout(() => {
         setEditingProduct(null);
         setSaveSuccess(false);
       }, 1000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Erreur inattendue");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    setDeleting(true);
+    try {
+      const res = await deleteAdminProduct(productToDelete.id);
+      if (!res.success) {
+        alert(
+          res.isRlsError
+            ? "Impossible de supprimer : Supabase RLS bloque la suppression. Activez la suppression dans Supabase SQL Editor ou ajoutez SUPABASE_SERVICE_ROLE_KEY."
+            : res.error
+        );
+      } else {
+        setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
+        setProductToDelete(null);
+        if (editingProduct?.id === productToDelete.id) {
+          setEditingProduct(null);
+        }
+      }
     } catch (err) {
       console.error(err);
     } finally {
-      setSaving(false);
+      setDeleting(false);
     }
   };
 
@@ -158,7 +218,7 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-serif text-charcoal tracking-tight">Catalogue Produits</h1>
-          <p className="text-sm text-gray-500 mt-1">Gérez, éditez les photos, les prix et la visibilité des soins Samiah</p>
+          <p className="text-sm text-gray-500 mt-1">Gérez, éditez, supprimez et ajoutez les soins de la boutique Samiah</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -181,7 +241,7 @@ export default function AdminProductsPage() {
             target="_blank"
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg bg-charcoal text-white hover:bg-charcoal/90 transition-colors shadow-2xs"
           >
-            Boutique
+            Voir la boutique
             <ExternalLink className="w-3.5 h-3.5 text-gold" />
           </Link>
         </div>
@@ -217,7 +277,7 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Products Table */}
+      {/* Products Table with Real Delete button */}
       <div className="bg-white border border-gray-200/80 rounded-xl shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
@@ -279,23 +339,34 @@ export default function AdminProductsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="inline-flex items-center gap-2">
+                      <div className="inline-flex items-center gap-1.5">
                         <button
                           onClick={() => handleEditClick(product)}
                           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                          title="Modifier le produit"
                         >
                           <Edit3 className="w-3.5 h-3.5 text-gray-500" />
                           Éditer
                         </button>
+
                         <button
                           onClick={() => toggleProductActive(product.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                             product.active
-                              ? "bg-red-50 text-red-600 hover:bg-red-100"
+                              ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
                               : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                           }`}
+                          title={product.active ? "Désactiver de la boutique" : "Activer sur la boutique"}
                         >
-                          {product.active ? "Désactiver" : "Activer"}
+                          {product.active ? "Masquer" : "Publier"}
+                        </button>
+
+                        <button
+                          onClick={() => setProductToDelete(product)}
+                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
+                          title="Supprimer définitivement ce produit"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -307,14 +378,54 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Edit / Add Product Modal Dialog with Photo Upload & Editing */}
+      {/* Delete Confirmation Modal */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 text-red-600">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-charcoal">Supprimer ce produit ?</h3>
+                <p className="text-xs text-gray-500">Cette action est irréversible.</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-600 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
+              Êtes-vous sûr de vouloir supprimer définitivement le soin <strong className="font-semibold text-charcoal">« {productToDelete.title} »</strong> de la base de données et du catalogue en ligne ?
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                disabled={deleting}
+                className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-xs font-medium"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={deleting}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-xs font-medium transition-colors shadow-2xs"
+              >
+                {deleting ? "Suppression en cours..." : "Oui, supprimer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit / Add Product Modal Dialog */}
       {editingProduct && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-gold">
-                  {isNew ? "Création de produit" : "Modification"}
+                  {isNew ? "Nouveau produit" : "Modification catalogue"}
                 </span>
                 <h3 className="text-lg font-serif font-bold text-charcoal">
                   {isNew ? "Ajouter un nouveau soin" : editingProduct.title || "Édition du produit"}
@@ -331,20 +442,27 @@ export default function AdminProductsPage() {
             {saveSuccess && (
               <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl flex items-center gap-2 text-xs">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Produit et photo enregistrés avec succès !</span>
+                <span>Produit enregistré et répercuté sur la boutique avec succès !</span>
               </div>
             )}
 
-            <form onSubmit={handleSaveProduct} className="space-y-5 text-xs">
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-xl flex items-start gap-2 text-xs">
+                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveProduct} className="space-y-4 text-xs">
               {/* Photo section */}
-              <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-100 space-y-3">
+              <div className="bg-gray-50/80 p-3.5 rounded-xl border border-gray-100 space-y-2.5">
                 <label className="block font-semibold text-charcoal text-xs">
                   Photo de l'article
                 </label>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3.5">
                   {/* Photo Preview */}
-                  <div className="w-20 h-20 rounded-xl overflow-hidden border border-gray-200 bg-white flex items-center justify-center relative flex-shrink-0 shadow-2xs">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 bg-white flex items-center justify-center relative flex-shrink-0 shadow-2xs">
                     {(editingProduct.image || editingProduct.image_url) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -353,12 +471,12 @@ export default function AdminProductsPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <ImageIcon className="w-8 h-8 text-gray-300" />
+                      <ImageIcon className="w-6 h-6 text-gray-300" />
                     )}
                   </div>
 
                   {/* Actions for Photo */}
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-1.5">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -385,22 +503,19 @@ export default function AdminProductsPage() {
                           className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-600 hover:bg-red-50 transition-colors"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
-                          Supprimer
+                          Retirer
                         </button>
                       )}
                     </div>
 
                     <p className="text-[11px] text-gray-400">
-                      Depuis votre téléphone (galerie/appareil) ou PC (JPG, PNG, WebP)
+                      Depuis votre téléphone ou PC (JPG, PNG, WebP)
                     </p>
                   </div>
                 </div>
 
                 {/* Direct image URL input */}
                 <div>
-                  <label className="block text-[11px] text-gray-500 mb-1">
-                    Ou coller directement l'URL d'une image web :
-                  </label>
                   <input
                     type="url"
                     value={editingProduct.image || editingProduct.image_url || ""}
@@ -412,7 +527,7 @@ export default function AdminProductsPage() {
                       })
                     }
                     className="w-full p-2 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-gold font-mono"
-                    placeholder="https://images.unsplash.com/... ou URL Supabase"
+                    placeholder="Ou lien URL : https://..."
                   />
                 </div>
               </div>
@@ -433,7 +548,7 @@ export default function AdminProductsPage() {
               </div>
 
               {/* Prix & Catégorie */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3.5">
                 <div>
                   <label className="block font-semibold text-charcoal mb-1">Prix (FCFA)</label>
                   <input
@@ -468,6 +583,9 @@ export default function AdminProductsPage() {
                     <option value="Cheveux">Cheveux</option>
                     <option value="Corps">Corps</option>
                     <option value="Visage">Visage</option>
+                    <option value="Shampoing">Shampoing</option>
+                    <option value="Baumes">Baumes</option>
+                    <option value="Huiles">Huiles</option>
                     <option value="Accessoires">Accessoires</option>
                   </select>
                 </div>
@@ -486,7 +604,7 @@ export default function AdminProductsPage() {
                     })
                   }
                   className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold"
-                  placeholder="Accroche ou résumé en 1 phrase"
+                  placeholder="Accroche ou résumé du soin"
                 />
               </div>
 
@@ -526,22 +644,37 @@ export default function AdminProductsPage() {
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => setEditingProduct(null)}
-                  className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-xs font-medium"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors"
-                >
-                  <Save className="w-3.5 h-3.5 text-gold" />
-                  {saving ? "Enregistrement..." : "Enregistrer les modifications"}
-                </button>
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                {!isNew ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProductToDelete(editingProduct);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Supprimer ce produit
+                  </button>
+                ) : <div />}
+
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(null)}
+                    className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-xs font-medium"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors shadow-2xs"
+                  >
+                    <Save className="w-3.5 h-3.5 text-gold" />
+                    {saving ? "Enregistrement..." : "Enregistrer les modifications"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
