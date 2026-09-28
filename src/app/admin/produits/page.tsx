@@ -9,15 +9,23 @@ import {
   X, 
   ExternalLink,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  Edit3,
+  Plus,
+  Save,
+  CheckCircle2
 } from "lucide-react";
-import { fetchAdminData, AdminProduct } from "@/lib/admin-data";
+import { fetchAdminData, updateAdminProduct, AdminProduct } from "@/lib/admin-data";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+  const [isNew, setIsNew] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const loadProducts = async () => {
     setLoading(true);
@@ -35,10 +43,59 @@ export default function AdminProductsPage() {
     loadProducts();
   }, []);
 
-  const toggleProductActive = (productId: string) => {
+  const toggleProductActive = async (productId: string) => {
+    const prod = products.find((p) => p.id === productId);
+    if (!prod) return;
+    const newActive = !prod.active;
     setProducts((prev) =>
-      prev.map((p) => (p.id === productId ? { ...p, active: !p.active } : p))
+      prev.map((p) => (p.id === productId ? { ...p, active: newActive } : p))
     );
+    await updateAdminProduct({ id: productId, active: newActive });
+  };
+
+  const handleEditClick = (product: AdminProduct) => {
+    setEditingProduct({ ...product });
+    setIsNew(false);
+    setSaveSuccess(false);
+  };
+
+  const handleAddNewClick = () => {
+    setEditingProduct({
+      id: `prod-${Date.now()}`,
+      title: "",
+      price: 5000,
+      category: "Cheveux",
+      active: true,
+      description: "",
+      short_description: "",
+    });
+    setIsNew(true);
+    setSaveSuccess(false);
+  };
+
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    setSaving(true);
+    try {
+      await updateAdminProduct(editingProduct);
+      if (isNew) {
+        setProducts((prev) => [editingProduct, ...prev]);
+      } else {
+        setProducts((prev) =>
+          prev.map((p) => (p.id === editingProduct.id ? editingProduct : p))
+        );
+      }
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setEditingProduct(null);
+        setSaveSuccess(false);
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const categories = ["all", ...Array.from(new Set(products.map((p) => p.category)))];
@@ -58,7 +115,7 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-serif text-charcoal tracking-tight">Catalogue Produits</h1>
-          <p className="text-sm text-gray-500 mt-1">Gérez la visibilité et les prix des soins botaniques Samiah</p>
+          <p className="text-sm text-gray-500 mt-1">Gérez, éditez les prix et la visibilité des soins botaniques Samiah</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -69,12 +126,19 @@ export default function AdminProductsPage() {
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             Actualiser
           </button>
+          <button
+            onClick={handleAddNewClick}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium rounded-lg bg-gold text-white hover:bg-gold/90 transition-colors shadow-2xs"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Nouveau produit
+          </button>
           <Link
             href="/produits"
             target="_blank"
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium rounded-lg bg-charcoal text-white hover:bg-charcoal/90 transition-colors shadow-2xs"
           >
-            Voir la boutique
+            Boutique
             <ExternalLink className="w-3.5 h-3.5 text-gold" />
           </Link>
         </div>
@@ -159,16 +223,25 @@ export default function AdminProductsPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => toggleProductActive(product.id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        product.active
-                          ? "bg-red-50 text-red-600 hover:bg-red-100"
-                          : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                      }`}
-                    >
-                      {product.active ? "Désactiver" : "Activer"}
-                    </button>
+                    <div className="inline-flex items-center gap-2">
+                      <button
+                        onClick={() => handleEditClick(product)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-gray-500" />
+                        Éditer
+                      </button>
+                      <button
+                        onClick={() => toggleProductActive(product.id)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          product.active
+                            ? "bg-red-50 text-red-600 hover:bg-red-100"
+                            : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                        }`}
+                      >
+                        {product.active ? "Désactiver" : "Activer"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -176,6 +249,160 @@ export default function AdminProductsPage() {
           </table>
         </div>
       </div>
+
+      {/* Edit / Add Product Modal Dialog */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-gold">
+                  {isNew ? "Création de produit" : "Modification"}
+                </span>
+                <h3 className="text-lg font-serif font-bold text-charcoal">
+                  {isNew ? "Ajouter un nouveau soin" : editingProduct.title || "Édition du produit"}
+                </h3>
+              </div>
+              <button
+                onClick={() => setEditingProduct(null)}
+                className="text-gray-400 hover:text-charcoal p-1.5 rounded-lg hover:bg-gray-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {saveSuccess && (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl flex items-center gap-2 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Produit enregistré avec succès !</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveProduct} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold text-charcoal mb-1">Titre du produit</label>
+                <input
+                  type="text"
+                  required
+                  value={editingProduct.title}
+                  onChange={(e) =>
+                    setEditingProduct({ ...editingProduct, title: e.target.value })
+                  }
+                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold"
+                  placeholder="Ex: Huile de Chébé 100ml"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-semibold text-charcoal mb-1">Prix (FCFA)</label>
+                  <input
+                    type="number"
+                    required
+                    min={0}
+                    step={100}
+                    value={editingProduct.price}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        price: Number(e.target.value),
+                      })
+                    }
+                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:border-gold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-semibold text-charcoal mb-1">Catégorie</label>
+                  <select
+                    value={editingProduct.category}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        category: e.target.value,
+                      })
+                    }
+                    className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold capitalize"
+                  >
+                    <option value="Cheveux">Cheveux</option>
+                    <option value="Corps">Corps</option>
+                    <option value="Visage">Visage</option>
+                    <option value="Accessoires">Accessoires</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-charcoal mb-1">Description courte</label>
+                <input
+                  type="text"
+                  value={editingProduct.short_description || ""}
+                  onChange={(e) =>
+                    setEditingProduct({
+                      ...editingProduct,
+                      short_description: e.target.value,
+                    })
+                  }
+                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold"
+                  placeholder="Accroche ou résumé en 1 phrase"
+                />
+              </div>
+
+              <div>
+                <label className="block font-semibold text-charcoal mb-1">Description détaillée</label>
+                <textarea
+                  rows={4}
+                  value={editingProduct.description || ""}
+                  onChange={(e) =>
+                    setEditingProduct({
+                      ...editingProduct,
+                      description: e.target.value,
+                    })
+                  }
+                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-gold leading-relaxed"
+                  placeholder="Bienfaits, conseils d'application, ingrédients..."
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="activeCheck"
+                  checked={editingProduct.active}
+                  onChange={(e) =>
+                    setEditingProduct({
+                      ...editingProduct,
+                      active: e.target.checked,
+                    })
+                  }
+                  className="w-4 h-4 text-gold rounded border-gray-300 focus:ring-gold"
+                />
+                <label htmlFor="activeCheck" className="font-medium text-charcoal cursor-pointer">
+                  Produit actif et visible sur la boutique
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingProduct(null)}
+                  className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 text-xs font-medium"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors"
+                >
+                  <Save className="w-3.5 h-3.5 text-gold" />
+                  {saving ? "Enregistrement..." : "Enregistrer"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

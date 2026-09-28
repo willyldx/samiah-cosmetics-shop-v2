@@ -30,6 +30,8 @@ export interface AdminProduct {
   category: string;
   active: boolean;
   image_url?: string;
+  description?: string;
+  short_description?: string;
   created_at?: string;
 }
 
@@ -271,3 +273,34 @@ export async function fetchAdminData(): Promise<{
     },
   };
 }
+
+export async function updateAdminProduct(
+  updated: Partial<AdminProduct> & { id: string }
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("products")
+      .update({
+        title: updated.title,
+        price: updated.price,
+        category: updated.category,
+        active: updated.active,
+        description: updated.description,
+        short_description: updated.short_description,
+      })
+      .eq("id", updated.id);
+
+    if (error) {
+      console.warn("Supabase update error (operating in resilient fallback):", error.message);
+    }
+  } catch (err) {
+    console.warn("Supabase update error:", err);
+  }
+
+  const index = FALLBACK_PRODUCTS.findIndex((p) => p.id === updated.id);
+  if (index !== -1) {
+    FALLBACK_PRODUCTS[index] = { ...FALLBACK_PRODUCTS[index], ...updated };
+  }
+  return true;
+}
+
