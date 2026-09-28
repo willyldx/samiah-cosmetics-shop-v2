@@ -111,7 +111,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const totals = calculateTrustedOrder(input, products ?? []);
+    const { data: shippingSetting } = await supabase
+      .from("settings")
+      .select("value")
+      .eq("id", "shipping")
+      .maybeSingle();
+
+    const customFees =
+      shippingSetting?.value && typeof shippingSetting.value === "object"
+        ? (shippingSetting.value as Record<string, number>)
+        : undefined;
+
+    const totals = calculateTrustedOrder(input, products ?? [], customFees);
     const orderNumber = createOrderNumber();
     const statusToken = input.checkoutToken;
     const statusTokenHash = hashStatusAccessToken(statusToken);

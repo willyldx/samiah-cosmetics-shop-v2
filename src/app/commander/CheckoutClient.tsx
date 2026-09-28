@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Banknote, Check, ShieldCheck, Smartphone } from "lucide-react";
@@ -41,10 +41,22 @@ export default function CheckoutClient({
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentMethod>("cash");
+  const [fees, setFees] = useState<Record<string, number>>({ ...SHIPPING_FEES });
   const checkoutTokenRef = useRef<string | null>(null);
 
+  useEffect(() => {
+    fetch("/api/shipping")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.shippingFees) {
+          setFees((prev) => ({ ...prev, ...data.shippingFees }));
+        }
+      })
+      .catch((err) => console.error("Error fetching shipping fees:", err));
+  }, []);
+
   const shippingFee =
-    subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEES[city];
+    subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (fees[city] ?? SHIPPING_FEES[city]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("fr-FR").format(price) + " FCFA";

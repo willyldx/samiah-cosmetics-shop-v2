@@ -14,11 +14,21 @@ import {
   RefreshCw
 } from "lucide-react";
 import { fetchAdminData, AdminStats } from "@/lib/admin-data";
+import { SHIPPING_FEES, ShippingCity } from "@/lib/checkout/config";
 
 export default function AdminSettingsPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [shippingFees, setShippingFees] = useState<Record<string, number>>({
+    ...SHIPPING_FEES,
+  });
+  const [loadingSettings, setLoadingSettings] = useState(false);
+  const [savingShipping, setSavingShipping] = useState(false);
+  const [shippingFeedback, setShippingFeedback] = useState<{
+    type: "success" | "warning" | "error";
+    message: string;
+  } | null>(null);
 
   const loadDiagnostics = async () => {
     setLoading(true);
@@ -32,14 +42,62 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const loadSettings = async () => {
+    setLoadingSettings(true);
+    try {
+      const res = await fetch("/api/admin/settings");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.shippingFees && typeof data.shippingFees === "object") {
+          setShippingFees((prev) => ({ ...prev, ...data.shippingFees }));
+        }
+      }
+    } catch (e) {
+      console.error("Erreur chargement paramètres livraison:", e);
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
+
   useEffect(() => {
     loadDiagnostics();
+    loadSettings();
   }, []);
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSaveShipping = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setSavingShipping(true);
+    setShippingFeedback(null);
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shippingFees }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur de sauvegarde.");
+      }
+      if (data.warning) {
+        setShippingFeedback({
+          type: "warning",
+          message: data.warning,
+        });
+      } else {
+        setShippingFeedback({
+          type: "success",
+          message: "Tarifs de livraison enregistrés avec succès dans la base de données !",
+        });
+      }
+      setTimeout(() => setShippingFeedback(null), 6000);
+    } catch (err: any) {
+      setShippingFeedback({
+        type: "error",
+        message: err?.message || "Erreur lors de l'enregistrement des tarifs.",
+      });
+    } finally {
+      setSavingShipping(false);
+    }
   };
 
   const isConnected = stats?.supabaseStatus === "connected";
@@ -158,50 +216,86 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* Shipping & Delivery settings */}
-      <form onSubmit={handleSave} className="bg-white border border-gray-200/80 rounded-xl p-6 shadow-2xs space-y-6">
-        <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-          <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
-            <Truck className="w-5 h-5" />
+      <form onSubmit={handleSaveShipping} className="bg-white border border-gray-200/80 rounded-xl p-6 shadow-2xs space-y-6">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-semibold text-charcoal">Tarifs de Livraison (FCFA)</h2>
+              <p className="text-xs text-gray-500">Frais enregistrés en base de données et appliqués en direct sur le panier</p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-base font-semibold text-charcoal">Tarifs de Livraison (FCFA)</h2>
-            <p className="text-xs text-gray-500">Frais appliqués automatiquement lors du checkout</p>
-          </div>
+          {loadingSettings && (
+            <span className="text-xs text-gray-400">Chargement...</span>
+          )}
         </div>
 
+        {shippingFeedback && (
+          <div className={`p-4 rounded-xl text-xs flex items-start gap-3 ${
+            shippingFeedback.type === "success" 
+              ? "bg-emerald-50 border border-emerald-200 text-emerald-900" 
+              : shippingFeedback.type === "warning"
+              ? "bg-amber-50 border border-amber-200 text-amber-900"
+              : "bg-red-50 border border-red-200 text-red-900"
+          }`}>
+            {shippingFeedback.type === "success" ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+            ) : (
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            )}
+            <div className="space-y-1">
+              <p className="font-medium">{shippingFeedback.message}</p>
+              {shippingFeedback.type === "warning" && (
+                <p className="text-[11px] font-mono bg-amber-100/70 p-2 rounded mt-1">
+                  ALTER TABLE settings DISABLE ROW LEVEL SECURITY;
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div>
-            <label className="block text-gray-600 font-medium mb-1.5">N'Djamena</label>
-            <input
-              type="number"
-              defaultValue={1000}
-              className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-600 font-medium mb-1.5">Moundou</label>
-            <input
-              type="number"
-              defaultValue={2500}
-              className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-600 font-medium mb-1.5">Sarh / Autres villes</label>
-            <input
-              type="number"
-              defaultValue={3000}
-              className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono"
-            />
-          </div>
+          {Object.keys(SHIPPING_FEES).map((cityName) => (
+            <div key={cityName}>
+              <label className="block text-gray-600 font-medium mb-1.5">{cityName}</label>
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  value={shippingFees[cityName] ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+                    setShippingFees((prev) => ({
+                      ...prev,
+                      [cityName]: isNaN(val) ? 0 : val,
+                    }));
+                  }}
+                  className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg font-mono text-sm focus:border-gold focus:bg-white outline-none transition-colors"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-[11px]">
+                  FCFA
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="flex justify-end pt-4 border-t border-gray-100">
           <button
             type="submit"
-            className="px-5 py-2.5 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors"
+            disabled={savingShipping}
+            className="px-5 py-2.5 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
           >
-            Enregistrer les modifications
+            {savingShipping ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <span>Enregistrement...</span>
+              </>
+            ) : (
+              "Enregistrer les tarifs"
+            )}
           </button>
         </div>
       </form>

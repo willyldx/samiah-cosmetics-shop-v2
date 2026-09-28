@@ -134,6 +134,7 @@ export function parseCheckoutInput(value: unknown): CheckoutInput {
 export function calculateTrustedOrder(
   input: CheckoutInput,
   products: ProductRecord[],
+  customShippingFees?: Record<string, number>,
 ): TrustedOrderTotals {
   const productsById = new Map(products.map((product) => [product.id, product]));
 
@@ -169,10 +170,15 @@ export function calculateTrustedOrder(
     throw new CheckoutValidationError("Le montant du panier est invalide.");
   }
 
+  const cityFee =
+    customShippingFees && typeof customShippingFees[input.customer.city] === "number"
+      ? customShippingFees[input.customer.city]
+      : SHIPPING_FEES[input.customer.city];
+
   const shippingFee =
     subtotal >= FREE_SHIPPING_THRESHOLD
       ? 0
-      : SHIPPING_FEES[input.customer.city];
+      : cityFee;
   const total = subtotal + shippingFee;
 
   return { items, subtotal, shippingFee, total };
