@@ -29,6 +29,7 @@ export interface AdminProduct {
   price: number;
   category: string;
   active: boolean;
+  image?: string;
   image_url?: string;
   description?: string;
   short_description?: string;
@@ -52,6 +53,8 @@ export const FALLBACK_PRODUCTS: AdminProduct[] = [
     price: 8500,
     category: "Cheveux",
     active: true,
+    image: "https://images.unsplash.com/photo-1608248597359-00995fa665d9?w=800&q=80",
+    image_url: "https://images.unsplash.com/photo-1608248597359-00995fa665d9?w=800&q=80",
   },
   {
     id: "prod-karite-creme",
@@ -59,6 +62,8 @@ export const FALLBACK_PRODUCTS: AdminProduct[] = [
     price: 6500,
     category: "Corps",
     active: true,
+    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
+    image_url: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
   },
   {
     id: "prod-serum-eclat",
@@ -66,6 +71,8 @@ export const FALLBACK_PRODUCTS: AdminProduct[] = [
     price: 12000,
     category: "Visage",
     active: true,
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80",
+    image_url: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80",
   },
   {
     id: "prod-savon-noir",
@@ -73,6 +80,8 @@ export const FALLBACK_PRODUCTS: AdminProduct[] = [
     price: 3500,
     category: "Visage",
     active: true,
+    image: "https://images.unsplash.com/photo-1607006314605-78330a1038fb?w=800&q=80",
+    image_url: "https://images.unsplash.com/photo-1607006314605-78330a1038fb?w=800&q=80",
   },
   {
     id: "prod-masque-fortifiant",
@@ -80,6 +89,8 @@ export const FALLBACK_PRODUCTS: AdminProduct[] = [
     price: 9500,
     category: "Cheveux",
     active: false,
+    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
+    image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
   },
 ];
 
@@ -285,6 +296,8 @@ export async function updateAdminProduct(
         price: updated.price,
         category: updated.category,
         active: updated.active,
+        image: updated.image || updated.image_url,
+        image_url: updated.image || updated.image_url,
         description: updated.description,
         short_description: updated.short_description,
       })
