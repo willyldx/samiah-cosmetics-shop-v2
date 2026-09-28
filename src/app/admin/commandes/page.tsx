@@ -11,12 +11,16 @@ import {
   Truck, 
   XCircle, 
   ChevronRight,
-  Package,
-  MessageCircle,
-  RefreshCw,
-  Save,
-  FileText,
-  Send
+  Package, 
+  MessageCircle, 
+  RefreshCw, 
+  Save, 
+  FileText, 
+  Send,
+  AlertTriangle,
+  Lock,
+  ArrowRight,
+  ShieldCheck
 } from "lucide-react";
 import { fetchAdminData, updateAdminOrder, AdminOrder } from "@/lib/admin-data";
 
@@ -28,7 +32,13 @@ export default function AdminOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [currentNotes, setCurrentNotes] = useState("");
   const [savingOrder, setSavingOrder] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    status: AdminOrder["status"];
+    title: string;
+    description: string;
+  } | null>(null);
 
   const loadOrders = async () => {
     setLoading(true);
@@ -49,36 +59,84 @@ export default function AdminOrdersPage() {
   const handleSelectOrder = (order: AdminOrder) => {
     setSelectedOrder(order);
     setCurrentNotes(order.notes || "");
-    setSaveSuccess(false);
+    setSaveSuccess(null);
+    setErrorMessage(null);
+    setConfirmModal(null);
   };
 
-  const handleStatusChange = (newStatus: AdminOrder["status"]) => {
-    if (!selectedOrder) return;
-    setSelectedOrder({ ...selectedOrder, status: newStatus });
-  };
-
-  const handleSaveOrderChanges = async () => {
+  // Traite la transition de statut : à sens unique
+  const executeStatusTransition = async (targetStatus: AdminOrder["status"]) => {
     if (!selectedOrder) return;
     setSavingOrder(true);
+    setErrorMessage(null);
     try {
-      await updateAdminOrder(selectedOrder.id, {
-        status: selectedOrder.status,
+      const res = await updateAdminOrder(selectedOrder.id, {
+        status: targetStatus,
         notes: currentNotes,
       });
 
-      // Update in local list
+      if (!res.success) {
+        setErrorMessage(res.error || "Impossible de changer le statut.");
+        return;
+      }
+
+      // Mise à jour de la commande sélectionnée
+      setSelectedOrder((prev) =>
+        prev ? { ...prev, status: targetStatus, notes: currentNotes } : null
+      );
+
+      // Mise à jour de la liste locale
       setOrders((prev) =>
         prev.map((o) =>
           o.id === selectedOrder.id
-            ? { ...o, status: selectedOrder.status, notes: currentNotes }
+            ? { ...o, status: targetStatus, notes: currentNotes }
             : o
         )
       );
 
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err) {
-      console.error(err);
+      setConfirmModal(null);
+      setSaveSuccess(
+        targetStatus === "delivered"
+          ? "Commande livrée avec succès et clôturée définitivement !"
+          : targetStatus === "cancelled"
+          ? "Commande annulée de façon irréversible."
+          : `Statut mis à jour : commande passée en ${
+              targetStatus === "processing" ? "préparation" : "expédition"
+            }.`
+      );
+      setTimeout(() => setSaveSuccess(null), 4000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Erreur de communication avec le serveur.");
+    } finally {
+      setSavingOrder(false);
+    }
+  };
+
+  // Sauvegarder uniquement la note/mot sans altérer le statut
+  const handleSaveNotesOnly = async () => {
+    if (!selectedOrder) return;
+    setSavingOrder(true);
+    setErrorMessage(null);
+    try {
+      const res = await updateAdminOrder(selectedOrder.id, {
+        notes: currentNotes,
+      });
+
+      if (!res.success) {
+        setErrorMessage(res.error || "Impossible d'enregistrer la note.");
+        return;
+      }
+
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedOrder.id ? { ...o, notes: currentNotes } : o
+        )
+      );
+
+      setSaveSuccess("Note enregistrée avec succès !");
+      setTimeout(() => setSaveSuccess(null), 3000);
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Erreur lors de l'enregistrement de la note.");
     } finally {
       setSavingOrder(false);
     }
@@ -122,7 +180,7 @@ export default function AdminOrdersPage() {
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-3 h-3" />
-            Livrée
+            Livrée (Clôturée)
           </span>
         );
       case "shipped":
@@ -156,13 +214,38 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const STEPS: Array<{ id: AdminOrder["status"]; label: string; icon: any }> = [
+    { id: "pending", label: "Reçue", icon: Clock },
+    { id: "processing", label: "Préparation", icon: Package },
+    { id: "shipped", label: "Expédiée", icon: Truck },
+    { id: "delivered", label: "Livrée", icon: CheckCircle2 },
+  ];
+
+  const getStepIndex = (status: AdminOrder["status"]) => {
+    switch (status) {
+      case "pending":
+        return 0;
+      case "processing":
+        return 1;
+      case "shipped":
+        return 2;
+      case "delivered":
+        return 3;
+      default:
+        return -1;
+    }
+  };
+
+  const currentStep = selectedOrder ? getStepIndex(selectedOrder.status) : -1;
+  const isTerminal = selectedOrder?.status === "delivered" || selectedOrder?.status === "cancelled";
+
   return (
     <div className="space-y-6">
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-serif text-charcoal tracking-tight">Commandes</h1>
-          <p className="text-sm text-gray-500 mt-1">Gérez, traitez et communiquez sur les commandes clientes</p>
+          <p className="text-sm text-gray-500 mt-1">Gérez, traitez et suivez le cycle de vie de vos commandes</p>
         </div>
         <button
           onClick={loadOrders}
@@ -297,7 +380,7 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
-        {/* Order Details Drawer / Card with Status, Notes, and WhatsApp */}
+        {/* Order Details Drawer / Workflow & Notes */}
         {selectedOrder && (
           <div className="lg:col-span-5 bg-white border border-gray-200/80 rounded-xl shadow-2xs p-5 sm:p-6 space-y-6 self-start sticky top-20 animate-in fade-in-50 duration-200">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -316,9 +399,202 @@ export default function AdminOrdersPage() {
             {saveSuccess && (
               <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl flex items-center gap-2 text-xs">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>Statut et mot enregistrés avec succès !</span>
+                <span>{saveSuccess}</span>
               </div>
             )}
+
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-xl flex items-center gap-2 text-xs">
+                <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {/* Stepper visuel du cycle de vie */}
+            <div className="space-y-3 bg-gray-50/70 p-4 rounded-xl border border-gray-100">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500">
+                  Progression de la commande
+                </span>
+                {isTerminal && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">
+                    <Lock className="w-3 h-3" />
+                    Statut verrouillé
+                  </span>
+                )}
+              </div>
+
+              {selectedOrder.status === "cancelled" ? (
+                <div className="bg-red-50 border border-red-200 text-red-900 rounded-xl p-3.5 flex items-start gap-3 text-xs">
+                  <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-950">Commande annulée</p>
+                    <p className="text-[11px] text-red-800 mt-0.5 leading-relaxed">
+                      Cette commande a été annulée de façon irréversible. Conformément aux règles, aucun retour en arrière n'est possible.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-4 gap-1.5 pt-2">
+                  {STEPS.map((step, idx) => {
+                    const StepIcon = step.icon;
+                    const isPassed = currentStep > idx;
+                    const isCurrent = currentStep === idx;
+                    return (
+                      <div key={step.id} className="flex flex-col items-center text-center">
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                            isPassed
+                              ? "bg-emerald-600 text-white"
+                              : isCurrent
+                              ? selectedOrder.status === "delivered"
+                                ? "bg-emerald-600 text-white ring-2 ring-emerald-200"
+                                : "bg-charcoal text-white ring-2 ring-gold/40"
+                              : "bg-gray-200 text-gray-400"
+                          }`}
+                        >
+                          <StepIcon className="w-3.5 h-3.5" />
+                        </div>
+                        <span
+                          className={`text-[10px] mt-1.5 font-medium ${
+                            isPassed || isCurrent ? "text-charcoal" : "text-gray-400"
+                          }`}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Actions contextuelles : progression à sens unique */}
+            <div className="space-y-3 pt-1">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-gray-500 block">
+                Actions disponibles
+              </span>
+
+              {selectedOrder.status === "delivered" && (
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl p-3.5 flex items-start gap-3 text-xs">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-emerald-950">Commande livrée et clôturée</p>
+                    <p className="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
+                      Le colis est entre les mains du client. L'état est définitif et verrouillé.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {selectedOrder.status === "cancelled" && (
+                <div className="bg-gray-100 text-gray-600 rounded-xl p-3 text-center text-xs">
+                  Aucune autre action possible sur cette commande annulée.
+                </div>
+              )}
+
+              {selectedOrder.status === "pending" && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    disabled={savingOrder}
+                    onClick={() => executeStatusTransition("processing")}
+                    className="w-full py-2.5 px-4 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors shadow-2xs flex items-center justify-center gap-2"
+                  >
+                    <Package className="w-3.5 h-3.5 text-gold" />
+                    <span>Démarrer la préparation du colis</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-auto text-gray-400" />
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={savingOrder}
+                    onClick={() =>
+                      setConfirmModal({
+                        status: "cancelled",
+                        title: "Confirmer l'annulation",
+                        description:
+                          "Êtes-vous sûr de vouloir annuler cette commande ? Cette action est irréversible : aucun retour en arrière ne sera possible.",
+                      })
+                    }
+                    className="w-full py-2 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Annuler cette commande</span>
+                  </button>
+                </div>
+              )}
+
+              {selectedOrder.status === "processing" && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    disabled={savingOrder}
+                    onClick={() => executeStatusTransition("shipped")}
+                    className="w-full py-2.5 px-4 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-medium transition-colors shadow-2xs flex items-center justify-center gap-2"
+                  >
+                    <Truck className="w-3.5 h-3.5" />
+                    <span>Remettre au livreur / Expédier</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-auto text-white/70" />
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={savingOrder}
+                    onClick={() =>
+                      setConfirmModal({
+                        status: "cancelled",
+                        title: "Confirmer l'annulation",
+                        description:
+                          "Êtes-vous sûr de vouloir annuler cette commande en cours de préparation ? Cette action est irréversible.",
+                      })
+                    }
+                    className="w-full py-2 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Annuler la commande</span>
+                  </button>
+                </div>
+              )}
+
+              {selectedOrder.status === "shipped" && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    disabled={savingOrder}
+                    onClick={() =>
+                      setConfirmModal({
+                        status: "delivered",
+                        title: "Confirmer la livraison définitive",
+                        description:
+                          "Êtes-vous sûr de marquer cette commande comme livrée ? Cette action clôture définitivement la commande : aucun retour en arrière ne sera possible.",
+                      })
+                    }
+                    className="w-full py-2.5 px-4 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-medium transition-colors shadow-2xs flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Confirmer la livraison client (Définitif)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={savingOrder}
+                    onClick={() =>
+                      setConfirmModal({
+                        status: "cancelled",
+                        title: "Confirmer l'échec ou annulation",
+                        description:
+                          "Êtes-vous sûr de vouloir annuler cette commande expédiée ? Cette action est irréversible.",
+                      })
+                    }
+                    className="w-full py-2 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-medium transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Annuler / Retour livreur</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Client Info */}
             <div className="space-y-3 bg-gray-50/70 p-4 rounded-lg border border-gray-100 text-xs">
@@ -379,28 +655,8 @@ export default function AdminOrdersPage() {
               </div>
             </div>
 
-            {/* Status change actions */}
-            <div className="pt-2 space-y-4 border-t border-gray-100">
-              <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
-                  Statut de la commande
-                </label>
-                <select
-                  value={selectedOrder.status}
-                  onChange={(e) =>
-                    handleStatusChange(e.target.value as AdminOrder["status"])
-                  }
-                  className="w-full text-xs font-medium p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gold"
-                >
-                  <option value="pending">En attente (Nouvelle commande)</option>
-                  <option value="processing">En préparation (Colis en cours)</option>
-                  <option value="shipped">Expédiée (Remise au livreur)</option>
-                  <option value="delivered">Livrée avec succès</option>
-                  <option value="cancelled">Annulée</option>
-                </select>
-              </div>
-
-              {/* Note / Mot sur la commande */}
+            {/* Note / Mot sur la commande & WhatsApp */}
+            <div className="pt-2 space-y-3 border-t border-gray-100">
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
                   Mot / Note sur la commande
@@ -409,21 +665,20 @@ export default function AdminOrdersPage() {
                   rows={3}
                   value={currentNotes}
                   onChange={(e) => setCurrentNotes(e.target.value)}
-                  placeholder="Écrivez un mot sur cette commande (ex: colis remis au livreur Moussa, rappel à 16h, quartier confirmé...)"
+                  placeholder="Écrivez un mot sur cette commande (ex: colis remis au livreur Moussa, rappel à 16h, quartier Sabangali...)"
                   className="w-full text-xs p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gold leading-relaxed"
                 />
               </div>
 
-              {/* Actions buttons */}
-              <div className="space-y-2 pt-1">
+              <div className="space-y-2">
                 <button
                   type="button"
-                  onClick={handleSaveOrderChanges}
+                  onClick={handleSaveNotesOnly}
                   disabled={savingOrder}
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors shadow-2xs"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-gray-100 text-charcoal hover:bg-gray-200 text-xs font-medium transition-colors"
                 >
                   <Save className="w-3.5 h-3.5 text-gold" />
-                  {savingOrder ? "Enregistrement en cours..." : "Enregistrer la commande"}
+                  {savingOrder ? "Enregistrement..." : "Enregistrer la note"}
                 </button>
 
                 {/* WhatsApp button with prefilled custom word/note */}
@@ -441,6 +696,74 @@ export default function AdminOrdersPage() {
           </div>
         )}
       </div>
+
+      {/* Modal de confirmation d'action irréversible */}
+      {confirmModal && selectedOrder && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center gap-3">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  confirmModal.status === "delivered"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {confirmModal.status === "delivered" ? (
+                  <CheckCircle2 className="w-5 h-5" />
+                ) : (
+                  <AlertTriangle className="w-5 h-5" />
+                )}
+              </div>
+              <div>
+                <h4 className="font-serif font-semibold text-charcoal text-base">
+                  {confirmModal.title}
+                </h4>
+                <p className="text-xs text-gray-500 font-mono">
+                  {selectedOrder.order_number} — {selectedOrder.client_name}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-3.5 text-xs text-amber-900 flex items-start gap-2.5">
+              <Lock className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Attention — Action unique & définitive :</strong> {confirmModal.description}
+              </p>
+            </div>
+
+            <div className="flex justify-end gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setConfirmModal(null)}
+                disabled={savingOrder}
+                className="px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Non, annuler
+              </button>
+              <button
+                type="button"
+                onClick={() => executeStatusTransition(confirmModal.status)}
+                disabled={savingOrder}
+                className={`px-4 py-2 text-xs font-medium text-white rounded-lg transition-colors flex items-center gap-1.5 shadow-sm ${
+                  confirmModal.status === "delivered"
+                    ? "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-red-600 hover:bg-red-700"
+                }`}
+              >
+                {savingOrder ? (
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                ) : confirmModal.status === "delivered" ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  <XCircle className="w-3.5 h-3.5" />
+                )}
+                <span>Oui, confirmer définitivement</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

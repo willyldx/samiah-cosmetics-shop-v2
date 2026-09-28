@@ -373,30 +373,37 @@ export async function deleteAdminProduct(
 export async function updateAdminOrder(
   orderId: string,
   updates: Partial<AdminOrder>
-): Promise<boolean> {
+): Promise<{ success: boolean; error?: string }> {
   try {
-    const payload: Record<string, unknown> = {};
-    if (updates.status) payload.status = updates.status;
-    if (updates.payment_status) payload.payment_status = updates.payment_status;
+    const res = await fetch("/api/admin/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: orderId,
+        status: updates.status,
+        notes: updates.notes,
+      }),
+    });
 
-    const { error } = await supabase
-      .from("orders")
-      .update(payload)
-      .eq("id", orderId);
-
-    if (error) {
-      console.warn("Supabase order update warning:", error.message);
+    const data = await res.json();
+    if (!res.ok || data.error) {
+      return { success: false, error: data.error || "Erreur lors de la mise à jour de la commande" };
     }
-  } catch (err) {
-    console.warn("Supabase order update error:", err);
-  }
 
-  // Update in-memory fallback list
-  const idx = FALLBACK_ORDERS.findIndex((o) => o.id === orderId);
-  if (idx !== -1) {
-    FALLBACK_ORDERS[idx] = { ...FALLBACK_ORDERS[idx], ...updates };
+    // Update in-memory fallback list
+    const idx = FALLBACK_ORDERS.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      FALLBACK_ORDERS[idx] = { ...FALLBACK_ORDERS[idx], ...updates };
+    }
+    return { success: true };
+  } catch (err: any) {
+    console.warn("Erreur réseau /api/admin/orders:", err);
+    const idx = FALLBACK_ORDERS.findIndex((o) => o.id === orderId);
+    if (idx !== -1) {
+      FALLBACK_ORDERS[idx] = { ...FALLBACK_ORDERS[idx], ...updates };
+    }
+    return { success: true };
   }
-  return true;
 }
 
 
