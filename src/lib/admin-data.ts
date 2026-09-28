@@ -46,156 +46,10 @@ export interface AdminStats {
   supabaseErrorMessage?: string;
 }
 
-// Fallback demo products
-export const FALLBACK_PRODUCTS: AdminProduct[] = [
-  {
-    id: "prod-chebe-oil",
-    title: "Huile de Chébé Authentique 100ml",
-    price: 8500,
-    category: "Cheveux",
-    active: true,
-    image: "https://images.unsplash.com/photo-1608248597359-00995fa665d9?w=800&q=80",
-    image_url: "https://images.unsplash.com/photo-1608248597359-00995fa665d9?w=800&q=80",
-  },
-  {
-    id: "prod-karite-creme",
-    title: "Crème Nourrissante au Karité Pur 200ml",
-    price: 6500,
-    category: "Corps",
-    active: true,
-    image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
-    image_url: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
-  },
-  {
-    id: "prod-serum-eclat",
-    title: "Sérum Visage Éclat & Anti-taches 50ml",
-    price: 12000,
-    category: "Visage",
-    active: true,
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80",
-    image_url: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80",
-  },
-  {
-    id: "prod-savon-noir",
-    title: "Savon Noir Artisanal aux Plantes",
-    price: 3500,
-    category: "Visage",
-    active: true,
-    image: "https://images.unsplash.com/photo-1607006314605-78330a1038fb?w=800&q=80",
-    image_url: "https://images.unsplash.com/photo-1607006314605-78330a1038fb?w=800&q=80",
-  },
-  {
-    id: "prod-masque-fortifiant",
-    title: "Masque Capillaire Régénérant",
-    price: 9500,
-    category: "Cheveux",
-    active: false,
-    image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-    image_url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
-  },
-];
+// Pas de fausses commandes mocks : la base de données réelle fait foi !
+export const FALLBACK_ORDERS: AdminOrder[] = [];
 
-// Fallback demo orders for testing when Supabase keys are disabled
-export const FALLBACK_ORDERS: AdminOrder[] = [
-  {
-    id: "ord-1",
-    order_number: "CMD-2026-9041",
-    created_at: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
-    client_name: "Fatimé Zara Mahamat",
-    client_phone: "+235 66 12 34 56",
-    client_city: "N'Djamena",
-    client_address: "Quartier Moursal, Rue 102",
-    items: [
-      {
-        productId: "prod-chebe-oil",
-        product_title: "Huile de Chébé Authentique 100ml",
-        quantity: 2,
-        product_price: 8500,
-      },
-    ],
-    subtotal: 17000,
-    shipping_fee: 1000,
-    total: 18000,
-    payment_method: "kadryza",
-    payment_status: "paid",
-    status: "processing",
-  },
-  {
-    id: "ord-2",
-    order_number: "CMD-2026-9038",
-    created_at: new Date(Date.now() - 3 * 3600 * 1000).toISOString(),
-    client_name: "Amina Idriss",
-    client_phone: "+235 99 45 67 89",
-    client_city: "N'Djamena",
-    client_address: "Quartier Chagoua",
-    items: [
-      {
-        productId: "prod-serum-eclat",
-        product_title: "Sérum Visage Éclat & Anti-taches 50ml",
-        quantity: 1,
-        product_price: 12000,
-      },
-      {
-        productId: "prod-karite-creme",
-        product_title: "Crème Nourrissante au Karité Pur 200ml",
-        quantity: 1,
-        product_price: 6500,
-      },
-    ],
-    subtotal: 18500,
-    shipping_fee: 1000,
-    total: 19500,
-    payment_method: "cash",
-    payment_status: "pending_payment",
-    status: "pending",
-  },
-  {
-    id: "ord-3",
-    order_number: "CMD-2026-9025",
-    created_at: new Date(Date.now() - 26 * 3600 * 1000).toISOString(),
-    client_name: "Mariam Ousmane",
-    client_phone: "+235 62 78 90 12",
-    client_city: "Moundou",
-    client_address: "Centre-ville, face marché",
-    items: [
-      {
-        productId: "prod-chebe-oil",
-        product_title: "Huile de Chébé Authentique 100ml",
-        quantity: 1,
-        product_price: 8500,
-      },
-    ],
-    subtotal: 8500,
-    shipping_fee: 2500,
-    total: 11000,
-    payment_method: "kadryza",
-    payment_status: "paid",
-    status: "delivered",
-  },
-  {
-    id: "ord-4",
-    order_number: "CMD-2026-9012",
-    created_at: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
-    client_name: "Khadidja Tahir",
-    client_phone: "+235 60 11 22 33",
-    client_city: "Sarh",
-    client_address: "Avenue Mobutu",
-    items: [
-      {
-        productId: "prod-savon-noir",
-        product_title: "Savon Noir Artisanal aux Plantes",
-        quantity: 3,
-        product_price: 3500,
-      },
-    ],
-    subtotal: 10500,
-    shipping_fee: 3000,
-    total: 13500,
-    payment_method: "cash",
-    payment_status: "not_applicable",
-    status: "shipped",
-  },
-];
+export const FALLBACK_PRODUCTS: AdminProduct[] = [];
 
 export async function fetchAdminData(): Promise<{
   orders: AdminOrder[];
@@ -207,6 +61,7 @@ export async function fetchAdminData(): Promise<{
   let supabaseStatus: AdminStats["supabaseStatus"] = "connected";
   let errorMessage: string | undefined;
 
+  // 1. Chargement des produits réels depuis Supabase
   try {
     const { data: prodData, error: prodErr } = await supabase
       .from("products")
@@ -222,18 +77,17 @@ export async function fetchAdminData(): Promise<{
         supabaseStatus = "error";
         errorMessage = prodErr.message;
       }
-      products = FALLBACK_PRODUCTS;
-    } else if (prodData && prodData.length > 0) {
-      products = prodData;
+      products = [];
     } else {
-      products = FALLBACK_PRODUCTS;
+      products = prodData || [];
     }
   } catch (err: any) {
     supabaseStatus = "error";
     errorMessage = err?.message || "Erreur de connexion Supabase";
-    products = FALLBACK_PRODUCTS;
+    products = [];
   }
 
+  // 2. Chargement des commandes réelles depuis Supabase (zéro mock !)
   try {
     const { data: orderData, error: ordErr } = await supabase
       .from("orders")
@@ -246,17 +100,15 @@ export async function fetchAdminData(): Promise<{
         errorMessage =
           "Les anciennes clés Supabase (anon/service_role) sont désactivées. Veuillez générer les nouvelles clés API Publishable/Secret dans le dashboard Supabase.";
       }
-      orders = FALLBACK_ORDERS;
-    } else if (orderData && orderData.length > 0) {
-      orders = orderData;
+      orders = [];
     } else {
-      orders = FALLBACK_ORDERS;
+      orders = orderData || [];
     }
   } catch {
-    orders = FALLBACK_ORDERS;
+    orders = [];
   }
 
-  // Calculate real metrics
+  // Calcul des métriques réelles
   const ordersCount = orders.length;
   const now = new Date();
   const monthOrdersCount = orders.filter((o) => {
@@ -305,9 +157,6 @@ export async function createAdminProduct(
       };
     }
 
-    if (json.product) {
-      FALLBACK_PRODUCTS.unshift(json.product);
-    }
     return { success: true, product: json.product };
   } catch (err: any) {
     return { success: false, error: err?.message || "Erreur réseau" };
@@ -333,10 +182,6 @@ export async function updateAdminProduct(
       };
     }
 
-    const index = FALLBACK_PRODUCTS.findIndex((p) => p.id === updated.id);
-    if (index !== -1) {
-      FALLBACK_PRODUCTS[index] = { ...FALLBACK_PRODUCTS[index], ...updated };
-    }
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || "Erreur réseau" };
@@ -360,10 +205,6 @@ export async function deleteAdminProduct(
       };
     }
 
-    const index = FALLBACK_PRODUCTS.findIndex((p) => p.id === productId);
-    if (index !== -1) {
-      FALLBACK_PRODUCTS.splice(index, 1);
-    }
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || "Erreur réseau" };
@@ -390,20 +231,9 @@ export async function updateAdminOrder(
       return { success: false, error: data.error || "Erreur lors de la mise à jour de la commande" };
     }
 
-    // Update in-memory fallback list
-    const idx = FALLBACK_ORDERS.findIndex((o) => o.id === orderId);
-    if (idx !== -1) {
-      FALLBACK_ORDERS[idx] = { ...FALLBACK_ORDERS[idx], ...updates };
-    }
     return { success: true };
   } catch (err: any) {
     console.warn("Erreur réseau /api/admin/orders:", err);
-    const idx = FALLBACK_ORDERS.findIndex((o) => o.id === orderId);
-    if (idx !== -1) {
-      FALLBACK_ORDERS[idx] = { ...FALLBACK_ORDERS[idx], ...updates };
-    }
-    return { success: true };
+    return { success: false, error: err?.message || "Erreur réseau" };
   }
 }
-
-

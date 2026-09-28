@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
-import { AdminOrder } from "@/lib/admin-data";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -64,6 +63,19 @@ export async function PATCH(req: Request) {
       );
     }
 
+    // Protection syntaxique : vérifier si l'identifiant est bien un UUID valide
+    const UUID_REGEX =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!UUID_REGEX.test(id)) {
+      return NextResponse.json(
+        {
+          error:
+            "Cette commande est un exemple factice (mock) qui n'existe pas dans la base de données réelle.",
+        },
+        { status: 400 }
+      );
+    }
+
     const supabase = getAdminClient();
 
     // 1. Récupérer la commande actuelle pour vérifier son état
@@ -77,7 +89,14 @@ export async function PATCH(req: Request) {
       console.warn("Erreur lecture commande:", fetchErr);
     }
 
-    if (currentOrder && status && status !== currentOrder.status) {
+    if (!currentOrder) {
+      return NextResponse.json(
+        { error: "Commande introuvable dans la base de données." },
+        { status: 404 }
+      );
+    }
+
+    if (status && status !== currentOrder.status) {
       const currentStatus = currentOrder.status;
 
       // Vérification : état terminal déjà atteint

@@ -221,7 +221,15 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 font-light">
-              {orders.slice(0, 5).map((order) => (
+              {orders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                    <p className="font-medium text-charcoal text-xs">Aucune commande pour le moment</p>
+                    <p className="text-[11px] text-gray-400 mt-1">Les nouvelles commandes apparaîtront ici.</p>
+                  </td>
+                </tr>
+              ) : (
+                orders.slice(0, 5).map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-6 py-4 font-mono font-medium text-charcoal text-xs">
                     {order.order_number}
@@ -249,7 +257,8 @@ export default function AdminDashboard() {
                     {getStatusBadge(order.status)}
                   </td>
                 </tr>
-              ))}
+              ))
+            )}
             </tbody>
           </table>
         </div>
