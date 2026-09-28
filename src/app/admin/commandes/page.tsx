@@ -13,9 +13,12 @@ import {
   ChevronRight,
   Package,
   MessageCircle,
-  RefreshCw
+  RefreshCw,
+  Save,
+  FileText,
+  Send
 } from "lucide-react";
-import { fetchAdminData, AdminOrder } from "@/lib/admin-data";
+import { fetchAdminData, updateAdminOrder, AdminOrder } from "@/lib/admin-data";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -23,6 +26,9 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [currentNotes, setCurrentNotes] = useState("");
+  const [savingOrder, setSavingOrder] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const loadOrders = async () => {
     setLoading(true);
@@ -40,13 +46,61 @@ export default function AdminOrdersPage() {
     loadOrders();
   }, []);
 
-  const handleStatusChange = (orderId: string, newStatus: AdminOrder["status"]) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-    );
-    if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
+  const handleSelectOrder = (order: AdminOrder) => {
+    setSelectedOrder(order);
+    setCurrentNotes(order.notes || "");
+    setSaveSuccess(false);
+  };
+
+  const handleStatusChange = (newStatus: AdminOrder["status"]) => {
+    if (!selectedOrder) return;
+    setSelectedOrder({ ...selectedOrder, status: newStatus });
+  };
+
+  const handleSaveOrderChanges = async () => {
+    if (!selectedOrder) return;
+    setSavingOrder(true);
+    try {
+      await updateAdminOrder(selectedOrder.id, {
+        status: selectedOrder.status,
+        notes: currentNotes,
+      });
+
+      // Update in local list
+      setOrders((prev) =>
+        prev.map((o) =>
+          o.id === selectedOrder.id
+            ? { ...o, status: selectedOrder.status, notes: currentNotes }
+            : o
+        )
+      );
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSavingOrder(false);
     }
+  };
+
+  const generateWhatsAppUrl = () => {
+    if (!selectedOrder) return "#";
+    const cleanPhone = selectedOrder.client_phone.replace(/[^0-9]/g, "");
+    const statusLabels: Record<string, string> = {
+      pending: "reçue et en attente de traitement",
+      processing: "en cours de préparation",
+      shipped: "expédiée et en cours de livraison vers votre adresse",
+      delivered: "livrée avec succès",
+      cancelled: "annulée",
+    };
+    const statusText = statusLabels[selectedOrder.status] || selectedOrder.status;
+    let msg = `Bonjour ${selectedOrder.client_name}, concernant votre commande Samiah Cosmetics n° ${selectedOrder.order_number} : elle est actuellement ${statusText}.`;
+    if (currentNotes) {
+      msg += `\n\nMessage de la boutique : ${currentNotes}`;
+    }
+    msg += `\n\nMerci de votre confiance !`;
+    return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`;
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -108,7 +162,7 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-serif text-charcoal tracking-tight">Commandes</h1>
-          <p className="text-sm text-gray-500 mt-1">Gérez et suivez le traitement des commandes clientes</p>
+          <p className="text-sm text-gray-500 mt-1">Gérez, traitez et communiquez sur les commandes clientes</p>
         </div>
         <button
           onClick={loadOrders}
@@ -187,7 +241,7 @@ export default function AdminOrdersPage() {
                       return (
                         <tr
                           key={order.id}
-                          onClick={() => setSelectedOrder(order)}
+                          onClick={() => handleSelectOrder(order)}
                           className={`cursor-pointer transition-colors ${
                             isSelected ? "bg-amber-50/50" : "hover:bg-gray-50/50"
                           }`}
@@ -202,6 +256,12 @@ export default function AdminOrdersPage() {
                                 minute: "2-digit",
                               })}
                             </span>
+                            {order.notes && (
+                              <span className="inline-flex items-center gap-1 text-[10px] text-gold font-sans mt-1 bg-sand/20 px-1.5 py-0.5 rounded">
+                                <FileText className="w-3 h-3" />
+                                Note présente
+                              </span>
+                            )}
                           </td>
                           <td className="px-5 py-4">
                             <p className="font-medium text-charcoal text-xs sm:text-sm">{order.client_name}</p>
@@ -237,9 +297,9 @@ export default function AdminOrdersPage() {
           </div>
         </div>
 
-        {/* Order Details Drawer / Card */}
+        {/* Order Details Drawer / Card with Status, Notes, and WhatsApp */}
         {selectedOrder && (
-          <div className="lg:col-span-5 bg-white border border-gray-200/80 rounded-xl shadow-2xs p-5 sm:p-6 space-y-6 self-start sticky top-20">
+          <div className="lg:col-span-5 bg-white border border-gray-200/80 rounded-xl shadow-2xs p-5 sm:p-6 space-y-6 self-start sticky top-20 animate-in fade-in-50 duration-200">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-gold">Détails commande</span>
@@ -252,6 +312,13 @@ export default function AdminOrdersPage() {
                 Fermer
               </button>
             </div>
+
+            {saveSuccess && (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl flex items-center gap-2 text-xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>Statut et mot enregistrés avec succès !</span>
+              </div>
+            )}
 
             {/* Client Info */}
             <div className="space-y-3 bg-gray-50/70 p-4 rounded-lg border border-gray-100 text-xs">
@@ -266,7 +333,7 @@ export default function AdminOrdersPage() {
                   className="ml-auto inline-flex items-center gap-1 text-[11px] text-emerald-600 hover:text-emerald-700 font-medium"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
-                  WhatsApp
+                  Discuter
                 </a>
               </div>
               <div className="flex items-center gap-2 text-gray-600">
@@ -313,26 +380,63 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Status change actions */}
-            <div className="pt-2 space-y-2 border-t border-gray-100">
-              <label className="text-xs font-semibold uppercase tracking-wider text-gray-400 block">
-                Modifier le statut de la commande
-              </label>
-              <select
-                value={selectedOrder.status}
-                onChange={(e) =>
-                  handleStatusChange(
-                    selectedOrder.id,
-                    e.target.value as AdminOrder["status"]
-                  )
-                }
-                className="w-full text-xs font-medium p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gold"
-              >
-                <option value="pending">En attente (Nouvelle commande)</option>
-                <option value="processing">En préparation</option>
-                <option value="shipped">Expédiée (En cours de livraison)</option>
-                <option value="delivered">Livrée avec succès</option>
-                <option value="cancelled">Annulée</option>
-              </select>
+            <div className="pt-2 space-y-4 border-t border-gray-100">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                  Statut de la commande
+                </label>
+                <select
+                  value={selectedOrder.status}
+                  onChange={(e) =>
+                    handleStatusChange(e.target.value as AdminOrder["status"])
+                  }
+                  className="w-full text-xs font-medium p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gold"
+                >
+                  <option value="pending">En attente (Nouvelle commande)</option>
+                  <option value="processing">En préparation (Colis en cours)</option>
+                  <option value="shipped">Expédiée (Remise au livreur)</option>
+                  <option value="delivered">Livrée avec succès</option>
+                  <option value="cancelled">Annulée</option>
+                </select>
+              </div>
+
+              {/* Note / Mot sur la commande */}
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 block mb-1.5">
+                  Mot / Note sur la commande
+                </label>
+                <textarea
+                  rows={3}
+                  value={currentNotes}
+                  onChange={(e) => setCurrentNotes(e.target.value)}
+                  placeholder="Écrivez un mot sur cette commande (ex: colis remis au livreur Moussa, rappel à 16h, quartier confirmé...)"
+                  className="w-full text-xs p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gold leading-relaxed"
+                />
+              </div>
+
+              {/* Actions buttons */}
+              <div className="space-y-2 pt-1">
+                <button
+                  type="button"
+                  onClick={handleSaveOrderChanges}
+                  disabled={savingOrder}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-charcoal text-white hover:bg-charcoal/90 text-xs font-medium transition-colors shadow-2xs"
+                >
+                  <Save className="w-3.5 h-3.5 text-gold" />
+                  {savingOrder ? "Enregistrement en cours..." : "Enregistrer la commande"}
+                </button>
+
+                {/* WhatsApp button with prefilled custom word/note */}
+                <a
+                  href={generateWhatsAppUrl()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-medium transition-colors shadow-2xs"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  Envoyer ce mot au client sur WhatsApp
+                </a>
+              </div>
             </div>
           </div>
         )}

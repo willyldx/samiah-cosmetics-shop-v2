@@ -21,6 +21,7 @@ export interface AdminOrder {
   payment_method: "cash" | "kadryza";
   payment_status: string;
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  notes?: string;
 }
 
 export interface AdminProduct {
@@ -316,4 +317,34 @@ export async function updateAdminProduct(
   }
   return true;
 }
+
+export async function updateAdminOrder(
+  orderId: string,
+  updates: Partial<AdminOrder>
+): Promise<boolean> {
+  try {
+    const payload: Record<string, unknown> = {};
+    if (updates.status) payload.status = updates.status;
+    if (updates.payment_status) payload.payment_status = updates.payment_status;
+
+    const { error } = await supabase
+      .from("orders")
+      .update(payload)
+      .eq("id", orderId);
+
+    if (error) {
+      console.warn("Supabase order update warning:", error.message);
+    }
+  } catch (err) {
+    console.warn("Supabase order update error:", err);
+  }
+
+  // Update in-memory fallback list
+  const idx = FALLBACK_ORDERS.findIndex((o) => o.id === orderId);
+  if (idx !== -1) {
+    FALLBACK_ORDERS[idx] = { ...FALLBACK_ORDERS[idx], ...updates };
+  }
+  return true;
+}
+
 
