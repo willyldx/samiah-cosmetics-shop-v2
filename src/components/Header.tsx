@@ -4,12 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Search, ShoppingBag, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import MobileMenu from "./MobileMenu";
 import SearchModal from "./SearchModal";
 import CartDrawer from "./CartDrawer";
 import { useCart } from "@/context/CartContext";
 
 export default function Header() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -22,6 +24,11 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
 
   return (
     <>
