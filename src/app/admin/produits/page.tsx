@@ -67,7 +67,7 @@ export default function AdminProductsPage() {
     setEditingProduct({
       id: `prod-${Date.now()}`,
       title: "",
-      price: 5000,
+      price: 0,
       category: "Cheveux",
       active: true,
       image: "",
@@ -439,16 +439,17 @@ export default function AdminProductsPage() {
                   <input
                     type="number"
                     required
-                    min={0}
-                    step={100}
-                    value={editingProduct.price}
+                    min={1}
+                    step={1}
+                    value={editingProduct.price ? editingProduct.price : ""}
                     onChange={(e) =>
                       setEditingProduct({
                         ...editingProduct,
-                        price: Number(e.target.value),
+                        price: e.target.value === "" ? 0 : Number(e.target.value),
                       })
                     }
                     className="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:border-gold"
+                    placeholder="Prix libre de 1 à l'infini..."
                   />
                 </div>
 
